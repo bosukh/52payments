@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+<div>
+  <a href="#">
+    <button id='small-search-button' class= 'button' type="button" name="button">Search</button>
+  </a>
+</div>
+
+<div class="company-profile-container">
+  <div class="company-profile-top-row">
+    <img id="company-profile-logo" src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="52paymments_logo" width="200px">
+    <a href="#">
+      <button id='company-apply-button' class= 'button' type="button" name="button">Apply</button>
+    </a>
+    <a href="{{url_for('company_write_review', company_profile_name=company.company_profile_name)}}">
+      <button id='company-review-button' class= 'button' type="button" name="button">Write a Review</button>
+    </a>
+  </div>
+
+  <div class="company-left-col">
+    <div class="company-profile-basic-box">
+      Overall User Rating <br>
+      ☆☆☆☆☆ {{company.avg_rating}} ({{company.num_ratings}}) <br>
+      √ Verified With 52Payments <br>
+    </div>
+    {% if company.pricing %}
+    <div class="company-profile-basic-box">
+      Pricing Method: <br>
+      Pricing Range: <br>
+    </div>
+    {% endif %}
+
+    {% if company.provided_srvs %}
+    <div class="company-profile-basic-box">
+      Provided Services: <br>
+      {% for srvs in company.provided_srvs%}
+      - {{srvs}} <br>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+
+    {% if company.provided_srvs %}
+    <div class="company-profile-basic-box">
+      Complementary Services: <br>
+      {% for srvs in company.complementary_srvs%}
+      - {{srvs}} <br>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if company.provided_srvs %}
+    <div class="company-profile-basic-box">
+      Equipment <br>
+      {% for equip in company.equipment%}
+      - {{equip}} <br>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="company-right-col">
+    <div class="company-profile-basic-box">
+      {{company.full_description}}
+    </div>
+  </div>
+  </div>
+
+
+{% endblock %}
