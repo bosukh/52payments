@@ -6,6 +6,9 @@
     <title>52 Payments</title>
   </head>
   <body>
+    {% if current_user.is_authenticated %}
+      Hi {{ current_user.name }}!
+    {% endif %}
     <div>
       <ul>
         <img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px">

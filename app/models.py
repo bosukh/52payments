@@ -17,9 +17,27 @@ class Company(db.Model):
     avg_rating = db.FloatProperty(default = 0.0, required=False)
 
 class User(db.Model):
+    email = db.StringProperty(required=True)
     name = db.StringProperty(required=True)
+    password = db.StringProperty(required=True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
+    authenticated = db.BooleanProperty(default=False)
+    def is_active(self):
+        """True, as all users are active."""
+        return True
+
+    def get_id(self):
+        """Return the email address to satisfy Flask-Login's requirements."""
+        return self.email
+
+    def is_authenticated(self):
+        """Return True if the user is authenticated."""
+        return self.authenticated
+
+    def is_anonymous(self):
+        """False, as anonymous users aren't supported."""
+        return False
 
 class Review(db.Model):
     rating = db.FloatProperty(required=True)

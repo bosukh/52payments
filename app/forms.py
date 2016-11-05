@@ -1,7 +1,11 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField
+from wtforms import FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
 from wtforms.validators import DataRequired, Length
 from flask_wtf.file import FileField
+
+class LoginForm(Form):
+    email = TextField('Email')
+    password = PasswordField('Password')
 
 class SearchForm(Form):
     retail = BooleanField('Retail', default=False)

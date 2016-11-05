@@ -4,12 +4,53 @@ from flask import Flask, make_response
 from flask import render_template, flash, redirect, session, url_for, request, g
 from config import basedir
 from google.appengine.ext import db
-from config import ALLOWED_EXTENSIONS, UPLOAD_FOLDER
+from bcrypt import bcrypt as bt
+from flask_login import LoginManager, login_user
+
+
 app = Flask(__name__)
 app.config.from_object('config')
+login_manager = LoginManager()
+login_manager.init_app(app)
 
-from app.forms import CompanyForm, SearchForm
+from app.forms import CompanyForm, SearchForm, LoginForm
 from app.models import Company, User, Review
+
+@login_manager.user_loader
+def load_user(email):
+    query = User.gql("WHERE email = '%s'"%email)
+    return query.get()
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Here we use a class of some kind to represent and validate our
+    # client-side form data. For example, WTForms is a library that will
+    # handle this for us, and we use a custom LoginForm to validate.
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = load_user(form.data['email'])
+        try:
+            input_pw = bt.hashpw(form.data['password'], user.password)
+            if input_pw == user.password:
+                login_user(user)
+                flash('Logged in successfully.')
+                next = request.args.get('next')
+                if not next_is_valid(next):
+                    return flask.abort(400)
+        except ValueError:
+            return render_template('login.html', form=form)
+
+            return redirect(next or flask.url_for('index'))
+    return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    pass
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    pass
+
 
 @app.route('/temp', methods=['GET', 'POST'])
 def temp():
@@ -21,9 +62,9 @@ def temp():
 
 
 def test_db():
-    ben = User(name = 'Ben')
+    ben = User(name = 'Ben', email= 'ben@test.com', password = 'benpw')
     ben.put()
-    sarah = User(name = 'Sarah')
+    sarah = User(name = 'Sarah', email= 'sarah@test.com', password = 'sarahpw')
     sarah.put()
     query = Company.gql("WHERE company_profile_name = '%s'"%'52payments')
     ft_payments = query.get()
@@ -36,7 +77,7 @@ def test_db():
                         user = sarah, company = ft_payments)
     sarah_review.put_review()
 
-#fill_db()
+#test_db()
 @app.route('/register_company', methods=['GET', 'POST'])
 def register_company():
     form = CompanyForm()
@@ -86,7 +127,7 @@ def index():
     return render_template('index.html',
                             form=form,
                             companies = companies)
-                            
+
 @app.route("/img/<company_profile_name>")
 def img(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)

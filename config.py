@@ -5,6 +5,5 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 WTF_CSRF_ENABLED = True
 SECRET_KEY = 'you-will-never-guess'
-UPLOAD_FOLDER = '/uploads'
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
