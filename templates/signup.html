@@ -1,0 +1,27 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/signup.css') }}">
+<form action="" method="post" name="signup-form">
+    {{ form.hidden_tag() }}
+    <div id="signup-box" class="">
+      <div id = 'signup-inner-box' class="">
+        {% for field in form %}
+          {% if field.name != 'csrf_token'%}
+          <div class="signup-field-text">
+            {{ field.label.text }}
+          </div>
+          <div class="signup-field">
+            {{field}}
+          </div>
+          {% endif %}
+        {% endfor %}
+        <br>
+        <div class="button-wrapper">
+          <button id='signup-button' class='button' type="submit" name="button">SignUp</button>
+        </div>
+      </div>
+    </div>
+</form>
+{% endblock %}

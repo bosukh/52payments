@@ -13,7 +13,7 @@ app.config.from_object('config')
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-from app.forms import CompanyForm, SearchForm, LoginForm
+from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm
 from app.models import Company, User, Review
 
 @login_manager.user_loader
@@ -32,6 +32,7 @@ def login():
         try:
             input_pw = bt.hashpw(form.data['password'], user.password)
             if input_pw == user.password:
+                user.authenticated = True
                 login_user(user)
                 flash('Logged in successfully.')
                 next = request.args.get('next')
@@ -49,22 +50,26 @@ def logout():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    pass
-
-
-@app.route('/temp', methods=['GET', 'POST'])
-def temp():
-    test_db()
-    a = ''
-    query = Company.gql("WHERE company_profile_name = '%s'"%'52payments')
-    company = query.get()
-    return a + ' ' + str(company.review_set.count())
-
+    form = SignUpForm()
+    if form.validate_on_submit():
+        user_data = form.data
+        query = User.gql("WHERE email = '%s'"%(user_data['email']))
+        existing = query.get()
+        if existing:
+            flash('Your email or phone is already registered.')
+            return redirect('login')
+        user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
+        user_data.pop('password_2')
+        user = User(**user_data)
+        user.put()
+        flash('Signup successful')
+        return redirect(url_for('index'))
+    return render_template('signup.html', form=form)
 
 def test_db():
-    ben = User(name = 'Ben', email= 'ben@test.com', password = 'benpw')
+    ben = User(first_name = 'Ben', last_name = 'Hong',email= 'ben@test.com', password = 'benpw')
     ben.put()
-    sarah = User(name = 'Sarah', email= 'sarah@test.com', password = 'sarahpw')
+    sarah = User(first_name = 'Sarah', last_name = 'Bang', email= 'sarah@test.com', password = 'sarahpw')
     sarah.put()
     query = Company.gql("WHERE company_profile_name = '%s'"%'52payments')
     ft_payments = query.get()

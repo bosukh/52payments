@@ -3,6 +3,7 @@
 <html>
   <head>
     <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/base.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <title>52 Payments</title>
   </head>
   <body>
@@ -11,9 +12,9 @@
     {% endif %}
     <div>
       <ul>
-        <img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px">
-        <li><a href="#">Sign-up</a></li>
-        <li><a href="#">Sign-in</a></li>
+        <a href="{{url_for('index')}}"><img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px"></a>
+        <li><a href="{{ url_for('signup')}}">Sign-up</a></li>
+        <li><a href="{{url_for('login')}}">Sign-in</a></li>
         <li><a href="#">About</a></li>
         <li><a href="#">Processors</a></li>
       </ul>

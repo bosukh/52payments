@@ -1,0 +1,26 @@
+/*Login*/
+input {
+  width: 100%;
+  border-radius: 3px;
+  padding: 5px;
+}
+#signup-inner-box {
+  width: 70%;
+  max-width: 250px;
+  margin: auto;
+  margin-bottom: 30px;
+}
+.signup-field {
+}
+.signup-field-text {
+  text-align: left;
+  margin-top: 10px;
+}
+
+#signup-box {
+  border: 1px solid #CAC9C9;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+  margin-top: 40px;
+}

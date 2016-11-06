@@ -15,10 +15,13 @@ class Company(db.Model):
     last_modified = db.DateTimeProperty(auto_now = True)
     num_ratings = db.IntegerProperty(default = 0, required=False)
     avg_rating = db.FloatProperty(default = 0.0, required=False)
+    featured = db.BooleanProperty(default=False)
 
 class User(db.Model):
+    first_name = db.StringProperty(required=True)
+    last_name = db.StringProperty(required=True)
     email = db.StringProperty(required=True)
-    name = db.StringProperty(required=True)
+    phone = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
