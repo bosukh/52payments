@@ -22,11 +22,11 @@
     <hr>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <ul>
-    {% for message in messages %}
-        <li>{{ message }} </li>
-    {% endfor %}
-    </ul>
+    <div class="warning">
+      {% for message in messages %}
+          {{ message }} <br>
+      {% endfor %}
+    </div>
     {% endif %}
     {% endwith %}
     <div id='content-container'>

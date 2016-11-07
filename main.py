@@ -1,11 +1,11 @@
 import os
 
-from flask import Flask, make_response
+from flask import Flask, make_response, abort
 from flask import render_template, flash, redirect, session, url_for, request, g
 from config import basedir
 from google.appengine.ext import db
 from bcrypt import bcrypt as bt
-from flask_login import LoginManager, login_user
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
 
 app = Flask(__name__)
@@ -21,6 +21,11 @@ def load_user(email):
     query = User.gql("WHERE email = '%s'"%email)
     return query.get()
 
+def load_company(company_profile_name):
+    query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
+    company = query.get()
+    return company
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Here we use a class of some kind to represent and validate our
@@ -34,29 +39,30 @@ def login():
             if input_pw == user.password:
                 user.authenticated = True
                 login_user(user)
+                current_user = user
                 flash('Logged in successfully.')
-                next = request.args.get('next')
-                if not next_is_valid(next):
-                    return flask.abort(400)
+                #next = request.args.get('next')
+                #if not next:
+                #    return abort(400)
+                #return redirect(next or flask.url_for('index'))
+                return redirect(url_for('index'))
         except ValueError:
             return render_template('login.html', form=form)
-
-            return redirect(next or flask.url_for('index'))
     return render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    pass
+    logout_user()
+    return redirect(url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignUpForm()
     if form.validate_on_submit():
         user_data = form.data
-        query = User.gql("WHERE email = '%s'"%(user_data['email']))
-        existing = query.get()
+        existing = load_user(user_data['email'])
         if existing:
-            flash('Your email or phone is already registered.')
+            flash('Your email is already registered.')
             return redirect('login')
         user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
         user_data.pop('password_2')
@@ -84,6 +90,7 @@ def test_db():
 
 #test_db()
 @app.route('/register_company', methods=['GET', 'POST'])
+@login_required
 def register_company():
     form = CompanyForm()
     if form.validate_on_submit():
@@ -108,10 +115,13 @@ def company_write_review(company_profile_name):
 
 @app.route('/company/<company_profile_name>')
 def company(company_profile_name):
-    query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
-    company = query.get()
-    return render_template('company_profile.html',
-                            company = company)
+    company = load_company(company_profile_name)
+    if company:
+        return render_template('company_profile.html',
+                                company = company)
+    else:
+        flash("Requested page does not exist. Redirected to the main page.")
+        return redirect(url_for("index"))
 
 @app.route('/search_results')
 def search_results():
@@ -135,9 +145,8 @@ def index():
 
 @app.route("/img/<company_profile_name>")
 def img(company_profile_name):
-    query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
-    a= query.get()
-    a = a.logo_file
-    response = make_response(a)
+    company = load_company(company_profile_name)
+    company = company.logo_file
+    response = make_response(company)
     response.headers['Content-Type'] = 'image/svg+xml'
     return response

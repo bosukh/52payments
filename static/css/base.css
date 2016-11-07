@@ -31,7 +31,10 @@ li a {
     padding: 14px 16px;
     text-decoration: none;
 }
-
+.warning {
+  text-align: center;
+  color: red;
+}
 /* Search Box*/
 .search-box {
   overflow: auto;

@@ -23,9 +23,11 @@ class User(db.Model):
     email = db.StringProperty(required=True)
     phone = db.StringProperty(required=True)
     password = db.StringProperty(required=True)
+    authenticated = db.BooleanProperty(default=False)
+    company_admin = db.StringProperty(required=False)
     created = db.DateTimeProperty(auto_now_add = True)
     last_modified = db.DateTimeProperty(auto_now = True)
-    authenticated = db.BooleanProperty(default=False)
+
     def is_active(self):
         """True, as all users are active."""
         return True
