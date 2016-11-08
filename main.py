@@ -13,7 +13,7 @@ app.config.from_object('config')
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm
+from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
 from app.models import Company, User, Review
 
 @login_manager.user_loader
@@ -90,7 +90,7 @@ def test_db():
 
 #test_db()
 @app.route('/register_company', methods=['GET', 'POST'])
-@login_required
+@login_required # make it accessible only by business account
 def register_company():
     form = CompanyForm()
     if form.validate_on_submit():
@@ -109,8 +109,10 @@ def register_user():
     return '<h1>register_user</h1>'
 
 @app.route('/company_write_review/<company_profile_name>')
+@login_required # Make it accessible only by customer account
 def company_write_review(company_profile_name):
-    return '<h1>Write a review for %s</h1>'%company_profile_name
+    form = ReviewForm()
+    return render_template('write_review.html', form=form)
 
 
 @app.route('/company/<company_profile_name>')

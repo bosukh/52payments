@@ -1,0 +1,50 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/rating.css') }}">
+
+  <div class="search-box">
+    <form action="" method="post" name="search-box-form" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div id="search-box-checks" class="search-checkbox-row'">
+          <div class="rating">
+            <span id='rating_5'>☆</span><span id='rating_4'>☆</span><span id='rating_3'>☆</span><span id='rating_2'>☆</span><span id='rating_1'>☆</span>
+          </div>
+          {% for field in form %}
+            {% if field.name != 'csrf_token'%}
+              <div id = {{field.label.text + '_text'}} class="checkbox">
+                {{ field }}
+                {{ field.label.text }}
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        <div class="button-wrapper">
+          <button id='search-button' class='button' type="submit" name="button">Submit</button>
+        </div>
+    </form>
+  </div>
+
+  <script type="text/javascript">
+    var rating_input = document.getElementById('rating');
+    var rating_text = document.getElementById('rating_text');
+    rating_input.value = 0;
+    var ratings = document.getElementsByTagName('span');
+    for (var i = 0; i < ratings.length; i++){
+      var rating = ratings[i];
+      rating.addEventListener('click', (function(rating, i){
+        return function() {
+          rating_input.value = 5 - i;
+          rating_text.innerHTML = 5 - i;
+          for (var j = i; j < 5; j++){
+            ratings[j].innerHTML = '★';
+          };
+          for (var q = i-1; q > -1; q--){
+            ratings[q].innerHTML = '☆';
+          };
+          };
+      })(rating, i));
+    }
+  </script>
+{% endblock %}

@@ -3,6 +3,13 @@ from wtforms import FloatField, StringField, BooleanField, TextAreaField, TextFi
 from wtforms.validators import DataRequired, Length
 from flask_wtf.file import FileField
 
+class ReviewForm(Form):
+    rating = HiddenField('rating')
+    title = StringField('Title')
+    content = TextAreaField('Your Review')
+
+
+
 class SignUpForm(Form):
     first_name = TextField('First Name')
     last_name = TextField('Last Name')
