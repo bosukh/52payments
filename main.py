@@ -1,4 +1,5 @@
 import os
+import time
 
 from flask import Flask, make_response, abort
 from flask import render_template, flash, redirect, session, url_for, request, g
@@ -72,23 +73,6 @@ def signup():
         return redirect(url_for('index'))
     return render_template('signup.html', form=form)
 
-def test_db():
-    ben = User(first_name = 'Ben', last_name = 'Hong',email= 'ben@test.com', password = 'benpw')
-    ben.put()
-    sarah = User(first_name = 'Sarah', last_name = 'Bang', email= 'sarah@test.com', password = 'sarahpw')
-    sarah.put()
-    query = Company.gql("WHERE company_profile_name = '%s'"%'52payments')
-    ft_payments = query.get()
-    ben_review = Review(rating = 5.0, title = 'first review',
-                        content = '52 payments is now starting',
-                        user = ben, company = ft_payments)
-    ben_review.put_review()
-    sarah_review = Review(rating = 5.0, title = 'second review',
-                        content = '52 payments can be big!',
-                        user = sarah, company = ft_payments)
-    sarah_review.put_review()
-
-#test_db()
 @app.route('/register_company', methods=['GET', 'POST'])
 @login_required # make it accessible only by business account
 def register_company():
@@ -99,7 +83,8 @@ def register_company():
         company = Company(**company_form)
         company.put()
         flash('Info Submitted')
-        return redirect(url_for('index'))
+        time.sleep(1)
+        return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
     else:
         flash('Information Not Valid')
     return render_template('register_company.html', form = form)
@@ -108,10 +93,20 @@ def register_company():
 def register_user():
     return '<h1>register_user</h1>'
 
-@app.route('/company_write_review/<company_profile_name>')
+@app.route('/company_write_review/<company_profile_name>', methods=['GET', 'POST'])
 @login_required # Make it accessible only by customer account
 def company_write_review(company_profile_name):
     form = ReviewForm()
+    if form.validate_on_submit():
+        review = form.data
+        review['rating'] = float(review['rating'])
+        review['user'] = load_user(current_user.email)
+        review['company'] = load_company(company_profile_name)
+        review = Review(**review)
+        review.put_review()
+        flash('Your review is submitted.')
+        time.sleep(1)
+        return redirect(url_for('company', company_profile_name = company_profile_name))
     return render_template('write_review.html', form=form)
 
 
