@@ -3,7 +3,13 @@
   <h2 class="company-title">{{company.title}}</h2>
   <p>
     Overall User Rating <br>
-    ☆☆☆☆☆ {{company.avg_rating}} ({{company.num_ratings}}) <br>
+    {% for i in range(company.rounded_rating)%}
+      <span class='rating-star'>★</span>
+    {% endfor %}
+    {% for i in range(5-company.rounded_rating)%}
+      <span class='rating-star'>☆</span>
+    {% endfor %}
+    {{bjs().round(company.avg_rating)}}  ({{company.num_ratings}}) <br>
     √ Verified With 52Payments <br><br>
     {{company.summary|safe}}
   </p>

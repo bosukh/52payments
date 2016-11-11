@@ -1,0 +1,53 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+
+{% include 'review.html' %}
+
+<script type="text/javascript">
+  var currentDOM;
+  var objs = document.getElementsByClassName('decision-area');
+  var send_decision = function(decision){
+    var xhr = new XMLHttpRequest();
+    var key = document.getElementById('key').value;
+    var type = document.getElementById('type').value;
+    console.log('key=' + key + '&decision='+decision + '&type='+type);
+    // Change the address before deploying
+    //xhr.open('POST', 'https://52payments.com/admindecision');
+    xhr.open('POST', 'http://localhost:8080/admindecision');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+        currentDOM.style.display = 'none';
+      };
+    xhr.send('key=' + key + '&decision='+decision + '&type='+type);
+  };
+
+  for (var i = 0; i < objs.length; i++){
+    obj = objs[i];
+
+    var divElem = document.createElement('div');
+    divElem.setAttribute('class', 'button-wrapper');
+    divElem.style.display = 'inline-block'
+    var approve = document.createElement('button');
+    approve.innerHTML = 'Approve';
+    approve.setAttribute('type','submit');
+    approve.setAttribute('class', 'button');
+    approve.setAttribute('id', 'search-button');
+    approve.addEventListener('click', function(){
+      send_decision('true');
+      currentDOM = this.parentElement.parentElement.parentElement;
+    });
+    var decline = document.createElement('button');
+    decline.innerHTML = 'Decline';
+    decline.setAttribute('type','submit');
+    decline.setAttribute('class', 'button');
+    decline.setAttribute('id', 'search-button');
+    decline.addEventListener('click', function(){
+      send_decision('false');
+    });
+    divElem.appendChild(decline);
+    divElem.appendChild(approve);
+    obj.appendChild(divElem);
+  };
+</script>
+{% endblock %}

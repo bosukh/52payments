@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm as Form
-from wtforms import FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
+from wtforms import IntegerField, FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
 from wtforms.validators import DataRequired, Length
 from flask_wtf.file import FileField
 
@@ -59,7 +59,7 @@ class CompanyForm(Form):
     logo_file = FileField('Logo File (.svg)')
     summary = TextAreaField('Summary (300 Words Limit)')
     full_description = TextAreaField('Full Description')
-    year_founded = FloatField('Year Founded')
+    year_founded = IntegerField('Year Founded')
     provided_srvs = SelectMultipleField('Provided Services', choices = biz_type)
     complementary_srvs = SelectMultipleField('Complementary Services', choices = srv_type)
     equipment = SelectMultipleField('Equipments', choices = equip_type)

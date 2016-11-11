@@ -16,6 +16,11 @@ login_manager.init_app(app)
 
 from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
 from app.models import Company, User, Review
+from app.momentjs import momentjs
+from app.basejs import basejs
+
+app.jinja_env.globals['momentjs'] = momentjs
+app.jinja_env.globals['bjs'] = basejs
 
 @login_manager.user_loader
 def load_user(email):
@@ -24,8 +29,11 @@ def load_user(email):
 
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
-    company = query.get()
-    return company
+    return query.get()
+
+def load_review(review_key):
+    query = Review.gql("WHERE __key__ = KEY('%s')"%review_key)
+    return query.get()
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -99,11 +107,11 @@ def company_write_review(company_profile_name):
     form = ReviewForm()
     if form.validate_on_submit():
         review = form.data
-        review['rating'] = float(review['rating'])
+        review['rating'] = int(review['rating'])
         review['user'] = load_user(current_user.email)
         review['company'] = load_company(company_profile_name)
         review = Review(**review)
-        review.put_review()
+        review.put()
         flash('Your review is submitted.')
         time.sleep(1)
         return redirect(url_for('company', company_profile_name = company_profile_name))
@@ -114,8 +122,9 @@ def company_write_review(company_profile_name):
 def company(company_profile_name):
     company = load_company(company_profile_name)
     if company:
+        reviews = company.review_set.filter('approved =', True).order('-created').fetch(limit=None)
         return render_template('company_profile.html',
-                                company = company)
+                                company = company, reviews = reviews)
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
@@ -139,6 +148,29 @@ def index():
     return render_template('index.html',
                             form=form,
                             companies = companies)
+
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required # only admin
+def admin():
+    query = db.Query(Review)
+    reviews = query.filter('approved =', False).order('-created').fetch(limit=None)
+    return render_template('admin.html',
+                            reviews=reviews)
+
+@app.route('/admindecision', methods=['POST'])
+@login_required # only admin
+def admindecision():
+    key = request.form['key']
+    obj_type = request.form['type']
+    decision = request.form['decision']
+    if obj_type == 'review':
+        review = load_review(key)
+        if decision == 'true':
+            review.approve()
+            return 'approved'
+        else:
+            review.delete()
+            return 'declined'
 
 @app.route("/img/<company_profile_name>")
 def img(company_profile_name):

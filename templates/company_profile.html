@@ -22,7 +22,13 @@
   <div class="company-left-col">
     <div class="company-profile-basic-box">
       Overall User Rating <br>
-      ☆☆☆☆☆ {{company.avg_rating}} ({{company.num_ratings}}) <br>
+      {% for i in range(company.rounded_rating)%}
+        <span class='rating-star'>★</span>
+      {% endfor %}
+      {% for i in range(5-company.rounded_rating)%}
+        <span class='rating-star'>☆</span>
+      {% endfor %}
+      {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
       √ Verified With 52Payments <br>
     </div>
     {% if company.pricing %}
@@ -65,6 +71,12 @@
       {{company.full_description}}
     </div>
   </div>
+  <div class="company-right-col">
+    {% if reviews %}
+      {% include 'review.html' %}
+    {% endif %}
+  </div>
+
   </div>
 
 

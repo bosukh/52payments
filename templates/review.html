@@ -1,0 +1,30 @@
+<div class="company-profile-basic-box">
+  {% for review in reviews%}
+  <div class="review">
+    <h3>{{review.title}}
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      {% for i in range(review.rating)%}
+        <span class='rating-star'>★</span>
+      {% endfor %}
+      {% for i in range(5-review.rating)%}
+        <span class='rating-star'>☆</span>
+      {% endfor %}
+      {{review.rating}}
+
+      <span id='user_name'>
+        <em>{{ momentjs(review.created).calendar() }} by
+          {{review.user.first_name}}
+          {{review.user.last_name}}
+        </em>
+      </span>
+    </h3>
+  </div>
+  <p>
+    {{review.content}} <br><br>
+  </p>
+  <div class="decision-area">
+    <input id = 'key' type="hidden" name="key" value="{{review.key()}}">
+    <input id = 'type' type="hidden" name="type" value="review">
+  </div>
+  {% endfor %}
+</div>

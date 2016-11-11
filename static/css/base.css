@@ -31,6 +31,11 @@ li a {
     padding: 14px 16px;
     text-decoration: none;
 }
+.rating-star {
+  font-size: 18px;
+  font-weight: bold;
+  color: #FBBC16;
+}
 .warning {
   text-align: center;
   color: red;
@@ -117,6 +122,10 @@ li a {
 
 
 /*Comapny Profile*/
+#user_name {
+  float: right;
+  font-size: 14px;
+}
 #small-search-button {
   width: 100px;
   float: right;
