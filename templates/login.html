@@ -9,6 +9,14 @@
 <form action="" method="post" name="login-form">
     {{ form.hidden_tag() }}
     <div id="login-box" class="">
+      <div id="warning_div">
+        <ul id="warnings">
+          <li class = 'li_warning' id='warning_all'>- All fields are required.</li>
+          <li class = 'li_warning' id='warning_email'>- Email can only include letters, numbers, _, @, and dot.</li>
+          <li class = 'li_warning' id='warning_password'>- Password needs to be at least 8 charactors long and only include letters, numbers, and special charactor(!@#$%^&*).</li>
+        </ul>
+      </div>
+
       <div id = 'login-inner-box' class="">
         {% for field in form %}
           {% if field.name != 'csrf_token'%}
@@ -27,4 +35,15 @@
       </div>
     </div>
 </form>
+<script type="text/javascript">
+  var field_ids = ['email', 'password'];
+  var button_id = 'login-button';
+  var all_warning_id = 'warning_all';
+
+  hide_warnings(field_ids);
+  disable_btn('login-button');
+  add_validator('password', 'password_re');
+  add_validator('email', 'email_re');
+
+</script>
 {% endblock %}

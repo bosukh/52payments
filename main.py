@@ -93,8 +93,6 @@ def register_company():
         flash('Info Submitted')
         time.sleep(1)
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
-    else:
-        flash('Information Not Valid')
     return render_template('register_company.html', form = form)
 
 @app.route('/register_user', methods=['GET', 'POST'])

@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm as Form
 from wtforms import IntegerField, FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import Length, Email, Required
 from flask_wtf.file import FileField
 
 class ReviewForm(Form):
@@ -13,7 +13,7 @@ class ReviewForm(Form):
 class SignUpForm(Form):
     first_name = TextField('First Name')
     last_name = TextField('Last Name')
-    email = TextField('Email')
+    email = TextField('Email', validators = [Required(), Length(1, 64), Email()])
     phone = TextField('Phone')
     password = PasswordField('Password')
     password_2 = PasswordField('Re-type Password')
@@ -57,7 +57,7 @@ class CompanyForm(Form):
     title = TextField('Title')
     company_profile_name = TextField('Url End Point')
     logo_file = FileField('Logo File (.svg)')
-    summary = TextAreaField('Summary (300 Words Limit)')
+    summary = TextAreaField('Summary (200 Words Limit)')
     full_description = TextAreaField('Full Description')
     year_founded = IntegerField('Year Founded')
     provided_srvs = SelectMultipleField('Provided Services', choices = biz_type)

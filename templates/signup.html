@@ -6,6 +6,17 @@
 <form action="" method="post" name="signup-form">
     {{ form.hidden_tag() }}
     <div id="signup-box" class="">
+      <div id="warning_div">
+        <ul id="warnings">
+          <li class = 'li_warning' id='warning_all'>- All fields are required.</li>
+          <li class = 'li_warning' id='warning_first_name'>- First name can only include letters and '</li>
+          <li class = 'li_warning' id='warning_last_name'>- Last name can only include letters and '</li>
+          <li class = 'li_warning' id='warning_email'>- Email can only include letters, numbers, _, @, and dot.</li>
+          <li class = 'li_warning' id='warning_phone'>- Phone number should only include numbers.</li>
+          <li class = 'li_warning' id='warning_password'>- Password needs to be at least 8 charactors long and only include letters, numbers, and special charactor(!@#$%^&*).</li>
+          <li class = 'li_warning' id='warning_password_2'>- Passwords must match.</li>
+        </ul>
+      </div>
       <div id = 'signup-inner-box' class="">
         {% for field in form %}
           {% if field.name != 'csrf_token'%}
@@ -24,4 +35,27 @@
       </div>
     </div>
 </form>
+<script type="text/javascript">
+  var field_ids = ['first_name', 'last_name', 'email', 'phone', 'password', 'password_2'];
+  var button_id = 'signup-button';
+  var all_warning_id = 'warning_all';
+
+  hide_warnings(field_ids);
+  disable_btn('signup-button');
+
+  add_validator('first_name', 'text_re');
+  add_validator('last_name', 'text_re');
+  add_validator('email', 'email_re');
+  add_validator('phone', 'phone_re');
+  add_validator('password', 'password_re');
+  var password_match = function() {
+    var password = document.getElementById('password');
+    var password_2 = document.getElementById('password_2');
+    var message = document.getElementById("warning_password_2");
+    toggle_warning(password_2.value == password.value, message);
+    var all_warning = check_all_field(field_ids);
+    all_required_field_warning(all_warning);
+  };
+  document.getElementById('password_2').setAttribute('oninput', 'password_match()');
+</script>
 {% endblock %}

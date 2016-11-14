@@ -13,12 +13,12 @@
       Hi {{ current_user.name }}!
     {% endif %}
     <div>
-      <ul>
-        <a href="{{url_for('index')}}"><img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px"></a>
-        <li><a href="{{ url_for('signup')}}">Sign-up</a></li>
-        <li><a href="{{url_for('login')}}">Sign-in</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Processors</a></li>
+      <ul class="nav_ul">
+        <a class="nav_a" href="{{url_for('index')}}"><img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px"></a>
+        <li class="nav_li"><a class="nav_a" href="{{ url_for('signup')}}">Sign-up</a></li>
+        <li class="nav_li"><a class="nav_a" href="{{url_for('login')}}">Sign-in</a></li>
+        <li class="nav_li"><a class="nav_a" href="#">About</a></li>
+        <li class="nav_li"><a class="nav_a" href="#">Processors</a></li>
       </ul>
     </div>
     <hr>
