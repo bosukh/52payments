@@ -71,13 +71,52 @@
       {{company.full_description}}
     </div>
   </div>
-  <div class="company-right-col">
+  <div id='review-box' class="company-right-col">
     {% if reviews %}
       {% include 'review.html' %}
     {% endif %}
+    <div id = 'page-moves'>
+      <a id ='prev' class='page-move' style="display:none;" href="#">Prev</a>
+      <a id ='next' class='page-move' style="display:none;" href="#">Next</a>
+    </div>
   </div>
+</div>
 
-  </div>
+<script type="text/javascript">
+  var page = 0;
+  var next_page, prev_page;
 
+  var reviews = document.getElementsByClassName('review');
+
+  var hide_all = function(reviews){
+    for (var i = 0; i < reviews.length; i++){
+      reviews[i].style.display = 'none';
+    };
+  }
+  var create_page_moves = function(page, reviews){
+    next_page = page+1;
+    prev_page = page-1;
+    var next = document.getElementById('next');
+    next.setAttribute('href', 'javascript:display_current_page(next_page, reviews)');
+    next.style.display = 'none';
+    var prev = document.getElementById('prev');
+    prev.setAttribute('href', 'javascript:display_current_page(prev_page, reviews)');
+    prev.style.display = 'none';
+    if (page != 0){
+      prev.style.display = 'inline-block';
+    };
+    if (reviews.length/3 > page+1){
+      next.style.display = 'inline-block';
+    };
+  }
+  var display_current_page = function(page, reviews){
+    hide_all(reviews);
+    for (var i = page*3; i < (page+1)*3 && i < reviews.length; i++){
+      reviews[i].style.display = 'block';
+    }
+    create_page_moves(page, reviews);
+  }
+  display_current_page(page, reviews);
+</script>
 
 {% endblock %}

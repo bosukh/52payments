@@ -201,3 +201,11 @@ input {
   margin: auto;
   margin-top: 40px;
 }
+
+/* Review page*/
+#page-moves {
+  text-align: center;
+}
+.page-move {
+  margin: auto;
+}

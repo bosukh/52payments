@@ -18,13 +18,13 @@
         </em>
       </span>
     </h3>
-  </div>
-  <p>
-    {{review.content}} <br><br>
-  </p>
-  <div class="decision-area">
-    <input id = 'key' type="hidden" name="key" value="{{review.key()}}">
-    <input id = 'type' type="hidden" name="type" value="review">
+    <p>
+      {{review.content}} <br><br>
+    </p>
+    <div class="decision-area">
+      <input id = 'key' type="hidden" name="key" value="{{review.key()}}">
+      <input id = 'type' type="hidden" name="type" value="review">
+    </div>
   </div>
   {% endfor %}
 </div>
