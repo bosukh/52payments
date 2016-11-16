@@ -21,6 +21,9 @@
 
   <div class="company-left-col">
     <div class="company-profile-basic-box">
+      {% if company.pricing_range %}
+        Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
+      {% endif %}
       Overall User Rating <br>
       {% for i in range(company.rounded_rating)%}
         <span class='rating-star'>★</span>
@@ -31,10 +34,13 @@
       {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
       √ Verified With 52Payments <br>
     </div>
-    {% if company.pricing %}
+
+    {% if company.pricing_method %}
     <div class="company-profile-basic-box">
       Pricing Method: <br>
-      Pricing Range: <br>
+      {% for method in company.pricing_method%}
+      - {{method}} <br>
+      {% endfor %}
     </div>
     {% endif %}
 
@@ -48,7 +54,7 @@
     {% endif %}
 
 
-    {% if company.provided_srvs %}
+    {% if company.complementary_srvs %}
     <div class="company-profile-basic-box">
       Complementary Services: <br>
       {% for srvs in company.complementary_srvs%}
@@ -57,7 +63,7 @@
     </div>
     {% endif %}
 
-    {% if company.provided_srvs %}
+    {% if company.equipment %}
     <div class="company-profile-basic-box">
       Equipment <br>
       {% for equip in company.equipment%}

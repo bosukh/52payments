@@ -1,33 +1,35 @@
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 
-class Company(db.Model):
-    title = db.StringProperty(required = True)
-    company_profile_name = db.StringProperty(required = True)
-    logo_file = db.BlobProperty(required = True)
-    verified = db.BooleanProperty(default=False)
-    summary = db.TextProperty(required = True)
-    full_description = db.TextProperty(required = True)
-    year_founded = db.IntegerProperty()
-    provided_srvs = db.StringListProperty(required=True)
-    complementary_srvs = db.StringListProperty()
-    equipment = db.StringListProperty()
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
-    num_ratings = db.IntegerProperty(default = 0, required=False)
-    avg_rating = db.FloatProperty(default = 0.0, required=False)
-    rounded_rating = db.IntegerProperty(default = 0, required=False)
-    featured = db.BooleanProperty(default=False)
+class Company(ndb.Model):
+    title = ndb.StringProperty(required = True)
+    company_profile_name = ndb.StringProperty(required = True)
+    logo_file = ndb.BlobProperty(required = True)
+    verified = ndb.BooleanProperty(default=False)
+    summary = ndb.TextProperty(required = True)
+    full_description = ndb.TextProperty(required = True)
+    year_founded = ndb.IntegerProperty()
+    provided_srvs = ndb.StringProperty(repeated=True)
+    complementary_srvs = ndb.StringProperty(repeated=True)
+    equipment = ndb.StringProperty(repeated=True)
+    pricing_method = ndb.StringProperty(repeated=True)
+    pricing_range = ndb.FloatProperty(repeated=True)
+    created = ndb.DateTimeProperty(auto_now_add = True)
+    last_modified = ndb.DateTimeProperty(auto_now = True)
+    num_ratings = ndb.IntegerProperty(default = 0, required=False)
+    avg_rating = ndb.FloatProperty(default = 0.0, required=False)
+    rounded_rating = ndb.IntegerProperty(default = 0, required=False)
+    featured = ndb.BooleanProperty(default=False)
 
-class User(db.Model):
-    first_name = db.StringProperty(required=True)
-    last_name = db.StringProperty(required=True)
-    email = db.StringProperty(required=True)
-    phone = db.StringProperty(required=True)
-    password = db.StringProperty(required=True)
-    authenticated = db.BooleanProperty(default=False)
-    company_admin = db.StringProperty(required=False)
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
+class User(ndb.Model):
+    first_name = ndb.StringProperty(required=True)
+    last_name = ndb.StringProperty(required=True)
+    email = ndb.StringProperty(required=True)
+    phone = ndb.StringProperty(required=True)
+    password = ndb.StringProperty(required=True)
+    authenticated = ndb.BooleanProperty(default=False)
+    company_admin = ndb.StringProperty(required=False)
+    created = ndb.DateTimeProperty(auto_now_add = True)
+    last_modified = ndb.DateTimeProperty(auto_now = True)
 
     def is_active(self):
         """True, as all users are active."""
@@ -45,21 +47,21 @@ class User(db.Model):
         """False, as anonymous users aren't supported."""
         return False
 
-class Review(db.Model):
-    rating = db.IntegerProperty(required=True)
-    title = db.StringProperty(required=True)
-    content = db.TextProperty(required=True)
-    approved = db.BooleanProperty(default=False)
-    user = db.ReferenceProperty(User)
-    company = db.ReferenceProperty(Company)
-    created = db.DateTimeProperty(auto_now_add = True)
-    last_modified = db.DateTimeProperty(auto_now = True)
+class Review(ndb.Model):
+    rating = ndb.IntegerProperty(required=True)
+    title = ndb.StringProperty(required=True)
+    content = ndb.TextProperty(required=True)
+    approved = ndb.BooleanProperty(default=False)
+    user = ndb.KeyProperty(User)
+    company = ndb.KeyProperty(Company)
+    created = ndb.DateTimeProperty(auto_now_add = True)
+    last_modified = ndb.DateTimeProperty(auto_now = True)
 
     def approve(self):
         self.approved = True
         rating = self.rating
         self.put()
-        company = self.company
+        company = self.company.get()
         company.num_ratings += 1
         company.avg_rating = ((company.avg_rating * (company.num_ratings-1)) + rating) / company.num_ratings
         company.rounded_rating = int(round(company.avg_rating))

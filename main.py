@@ -4,7 +4,7 @@ import time
 from flask import Flask, make_response, abort
 from flask import render_template, flash, redirect, session, url_for, request, g
 from config import basedir
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 from bcrypt import bcrypt as bt
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 
@@ -29,10 +29,6 @@ def load_user(email):
 
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
-    return query.get()
-
-def load_review(review_key):
-    query = Review.gql("WHERE __key__ = KEY('%s')"%review_key)
     return query.get()
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -88,6 +84,9 @@ def register_company():
     if form.validate_on_submit():
         company_form = form.data
         company_form['logo_file'] = request.files['logo_file'].read()
+        company_form['pricing_range'] = [company_form['pricing_range_lower'],company_form['pricing_range_upper']]
+        company_form.pop('pricing_range_lower', None)
+        company_form.pop('pricing_range_upper', None)
         company = Company(**company_form)
         company.put()
         flash('Info Submitted')
@@ -106,8 +105,8 @@ def company_write_review(company_profile_name):
     if form.validate_on_submit():
         review = form.data
         review['rating'] = int(review['rating'])
-        review['user'] = load_user(current_user.email)
-        review['company'] = load_company(company_profile_name)
+        review['user'] = load_user(current_user.email).key
+        review['company'] = load_company(company_profile_name).key
         review = Review(**review)
         review.put()
         flash('Your review is submitted.')
@@ -115,12 +114,11 @@ def company_write_review(company_profile_name):
         return redirect(url_for('company', company_profile_name = company_profile_name))
     return render_template('write_review.html', form=form)
 
-
 @app.route('/company/<company_profile_name>')
 def company(company_profile_name):
     company = load_company(company_profile_name)
     if company:
-        reviews = company.review_set.filter('approved =', True).order('-created').fetch(limit=None)
+        reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
         return render_template('company_profile.html',
                                 company = company, reviews = reviews)
     else:
@@ -141,8 +139,7 @@ def index():
     if form.validate_on_submit():
         session['search_form'] = form.data
         return redirect(url_for('search_results'))
-    query = db.Query(Company)
-    companies = query.fetch(limit=3)
+    companies = Company.query().fetch(limit=3)
     return render_template('index.html',
                             form=form,
                             companies = companies)
@@ -150,19 +147,28 @@ def index():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin
 def admin():
-    query = db.Query(Review)
-    reviews = query.filter('approved =', False).order('-created').fetch(limit=None)
+    reviews = Review.query().filter(Review.approved ==False).order(-Review.created).fetch(limit=None)
+    dict_reviews = []
+    for review in reviews:
+        urlsafe = review.key.urlsafe()
+        review = review.to_dict()
+        review['urlsafe'] = urlsafe
+        user = review['user'].get()
+        review['user_name'] = user.first_name + ' ' +user.last_name
+        dict_reviews.append(review)
+    print dict_reviews
     return render_template('admin.html',
-                            reviews=reviews)
+                            reviews=dict_reviews)
 
 @app.route('/admindecision', methods=['POST'])
 @login_required # only admin
 def admindecision():
-    key = request.form['key']
+    urlsafe = request.form['urlsafe']
+    key = ndb.Key(urlsafe = urlsafe)
     obj_type = request.form['type']
     decision = request.form['decision']
     if obj_type == 'review':
-        review = load_review(key)
+        review = key.get()
         if decision == 'true':
             review.approve()
             return 'approved'

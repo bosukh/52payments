@@ -54,12 +54,20 @@ class CompanyForm(Form):
     equip_type = [('Verifone','Verifone'),
                   ('Ingenico', 'Ingenico'),
                   ('Other', 'Other')]
+    pricing_type = [('Tiered', 'Tiered'),
+                    ('Interchange Plus', 'Interchange Plus'),
+                    ('Flat', 'Flat'),
+                    ('Custom', 'Custom')
+                    ]
     title = TextField('Title')
     company_profile_name = TextField('Url End Point')
     logo_file = FileField('Logo File (.svg)')
-    summary = TextAreaField('Summary (200 Words Limit)')
+    summary = TextAreaField('Summary (100 Words Limit)')
     full_description = TextAreaField('Full Description')
     year_founded = IntegerField('Year Founded')
     provided_srvs = SelectMultipleField('Provided Services', choices = biz_type)
     complementary_srvs = SelectMultipleField('Complementary Services', choices = srv_type)
     equipment = SelectMultipleField('Equipments', choices = equip_type)
+    pricing_method = SelectMultipleField('Pricing Method', choices = pricing_type)
+    pricing_range_lower = FloatField('Lower Range For Pricing')
+    pricing_range_upper = FloatField('Upper Range For Pricing')

@@ -13,8 +13,7 @@
 
       <span id='user_name'>
         <em>{{ momentjs(review.created).calendar() }} by
-          {{review.user.first_name}}
-          {{review.user.last_name}}
+          {{review.user_name}}
         </em>
       </span>
     </h3>
@@ -22,7 +21,7 @@
       {{review.content}} <br><br>
     </p>
     <div class="decision-area">
-      <input id = 'key' type="hidden" name="key" value="{{review.key()}}">
+      <input id = 'urlsafe' type="hidden" name="urlsafe" value="{{review.urlsafe}}">
       <input id = 'type' type="hidden" name="type" value="review">
     </div>
   </div>
