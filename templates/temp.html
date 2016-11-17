@@ -1,1 +1,133 @@
-{{form}}
+{% extends "base.html" %}
+
+{% block content %}
+<style media="screen">
+  .a{
+    display: inline-block;
+    float:left;
+  }
+  .draggable-item{
+    font-size: 15px;
+    float: left;
+    padding: 10px;
+    margin-right: 20px;
+    margin-top: 10px;
+    border-radius: 7px;
+    border-width: 1px;
+    border-color: #9DAACE;
+    border-style: solid;
+    background-color: #EFF1F9;
+  }
+  .items-title-div{
+    margin-top: 10px;
+    float:left;
+    margin-right: 20px;
+    padding: 10px;
+  }
+  .selected {
+    border-top: 1px #9DAACE solid;
+    border-left: 1px #9DAACE solid;
+    border-right: 1px #9DAACE solid;
+    background-color: #CAD2E8;
+  }
+  .search-nav{
+    border-bottom: 1px #9DAACE solid;
+    display:inline-block;
+  }
+  .items{
+    margin-top: 10px;
+    display: inline-block;
+  }
+  .items-title {
+    text-decoration: none;
+  }
+  .search-left-box{
+    float:left;
+    width: 70%;
+  }
+  .search-right-box{
+    float:right;
+    width: 25%;
+  }
+  .selected-item{
+    border-color: #C3E0E3;
+    background-color: #EAF6F7;
+  }
+  #chosen-title{
+    border-bottom: 1px #92C0C4 solid;
+    width: 90%;
+    margin-right: 20px;
+  }
+</style>
+  <h1>Welcome to 52Payments!</h1>
+  <div class="search-box">
+    <div class="search-left-box">
+      <div id='search-nav' class="search-nav">
+        <div class="selected items-title-div">
+          <a class= 'items-title' href="#">Business Types</a>
+        </div>
+        <div class="items-title-div">
+          <a class="items-title" href="#">Pricing Method</a>
+        </div>
+        <div class="items-title-div">
+          <a class="items-title" href="#">Equipments</a>
+        </div>
+        <div class="items-title-div">
+          <a class="items-title" href="#">Complimentary Services</a>
+        </div>
+      </div>
+      <div id = 'items' class="items">
+      </div>
+    </div>
+    <div class="search-right-box">
+      <div id='chosen-title' class="items-title-div">
+        Chosen
+      </div>
+      <div id = 'selected-items' class="items">
+      </div>
+      <form action="" method="post" name="search-box-form">
+        <div class="button-wrapper">
+          <button id='search-button' class='button' type="submit" name="button">Search</button>
+        </div>
+    </form>
+    </div>
+  </div>
+
+  <div class="featured-title">
+    <h2>Featured Processors</h2>
+  </div>
+  <div class="box-row">
+    {% for company in companies %}
+      {% include 'small_company_box.html' %}
+    {% endfor %}
+  </div>
+<script type="text/javascript">
+  var left_width = document.getElementById('search-nav').offsetWidth + 'px';
+  document.getElementById('items').style.width = left_width;
+  var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
+                  'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
+                  'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];
+  var srv_type = ['Marketing', 'Analytics', 'Recurling Bill',
+                  'Chargeback', 'Security', 'Other'];
+  var equip_type = ['Verifone', 'Ingenico', 'Other'];
+  var pricing_type = ['Tiered', 'Interchange Plus',
+                      'Flat', 'Custom'];
+  var items = document.getElementById('items');
+  var selected_items = document.getElementById('selected-items');
+  var fill_items = function(list_, items, selected = 0){
+    for (var i = 0; i < list_.length; i++){
+      var item = document.createElement('div');
+      item.className = 'draggable-item';
+      if (selected){
+        item.className = 'draggable-item selected-item';
+        item.innerHTML = list_[i] + ' <span style="font-weight:bold;">×</span>';
+      } else{
+        item.innerHTML = list_[i];
+      };
+      items.appendChild(item);
+    };
+  }
+  fill_items(biz_type, items);
+  fill_items(biz_type, selected_items, 1);
+</script>
+{% endblock %}

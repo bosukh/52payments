@@ -22,6 +22,10 @@ from app.basejs import basejs
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
+@app.route('/temp', methods=["GET", "POST"])
+def temp():
+    return render_template("temp.html")
+
 @login_manager.user_loader
 def load_user(email):
     query = User.gql("WHERE email = '%s'"%email)
