@@ -24,7 +24,8 @@ app.jinja_env.globals['bjs'] = basejs
 
 @app.route('/temp', methods=["GET", "POST"])
 def temp():
-    return render_template("temp.html")
+    companies = Company.query().fetch(limit=3)
+    return render_template("temp.html", companies = companies)
 
 @login_manager.user_loader
 def load_user(email):
@@ -123,6 +124,10 @@ def company(company_profile_name):
     company = load_company(company_profile_name)
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
+        reviews = [review.to_dict() for review in reviews]
+        for review in reviews:
+            user = review['user'].get()
+            review['user_name'] = user.first_name +" " + user.last_name
         return render_template('company_profile.html',
                                 company = company, reviews = reviews)
     else:

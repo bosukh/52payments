@@ -32,6 +32,7 @@
   }
   .search-nav{
     border-bottom: 1px #9DAACE solid;
+    width: 100%;
     display:inline-block;
   }
   .items{
@@ -40,14 +41,12 @@
   }
   .items-title {
     text-decoration: none;
+    cursor: pointer;
+    cursor: hand;
   }
-  .search-left-box{
+  .search-row{
     float:left;
-    width: 70%;
-  }
-  .search-right-box{
-    float:right;
-    width: 25%;
+    width: 100%;
   }
   .selected-item{
     border-color: #C3E0E3;
@@ -55,33 +54,34 @@
   }
   #chosen-title{
     border-bottom: 1px #92C0C4 solid;
-    width: 90%;
-    margin-right: 20px;
+    opacity: 0;
   }
 </style>
   <h1>Welcome to 52Payments!</h1>
   <div class="search-box">
-    <div class="search-left-box">
+    <div class="search-row">
       <div id='search-nav' class="search-nav">
         <div class="selected items-title-div">
-          <a class= 'items-title' href="#">Business Types</a>
+          <a class= 'items-title' onclick="javascript:select_items_title(this)">Business Types</a>
         </div>
         <div class="items-title-div">
-          <a class="items-title" href="#">Pricing Method</a>
+          <a class="items-title" onclick="javascript:select_items_title(this)">Pricing Method</a>
         </div>
         <div class="items-title-div">
-          <a class="items-title" href="#">Equipments</a>
+          <a class="items-title" onclick="javascript:select_items_title(this)">Equipments</a>
         </div>
         <div class="items-title-div">
-          <a class="items-title" href="#">Complimentary Services</a>
+          <a class="items-title" onclick="javascript:select_items_title(this)">Complimentary Services</a>
         </div>
+      </div>
+      <div class="search-row">
+        *Select search criteria (Not selecting any will return all results)
       </div>
       <div id = 'items' class="items">
       </div>
     </div>
-    <div class="search-right-box">
-      <div id='chosen-title' class="items-title-div">
-        Chosen
+    <div class="search-row">
+      <div id='chosen-title' class="search-nav">
       </div>
       <div id = 'selected-items' class="items">
       </div>
@@ -103,7 +103,7 @@
   </div>
 <script type="text/javascript">
   var left_width = document.getElementById('search-nav').offsetWidth + 'px';
-  document.getElementById('items').style.width = left_width;
+  //document.getElementById('items').style.width = left_width;
   var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
                   'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
                   'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];
@@ -112,22 +112,62 @@
   var equip_type = ['Verifone', 'Ingenico', 'Other'];
   var pricing_type = ['Tiered', 'Interchange Plus',
                       'Flat', 'Custom'];
+  var types = {
+    "Business Types" : biz_type,
+    "Pricing Method" : srv_type,
+    "Equipments" : equip_type,
+    "Complimentary Services" : pricing_type
+  }
+  var current_type = "Business Types";
   var items = document.getElementById('items');
   var selected_items = document.getElementById('selected-items');
+  var selected_item_list = [];
   var fill_items = function(list_, items, selected = 0){
     for (var i = 0; i < list_.length; i++){
       var item = document.createElement('div');
       item.className = 'draggable-item';
       if (selected){
         item.className = 'draggable-item selected-item';
-        item.innerHTML = list_[i] + ' <span style="font-weight:bold;">×</span>';
+        item.innerHTML = list_[i] + ' <span style="font-weight:bold;"><a class="items-title" onclick="javascript:deselect(this)">×</a></span>';
       } else{
-        item.innerHTML = list_[i];
+        item.setAttribute("id", list_[i]);
+        item.innerHTML = '<a class="items-title" onclick="javascript:select(this)">' + list_[i] + '</a>';
       };
       items.appendChild(item);
     };
   }
   fill_items(biz_type, items);
-  fill_items(biz_type, selected_items, 1);
+  var select = function(item){
+    selected_item_list.push(item.innerHTML);
+    fill_items([item.innerHTML], selected_items, 1);
+    item.parentElement.remove();
+    document.getElementById('chosen-title').style.opacity= 1;
+  }
+  var deselect = function(item){
+    var item = item.parentElement.parentElement;
+    var item_name = item.innerHTML.split(' ')[0];
+    pop(selected_item_list, item_name);
+    if (types[current_type].includes(item_name)){
+      fill_items([item_name],items);
+    }
+    item.remove();
+    if (selected_item_list.length == 0){
+      document.getElementById('chosen-title').style.opacity= 0;
+    };
+  }
+  var select_items_title = function(items_title){
+    current_type = items_title.innerHTML;
+    items_title = items_title.parentElement;
+    var items_titles = document.getElementsByClassName('items-title-div');
+    for (var i = 0; i < items_titles.length; i++){
+      items_titles[i].className = 'items-title-div';
+    };
+    items_title.className = 'selected items-title-div'
+    var current_num = items.childNodes.length
+    for (var i = 1; i < current_num; i++){
+      items.childNodes[1].remove();
+    };
+    fill_items(types[current_type], items);
+  }
 </script>
 {% endblock %}

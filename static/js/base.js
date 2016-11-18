@@ -7,6 +7,10 @@ var field_ids = [];
 function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
+var pop = function(list_, item){
+  var index = list_.indexOf(item);
+  list_.splice(index, 1);
+}
 
 var hide_warnings = function(field_ids){
   for (var i = 0; i < field_ids.length; i++){
