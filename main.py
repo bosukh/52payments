@@ -22,10 +22,62 @@ from app.basejs import basejs
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
+def parse_search_criteria(search_criteria):
+    search_criteria = search_criteria.split(',')
+    search_criteria = map(lambda x: x.split(': '),search_criteria)
+    temp = {}
+    for k, v in search_criteria:
+        if k in temp.keys():
+            temp[k] += [v]
+        else:
+            temp[k] = [v]
+    return temp
+
+def company_search(search_criteria):
+    types = [('Business Types', 'provided_srvs'),
+             ('Complimentary Services', 'complementary_srvs'),
+             ('Equipments', 'equipment'),
+             ('Pricing Method', 'pricing_method')]
+    gql_query = "WHERE "
+    where_clause = []
+    for col, col_name in types:
+        criteria = search_criteria.get(col)
+        if criteria:
+            where_clause.append("%s IN (%s)"%(col_name, "'" + "', '".join(criteria) + "'"))
+    gql_query += ' AND '.join(where_clause) + " ORDER BY pricing_range"
+    return Company.gql(gql_query).fetch()
+
+@app.route('/search_results', methods=['GET'])
+def search_results():
+    if request.args['search_criteria']:
+        search_criteria = parse_search_criteria(request.args['search_criteria'])
+        search_result = company_search(search_criteria)
+    else:
+        search_result = Company.gql('ORDER BY featured DESC').fetch()
+    return render_template("search_results.html", companies=search_result)
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
+def index():
+    form = SearchForm()
+    if form.validate_on_submit():
+        return redirect(url_for('search_results'))
+    companies = Company.query().fetch(limit=3)
+    return render_template("index.html", companies = companies, form = form)
+
+
 @app.route('/temp', methods=["GET", "POST"])
 def temp():
+    form = SearchForm()
+    if form.validate_on_submit():
+        if form.data['search_criteria']:
+            search_criteria = parse_search_criteria(form.data['search_criteria'])
+            search_result = company_search(search_criteria)
+        else:
+            search_result = Company.gql('ORDER BY featured DESC').fetch()
+        return render_template("search_result.html", companies=search_result)
     companies = Company.query().fetch(limit=3)
-    return render_template("temp.html", companies = companies)
+    return render_template("temp.html", companies = companies, form = form)
 
 @login_manager.user_loader
 def load_user(email):
@@ -99,10 +151,6 @@ def register_company():
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
     return render_template('register_company.html', form = form)
 
-@app.route('/register_user', methods=['GET', 'POST'])
-def register_user():
-    return '<h1>register_user</h1>'
-
 @app.route('/company_write_review/<company_profile_name>', methods=['GET', 'POST'])
 @login_required # Make it accessible only by customer account
 def company_write_review(company_profile_name):
@@ -134,24 +182,6 @@ def company(company_profile_name):
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
 
-@app.route('/search_results')
-def search_results():
-    temp = ''
-    for k, v in session['search_form'].iteritems():
-        temp+=k
-    return temp
-
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-def index():
-    form = SearchForm()
-    if form.validate_on_submit():
-        session['search_form'] = form.data
-        return redirect(url_for('search_results'))
-    companies = Company.query().fetch(limit=3)
-    return render_template('index.html',
-                            form=form,
-                            companies = companies)
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin

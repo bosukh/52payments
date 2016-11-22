@@ -23,20 +23,11 @@ class LoginForm(Form):
     password = PasswordField('Password')
 
 class SearchForm(Form):
-    retail = BooleanField('Retail', default=False)
-    restuarant = BooleanField('Restuarant', default=False)
-    e_commerce = BooleanField('E-Commerce', default=False)
-    healthcare_medical = BooleanField('Healthcare/Medical', default=False)
-    mobile = BooleanField('Mobile', default=False)
-    prof_personal_srv = BooleanField('Professional/Personal Services', default=False)
-    non_profit = BooleanField('Non-Profit', default=False)
-    high_risk = BooleanField('High-Risk', default=False)
-    high_volume = BooleanField('High-Volume', default=False)
-    other = BooleanField('Other', default=False)
+    search_criteria = HiddenField('search_criteria')
 
 class CompanyForm(Form):
     biz_type = [('Retail','Retail'),
-                ('Restuarant','Restuarant'),
+                ('Restaurant','Restaurant'),
                 ('E-Commerce', 'E-Commerce'),
                 ('Healthcare/Medical', 'Healthcare/Medical'),
                 ('Mobile', 'Mobile'),

@@ -1,0 +1,17 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="featured-title">
+    <h2>Featured Processors</h2>
+  </div>
+  <div class="box-row">
+    {% if not companies%}
+    No Matching Results
+    {% endif %}
+    {% for company in companies %}
+      {% include 'small_company_box.html' %}
+    {% endfor %}
+  </div>
+
+{% endblock %}

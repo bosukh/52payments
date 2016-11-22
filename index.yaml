@@ -10,6 +10,32 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Company
+  properties:
+  - name: complementary_srvs
+  - name: equipment
+  - name: provided_srvs
+  - name: pricing_range
+
+- kind: Company
+  properties:
+  - name: complementary_srvs
+  - name: equipment
+  - name: pricing_method
+  - name: provided_srvs
+  - name: pricing_range
+
+- kind: Company
+  properties:
+  - name: equipment
+  - name: provided_srvs
+  - name: pricing_range
+
+- kind: Company
+  properties:
+  - name: provided_srvs
+  - name: pricing_range
+
 - kind: Review
   properties:
   - name: approved
