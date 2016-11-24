@@ -1,0 +1,35 @@
+<div class="search-box">
+  <div class="search-row">
+    <div id='search-nav' class="search-nav">
+      <div class="selected items-title-div">
+        <a class= 'items-title' onclick="javascript:select_items_title(this)">Business Types</a>
+      </div>
+      <div class="items-title-div">
+        <a class="items-title" onclick="javascript:select_items_title(this)">Pricing Method</a>
+      </div>
+      <div class="items-title-div">
+        <a class="items-title" onclick="javascript:select_items_title(this)">Equipments</a>
+      </div>
+      <div class="items-title-div">
+        <a class="items-title" onclick="javascript:select_items_title(this)">Complimentary Services</a>
+      </div>
+    </div>
+    <div class="search-row">
+      *Select search criteria (Not selecting any will return all results)
+    </div>
+    <div id = 'items' class="items">
+    </div>
+  </div>
+  <div class="search-row">
+    <div id='chosen-title' class="search-nav">
+    </div>
+    <div id = 'selected-items' class="items">
+    </div>
+    <form action='/search_results' method="get" name="search-box-form">
+      {{ form.search_criteria }}
+      <div class="button-wrapper">
+        <button id='search-button' class='button' type="submit" name="button">Search</button>
+      </div>
+  </form>
+  </div>
+</div>

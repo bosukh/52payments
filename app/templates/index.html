@@ -2,53 +2,17 @@
 
 {% block content %}
   <h1>Welcome to 52Payments!</h1>
-  <div class="search-box">
-    <div class="search-row">
-      <div id='search-nav' class="search-nav">
-        <div class="selected items-title-div">
-          <a class= 'items-title' onclick="javascript:select_items_title(this)">Business Types</a>
-        </div>
-        <div class="items-title-div">
-          <a class="items-title" onclick="javascript:select_items_title(this)">Pricing Method</a>
-        </div>
-        <div class="items-title-div">
-          <a class="items-title" onclick="javascript:select_items_title(this)">Equipments</a>
-        </div>
-        <div class="items-title-div">
-          <a class="items-title" onclick="javascript:select_items_title(this)">Complimentary Services</a>
-        </div>
-      </div>
-      <div class="search-row">
-        *Select search criteria (Not selecting any will return all results)
-      </div>
-      <div id = 'items' class="items">
-      </div>
-    </div>
-    <div class="search-row">
-      <div id='chosen-title' class="search-nav">
-      </div>
-      <div id = 'selected-items' class="items">
-      </div>
-      <form action='/search_results' method="get" name="search-box-form">
-        {{ form.search_criteria }}
-        <div class="button-wrapper">
-          <button id='search-button' class='button' type="submit" name="button">Search</button>
-        </div>
-    </form>
-    </div>
-  </div>
-
+  {% include 'search_box.html' %}
   <div class="featured-title">
     <h2>Featured Processors</h2>
   </div>
-  <div class="box-row">
+  <div id = 'featured-companies' class="box-row">
     {% for company in companies %}
       {% include 'small_company_box.html' %}
     {% endfor %}
   </div>
 <script type="text/javascript">
   var left_width = document.getElementById('search-nav').offsetWidth + 'px';
-  //document.getElementById('items').style.width = left_width;
   var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
                   'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
                   'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];

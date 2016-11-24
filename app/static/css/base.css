@@ -1,0 +1,267 @@
+/* General*/
+* {
+  font-family: 'Open Sans', sans-serif;
+  color: #424242;
+}
+input {
+  width: 100%;
+  border-radius: 3px;
+  padding: 5px;
+}
+.li_warning {
+  color: red;
+  text-align: left;
+  display: block
+}
+#content-container {
+  margin: auto;
+  max-width: 1140px;
+}
+/* Top menu */
+#logo {
+  padding-left: 10px;
+  cursor: pointer;
+}
+
+.nav_ul {
+    list-style-type: none;
+    margin: 10px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.nav_li {
+    float: right;
+}
+
+.nav_li .nav_a {
+    display: block;
+    text-align: center;
+    color: #424242;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.rating-star {
+  font-size: 18px;
+  font-weight: bold;
+  color: #FBBC16;
+}
+.warning {
+  text-align: center;
+  color: red;
+}
+/* Search Box*/
+.search-box {
+  overflow: auto;
+  border-top: 1px solid #CAC9C9;
+}
+.search-checkbox-row {
+  text-align: justify;
+  -ms-text-justify: distribute-all-lines;
+  text-justify: distribute-all-lines;
+}
+.checkbox{
+  width: 250px;
+  vertical-align: top;
+  display: inline-block;
+  *display: inline;
+  zoom: 1
+}
+#search-button {
+  width: 100px;
+  float:right;
+}
+
+
+/* Small Processor box*/
+.featured-title {
+  width:100%;
+  margin-top: 80px;
+  border-top: 1px solid #CAC9C9;
+}
+.box-row{
+  overflow: auto;
+  text-align: center;
+}
+.small-company-box{
+  overflow: auto;
+  width: 100%;
+  max-width: 300px;
+  display: inline-block;
+  margin-left: 35px;
+  margin-right: 35px;
+  text-align: left;
+  vertical-align: top;
+}
+.company-logo {
+  padding: 10px 25px 20px 25px;
+  width: 250px;
+  height: 70px;
+  border-bottom: 1px solid #CAC9C9;
+}
+.company-title {
+  margin: 5px 0 5px 0;
+}
+
+.button {
+  text-align: center;
+  background: white;
+  border-color: #465A92;
+  width: 90%;
+  height: 40px;
+}
+.button-wrapper{
+  margin: auto;
+  text-align: center;
+}
+
+.text-box {
+  max-height: 120px;
+  position: relative;
+  overflow: hidden;
+}
+.text-box .read-more {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  text-align: right;
+  margin: 0; padding: 30px 0;
+
+}
+
+
+/*Comapny Profile*/
+#user_name {
+  float: right;
+  font-size: 14px;
+}
+#small-search-button {
+  width: 100px;
+  float: right;
+  margin-top: 20px;
+}
+
+.company-profile-container {
+  width: 100%;
+  border-top: 1px solid #CAC9C9;
+  margin-top: 20px;
+  padding-top: 10px;
+  display: inline-block;
+}
+.company-profile-top-row{
+  margin-bottom: 30px;
+}
+.company-profile-basic-box{
+  border-top: 1px solid #CAC9C9;
+  margin-top: 30px;
+}
+.company-left-col{
+  width:320px;
+  float: left;
+}
+.company-right-col{
+  width:740px;
+  float: right;
+}
+#company-profile-logo{
+  width: 350px;
+}
+#company-apply-button, #company-review-button {
+  width: 100px;
+  float: right;
+  margin-right: 10px
+}
+
+#company-review-button {
+  border-radius: 10px;
+}
+#company-apply-button {
+  border-radius: 100px;
+}
+
+/* Signup*/
+#signup-inner-box {
+  width: 70%;
+  max-width: 250px;
+  margin: auto;
+  margin-bottom: 30px;
+}
+.signup-field {
+}
+.signup-field-text {
+  text-align: left;
+  margin-top: 10px;
+}
+
+#signup-box {
+  border: 1px solid #CAC9C9;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+  margin-top: 40px;
+}
+
+/* Review page*/
+#page-moves {
+  text-align: center;
+}
+.page-move {
+  margin: auto;
+}
+
+/* index */
+.a{
+  display: inline-block;
+  float:left;
+}
+.item{
+  font-size: 15px;
+  float: left;
+  padding: 10px;
+  margin-right: 20px;
+  margin-top: 10px;
+  border-radius: 7px;
+  border-width: 1px;
+  border-color: #9DAACE;
+  border-style: solid;
+  background-color: #EFF1F9;
+}
+.items-title-div{
+  margin-top: 10px;
+  float:left;
+  margin-right: 20px;
+  padding: 10px;
+}
+.selected {
+  border-top: 1px #9DAACE solid;
+  border-left: 1px #9DAACE solid;
+  border-right: 1px #9DAACE solid;
+  background-color: #CAD2E8;
+}
+.search-nav{
+  border-bottom: 1px #9DAACE solid;
+  width: 100%;
+  display:inline-block;
+}
+.items{
+  margin-top: 10px;
+  display: inline-block;
+}
+.items-title {
+  text-decoration: none;
+  cursor: pointer;
+  cursor: hand;
+}
+.search-row{
+  float:left;
+  width: 100%;
+}
+.selected-item{
+  border-color: #C3E0E3;
+  background-color: #EAF6F7;
+}
+#chosen-title{
+  border-bottom: 1px #92C0C4 solid;
+  opacity: 0;
+}

@@ -1,59 +1,31 @@
-import os
 import time
 
 from flask import Flask, make_response, abort
 from flask import render_template, flash, redirect, session, url_for, request, g
 from config import basedir
 from google.appengine.ext import ndb
+from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-
-
-app = Flask(__name__)
-app.config.from_object('config')
-login_manager = LoginManager()
-login_manager.init_app(app)
-
+from app import app, login_manager
 from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
 from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
+from app.search import parse_search_criteria, company_search
 
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
-
-def parse_search_criteria(search_criteria):
-    search_criteria = search_criteria.split(',')
-    search_criteria = map(lambda x: x.split(': '),search_criteria)
-    temp = {}
-    for k, v in search_criteria:
-        if k in temp.keys():
-            temp[k] += [v]
-        else:
-            temp[k] = [v]
-    return temp
-
-def company_search(search_criteria):
-    types = [('Business Types', 'provided_srvs'),
-             ('Complimentary Services', 'complementary_srvs'),
-             ('Equipments', 'equipment'),
-             ('Pricing Method', 'pricing_method')]
-    gql_query = "WHERE "
-    where_clause = []
-    for col, col_name in types:
-        criteria = search_criteria.get(col)
-        if criteria:
-            where_clause.append("%s IN (%s)"%(col_name, "'" + "', '".join(criteria) + "'"))
-    gql_query += ' AND '.join(where_clause) + " ORDER BY pricing_range"
-    return Company.gql(gql_query).fetch()
 
 @app.route('/search_results', methods=['GET'])
 def search_results():
     if request.args['search_criteria']:
         search_criteria = parse_search_criteria(request.args['search_criteria'])
         search_result = company_search(search_criteria)
+        session.search_criteria = search_criteria
+        session.search_result = search_result
     else:
-        search_result = Company.gql('ORDER BY featured DESC').fetch()
+        search_result = mc_getsert('all_verified_companies', Company.gql('WHERE verified = True').fetch)
     return render_template("search_results.html", companies=search_result)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -65,19 +37,9 @@ def index():
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
 
-
 @app.route('/temp', methods=["GET", "POST"])
 def temp():
-    form = SearchForm()
-    if form.validate_on_submit():
-        if form.data['search_criteria']:
-            search_criteria = parse_search_criteria(form.data['search_criteria'])
-            search_result = company_search(search_criteria)
-        else:
-            search_result = Company.gql('ORDER BY featured DESC').fetch()
-        return render_template("search_result.html", companies=search_result)
-    companies = Company.query().fetch(limit=3)
-    return render_template("temp.html", companies = companies, form = form)
+    return 'temp'
 
 @login_manager.user_loader
 def load_user(email):
@@ -146,8 +108,8 @@ def register_company():
         company_form.pop('pricing_range_upper', None)
         company = Company(**company_form)
         company.put()
-        flash('Info Submitted')
         time.sleep(1)
+        flash('Info Submitted')
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
     return render_template('register_company.html', form = form)
 
