@@ -1,6 +1,6 @@
 import time
 
-from flask import Flask, make_response, abort
+from flask import Flask, make_response, abort, g
 from flask import render_template, flash, redirect, session, url_for, request, g
 from config import basedir
 from google.appengine.ext import ndb
@@ -13,7 +13,7 @@ from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
-
+from app.memcache import mc_getsert
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
@@ -22,8 +22,8 @@ def search_results():
     if request.args['search_criteria']:
         search_criteria = parse_search_criteria(request.args['search_criteria'])
         search_result = company_search(search_criteria)
-        session.search_criteria = search_criteria
-        session.search_result = search_result
+        session['search_criteria'] = search_criteria
+        #session['search_result'] = search_result
     else:
         search_result = mc_getsert('all_verified_companies', Company.gql('WHERE verified = True').fetch)
     return render_template("search_results.html", companies=search_result)

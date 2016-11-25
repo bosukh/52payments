@@ -27,9 +27,10 @@
     </div>
     <form action='/search_results' method="get" name="search-box-form">
       {{ form.search_criteria }}
-      <div class="button-wrapper">
-        <button id='search-button' class='button' type="submit" name="button">Search</button>
+      <div class="button-wrapper button">
+        <a id='search-button' class='button' href="javascript:get_search_result()">Search</a>
       </div>
-  </form>
+    </form>
   </div>
 </div>
+<script src="{{ url_for('static', filename='js/search-box.js') }}"></script>

@@ -78,3 +78,12 @@ var func = function(elem, re) {
   var all_warning = check_all_field(field_ids);
   all_required_field_warning(all_warning);
 };
+
+
+var create_xhr = function(method, url, func){
+  var xhr = new XMLHttpRequest();
+  xhr.open(method, url);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onload = func;
+  return xhr
+}

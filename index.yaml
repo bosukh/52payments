@@ -27,7 +27,20 @@ indexes:
 
 - kind: Company
   properties:
+  - name: complementary_srvs
+  - name: pricing_method
+  - name: provided_srvs
+  - name: pricing_range
+
+- kind: Company
+  properties:
   - name: equipment
+  - name: provided_srvs
+  - name: pricing_range
+
+- kind: Company
+  properties:
+  - name: pricing_method
   - name: provided_srvs
   - name: pricing_range
 

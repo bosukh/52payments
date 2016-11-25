@@ -1,9 +1,4 @@
 /*Login*/
-input {
-  width: 100%;
-  border-radius: 3px;
-  padding: 5px;
-}
 #login-inner-box {
   width: 70%;
   max-width: 250px;

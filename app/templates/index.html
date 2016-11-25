@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Welcome to 52Payments!</h1>
   {% include 'search_box.html' %}
-  <div class="featured-title">
+  <div id = 'featured-title' class="featured-title">
     <h2>Featured Processors</h2>
   </div>
   <div id = 'featured-companies' class="box-row">
@@ -11,79 +11,21 @@
       {% include 'small_company_box.html' %}
     {% endfor %}
   </div>
+  <div id = 'search-result'>
+
+  </div>
 <script type="text/javascript">
-  var left_width = document.getElementById('search-nav').offsetWidth + 'px';
-  var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
-                  'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
-                  'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];
-  var srv_type = ['Marketing', 'Analytics', 'Recurling Bill',
-                  'Chargeback', 'Security', 'Other'];
-  var equip_type = ['Verifone', 'Ingenico', 'Other'];
-  var pricing_type = ['Tiered', 'Interchange Plus',
-                      'Flat', 'Custom'];
-  var types = {
-    "Business Types" : biz_type,
-    "Complimentary Services" : srv_type,
-    "Equipments" : equip_type,
-    "Pricing Method" : pricing_type
-  }
-  var current_type = "Business Types";
-  var items = document.getElementById('items');
-  var selected_items = document.getElementById('selected-items');
-  var selected_item_list = [];
-  var search_criteria = document.getElementById('search_criteria');
-  var fill_items = function(list_, items, selected = 0){
-    for (var i = 0; i < list_.length; i++){
-      var item = document.createElement('div');
-      item.className = 'item';
-      if (selected){
-        item.className = 'item selected-item';
-        item.innerHTML = list_[i] + ' <span style="font-weight:bold;"><a class="items-title" onclick="javascript:deselect(this)">×</a></span>';
-      } else{
-        item.setAttribute("id", list_[i]);
-        item.innerHTML = '<a class="items-title" onclick="javascript:select(this)">' + list_[i] + '</a>';
-      };
-      items.appendChild(item);
-    };
-  }
-  fill_items(biz_type, items);
-  var select = function(item){
-    pop(types[current_type], item.innerHTML);
-    selected_item_list.push(current_type + ': '+ item.innerHTML);
-    fill_items([current_type + ': '+ item.innerHTML], selected_items, 1);
-    item.parentElement.remove();
-    document.getElementById('chosen-title').style.opacity= 1;
-    search_criteria.value = selected_item_list.join(',');
-  }
-  var deselect = function(item){
-    var item = item.parentElement.parentElement;
-    var selected_item_name = item.innerHTML.split('<span')[0];
-    var type = selected_item_name.split(': ')[0];
-    var item_name = selected_item_name.split(': ')[1];
-    pop(selected_item_list, selected_item_name);
-    types[type].push(item_name);
-    if (types[current_type].includes(item_name)){
-      fill_items([item_name], items);
+  var featured_title = document.getElementById('featured-title');
+  var featured = document.getElementById('featured-companies');
+  var get_search_result = function() {
+    var after_todo = function(){
+      document.getElementById('search-result').innerHTML = xhr.responseText;
     }
-    item.remove();
-    if (selected_item_list.length == 0){
-      document.getElementById('chosen-title').style.opacity= 0;
-    };
-    search_criteria.value = selected_item_list.join(',');
-  }
-  var select_items_title = function(items_title){
-    current_type = items_title.innerHTML;
-    items_title = items_title.parentElement;
-    var items_titles = document.getElementsByClassName('items-title-div');
-    for (var i = 0; i < items_titles.length; i++){
-      items_titles[i].className = 'items-title-div';
-    };
-    items_title.className = 'selected items-title-div'
-    var current_num = items.childNodes.length
-    for (var i = 1; i < current_num; i++){
-      items.childNodes[1].remove();
-    };
-    fill_items(types[current_type], items);
+    var url = '/search_results?' + 'search_criteria='+encodeURIComponent(search_criteria.value)
+    var xhr = create_xhr('GET', url, after_todo);
+    xhr.send();
+    featured_title.remove();
+    featured.remove();
   }
 </script>
 {% endblock %}

@@ -10,7 +10,7 @@
 
 <div class="company-profile-container">
   <div class="company-profile-top-row">
-    <img id="company-profile-logo" src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="52paymments_logo" width="200px">
+    <img id="company-profile-logo" src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="200px">
     <a href="#">
       <button id='company-apply-button' class= 'button' type="button" name="button">Apply</button>
     </a>
@@ -74,6 +74,9 @@
   </div>
   <div class="company-right-col">
     <div class="company-profile-basic-box">
+      {% if company.title %}
+        <h2>{{ company.title }}</h2>
+      {% endif %}
       {{company.full_description}}
     </div>
   </div>

@@ -1,0 +1,86 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Search Results</h2>
+  {% for company in companies %}
+  <div id='search-result-box' class="company-profile-container">
+    <div class="search-result-left-col">
+      <img src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="90%">
+      <br><br>
+        {% if company.pricing_range %}
+          Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
+        {% endif %}
+        Overall User Rating <br>
+        {% for i in range(company.rounded_rating)%}
+          <span class='rating-star'>★</span>
+        {% endfor %}
+        {% for i in range(5-company.rounded_rating)%}
+          <span class='rating-star'>☆</span>
+        {% endfor %}
+        {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
+        √ Verified With 52Payments <br>
+    </div>
+    <div class="search-result-right-col">
+      <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}">
+        <button id= 'company-profile-button' class= 'search-result-button button' type="button" name="button">View Full Profile</button>
+      </a>
+      <a href="#">
+        <button id='company-apply-button' class= 'search-result-button button' type="button" name="button">Apply</button>
+      </a>
+      {% if company.title %}
+        <h2 id='company-title'>{{ company.title }}</h2>
+      {% endif %}
+      {% if company.pricing_method %}
+        <b>Pricing Method</b>: {{', '.join(company.pricing_method)}}
+      {% endif %}
+      <br>
+      {% if company.provided_srvs %}
+        <b>Provided Services</b>: {{', '.join(company.provided_srvs)}}
+      {% endif %}
+      <br><br>
+      {% if company.summary %}
+        {{company.summary}}
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+<style media="screen">
+.search-result-button {
+  margin-top: 10px;
+}
+#company-title{
+  margin-top: 10px;
+}
+#company-profile-button {
+  width: 130px;
+  float: right;
+}
+#search-result-box {
+  padding: 0px;
+  margin: 0px;
+}
+.search-result-left-col {
+  width: calc(25% - 10px);
+  float: left;
+  border-right: 1px solid #CAC9C9;
+  margin-top: 0px;
+  padding-top: 15px;
+}
+.search-result-right-col {
+  width: calc(100% - 25% - 10px);
+  float: right;
+}
+</style>
+<script type="text/javascript">
+  var left_cols = document.getElementsByClassName('search-result-left-col');
+  var right_cols = document.getElementsByClassName('search-result-right-col');
+  if (left_cols.length) {
+    for (var i = 0; i < left_cols.length; i++){
+      if (left_cols[i].offsetHeight < right_cols[i].offsetHeight){
+        left_cols[i].style.height =  right_cols[i].offsetHeight + 'px';
+      };
+    };
+  };
+</script>
+{% endblock %}
