@@ -1,29 +1,30 @@
-<div class="company-profile-basic-box">
-  {% for review in reviews%}
-  <div class="review">
-    <h3>{{review.title}}
-      &nbsp;&nbsp;&nbsp;&nbsp;
-      {% for i in range(review.rating)%}
-        <span class='rating-star'>★</span>
-      {% endfor %}
-      {% for i in range(5-review.rating)%}
-        <span class='rating-star'>☆</span>
-      {% endfor %}
-      {{review.rating}}
+{% for review in reviews%}
+<div class="review">
+  <h3>{{review.title}}
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    {% for i in range(review.rating)%}
+      <span class='rating-star'>★</span>
+    {% endfor %}
+    {% for i in range(5-review.rating)%}
+      <span class='rating-star'>☆</span>
+    {% endfor %}
+    {{review.rating}}
 
-      <span id='user_name'>
-        <em>{{ momentjs(review.created).calendar() }} by
-          {{review.user_name}}
-        </em>
-      </span>
-    </h3>
-    <p>
-      {{review.content}} <br><br>
-    </p>
-    <div class="decision-area">
-      <input id = 'urlsafe' type="hidden" name="urlsafe" value="{{review.urlsafe}}">
-      <input id = 'type' type="hidden" name="type" value="review">
-    </div>
+    <span id='user_name'>
+      <em>{{ momentjs(review.created).calendar() }} by
+        {{review.user_name}}
+      </em>
+    </span>
+  </h3>
+  <p>
+    {{review.content}}
+  </p><br><br>
+  <div class="decision-area">
+    <input id = 'urlsafe' type="hidden" name="urlsafe" value="{{review.urlsafe}}">
+    <input id = 'type' type="hidden" name="type" value="review">
   </div>
-  {% endfor %}
 </div>
+{% endfor %}
+<script type="text/javascript">
+  add_cont_reading_btn();
+</script>

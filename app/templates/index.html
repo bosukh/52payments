@@ -3,7 +3,7 @@
 {% block content %}
   <h1>Welcome to 52Payments!</h1>
   {% include 'search_box.html' %}
-  <div id = 'featured-title' class="featured-title">
+  <div id = 'featured-title' class="basic-title">
     <h2>Featured Processors</h2>
   </div>
   <div id = 'featured-companies' class="box-row">
@@ -11,21 +11,21 @@
       {% include 'small_company_box.html' %}
     {% endfor %}
   </div>
-  <div id = 'search-result'>
-
-  </div>
+  <script src="{{ url_for('static', filename='js/search-result.js') }}"></script>
 <script type="text/javascript">
   var featured_title = document.getElementById('featured-title');
   var featured = document.getElementById('featured-companies');
-  var get_search_result = function() {
-    var after_todo = function(){
-      document.getElementById('search-result').innerHTML = xhr.responseText;
-    }
-    var url = '/search_results?' + 'search_criteria='+encodeURIComponent(search_criteria.value)
-    var xhr = create_xhr('GET', url, after_todo);
-    xhr.send();
-    featured_title.remove();
-    featured.remove();
+  var get_search_result = function(){
+    get_search_result_base(function() {
+      featured_title.remove();
+      featured.remove();
+    });
   }
+  if (typeof(search_criteria)!='undefined' & search_criteria.value != ''){
+    get_search_result();
+  } else {
+    add_cont_reading_btn();    
+  };
 </script>
+
 {% endblock %}

@@ -1,7 +1,6 @@
 <div class="small-company-box">
   <img class="company-logo" src="/img/{{company.company_profile_name}}" alt="{{company.title}}">
   <h2 class="company-title">{{company.title}}</h2>
-  <p>
     Overall User Rating <br>
     {% for i in range(company.rounded_rating)%}
       <span class='rating-star'>★</span>
@@ -10,9 +9,10 @@
       <span class='rating-star'>☆</span>
     {% endfor %}
     {{bjs().round(company.avg_rating)}}  ({{company.num_ratings}}) <br>
-    √ Verified With 52Payments <br><br>
-    {{company.summary|safe}}
-  </p>
+    √ Verified With 52Payments <br>
+    <p>
+      {{company.summary}}
+    </p>
   <div class="button-wrapper">
     <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}">
     <button class= 'button' type="button" name="button">View Company Profile</button>

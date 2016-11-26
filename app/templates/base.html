@@ -9,14 +9,15 @@
     <title>52 Payments</title>
   </head>
   <body>
-    {% if current_user.is_authenticated %}
-      Hi {{ current_user.name }}!
-    {% endif %}
     <div>
       <ul class="nav_ul">
         <a class="nav_a" href="{{url_for('index')}}"><img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px"></a>
-        <li class="nav_li"><a class="nav_a" href="{{ url_for('signup')}}">Sign-up</a></li>
-        <li class="nav_li"><a class="nav_a" href="{{url_for('login')}}">Sign-in</a></li>
+        {% if current_user.is_authenticated %}
+          <li class="nav_li"><a class="nav_a" href="{{url_for('logout')}}">Sign-out</a></li>
+        {% else %}
+          <li class="nav_li"><a class="nav_a" href="{{ url_for('signup')}}">Sign-up</a></li>
+          <li class="nav_li"><a class="nav_a" href="{{url_for('login')}}">Sign-in</a></li>
+        {% endif %}
         <li class="nav_li"><a class="nav_a" href="#">About</a></li>
         <li class="nav_li"><a class="nav_a" href="#">Processors</a></li>
       </ul>

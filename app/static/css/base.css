@@ -8,6 +8,10 @@ input {
   border-radius: 3px;
   padding: 5px;
 }
+.cont_reading_btn {
+  cursor: pointer;
+  text-decoration: underline;
+}
 .li_warning {
   color: red;
   text-align: left;
@@ -78,7 +82,7 @@ input {
 
 
 /* Small Processor box*/
-.featured-title {
+.basic-title {
   width:100%;
   margin-top: 80px;
   border-top: 1px solid #CAC9C9;

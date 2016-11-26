@@ -81,9 +81,15 @@
     </div>
   </div>
   <div id='review-box' class="company-right-col">
-    {% if reviews %}
-      {% include 'review.html' %}
-    {% endif %}
+    <div class="company-profile-basic-box">
+      {% if reviews %}
+        {% include 'review.html' %}
+      {% else %}
+        <p>
+          Threre's no review for the company yet.
+        </p>
+      {% endif %}
+    </div>
     <div id = 'page-moves'>
       <a id ='prev' class='page-move' style="display:none;" href="#">Prev</a>
       <a id ='next' class='page-move' style="display:none;" href="#">Next</a>

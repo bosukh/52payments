@@ -24,7 +24,7 @@ var select = function(item){
 }
 var deselect = function(item){
   var item = item.parentElement.parentElement;
-  var selected_item_name = item.innerHTML.split('<span')[0];
+  var selected_item_name = item.innerHTML.split('<span')[0].trim();
   var type = selected_item_name.split(': ')[0];
   var item_name = selected_item_name.split(': ')[1];
   pop(selected_item_list, selected_item_name);

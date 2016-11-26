@@ -23,6 +23,7 @@ def search_results():
         search_criteria = parse_search_criteria(request.args['search_criteria'])
         search_result = company_search(search_criteria)
         session['search_criteria'] = search_criteria
+        print search_criteria
         #session['search_result'] = search_result
     else:
         search_result = mc_getsert('all_verified_companies', Company.gql('WHERE verified = True').fetch)

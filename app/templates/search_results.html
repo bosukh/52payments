@@ -1,4 +1,9 @@
-<h2>Search Results</h2>
+<div id = 'search-result-title' class="basic-title">
+  <h2>Search Results</h2>
+</div>
+{% if not companies %}
+<h3>No Matching Result</h3>
+{% endif %}
 {% for company in companies %}
 <div id='search-result-box' class="company-profile-container">
   <div class="search-result-left-col">
@@ -36,20 +41,11 @@
     {% endif %}
     <br><br>
     {% if company.summary %}
+    <p>
       {{company.summary}}
+    </p>
     {% endif %}
   </div>
 </div>
 <br><br>
 {% endfor %}
-<script type="text/javascript">
-  var left_cols = document.getElementsByClassName('search-result-left-col');
-  var right_cols = document.getElementsByClassName('search-result-right-col');
-  if (left_cols.length) {
-    for (var i = 0; i < left_cols.length; i++){
-      if (left_cols[i].offsetHeight < right_cols[i].offsetHeight){
-        left_cols[i].style.height =  right_cols[i].offsetHeight + 'px';
-      };
-    };
-  };
-</script>
