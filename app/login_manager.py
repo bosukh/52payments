@@ -21,10 +21,13 @@ def google_signup_auth(**kargs):
         return None, "Invalid Login Credentials"
     user_id = idinfo['sub']
     user = load_user(user_id)
-    if not user:
+    if user:
+        error = 'Your email is already registered.'
+    else:
+        error = None
         user = User(user_id = user_id,
                     email = kargs['email'],
                     first_name = kargs['first_name'],
                     last_name = kargs['last_name'])
         user.put()
-    return user, None
+    return user, error

@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form action="" method="post" name="signup-form">
+<form id= 'signup-form' action="" method="post" name="signup-form">
     {{ form.hidden_tag() }}
     <div id="signup-box" class="">
       <div id="warning_div">
@@ -33,6 +33,7 @@
       </div>
     </div>
 </form>
+<div id='signin-button' class="g-signin2" data-onsuccess="onSignIn"></div>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 <meta name="google-signin-client_id" content="456242400193-rvmtrqiuemt0ma9hfedb89fp6iullu9u.apps.googleusercontent.com">
 <script src="{{ url_for('static', filename='js/google_signin.js') }}"></script>

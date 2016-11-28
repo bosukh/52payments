@@ -1,8 +1,10 @@
 function onSignIn(googleUser) {
   var profile = googleUser.getBasicProfile();
-  var id_token = googleUser.getAuthResponse().id_token;
-  var email = profile.getEmail();
-  var name = profile.getName();
+  document.getElementById('id_token').value = googleUser.getAuthResponse().id_token;
+  document.getElementById('email').value = profile.getEmail();
+  document.getElementById('first_name').value = profile.getGivenName();
+  document.getElementById('last_name').value = profile.getFamilyName();
+  document.getElementById('signup-form').submit();
 }
 function signOut() {
   var auth2 = gapi.auth2.getAuthInstance();

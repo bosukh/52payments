@@ -14,6 +14,7 @@ from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
+from app.login_manager import load_user, google_signup_auth
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
@@ -37,17 +38,6 @@ def index():
         return redirect(url_for('search_results'))
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
-
-@app.route('/temp', methods=["GET", "POST"])
-def temp():
-    return 'temp'
-
-@login_manager.user_loader
-def load_user(email):
-    query = User.gql("WHERE email = '%s'"%email)
-    return query.get()
-
-from app.login_manager import load_user
 
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
@@ -87,16 +77,21 @@ def signup():
     form = SignUpForm()
     if form.validate_on_submit():
         user_data = form.data
-        existing = load_user(user_data['email'])
-        if existing:
-            flash('Your email is already registered.')
-            return redirect('login')
-        user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
-        user_data.pop('password_2')
-        user_data.pop('id_token')
-        user_data['user_id'] = user_data['email']
-        user = User(**user_data)
-        user.put()
+        if user_data['id_token']:
+            user, error = google_signup_auth(**user_data)
+        elif user_data['email']:
+            user = load_user(user_data['email'])
+            error = 'Your email is already registered.'
+        if error:
+            flash(error)
+            return render_template('signup.html', form=form)
+        elif not user:            
+            user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
+            user_data.pop('password_2')
+            user_data.pop('id_token')
+            user_data['user_id'] = user_data['email']
+            user = User(**user_data)
+            user.put()
         flash('Signup successful')
         return redirect(url_for('index'))
     return render_template('signup.html', form=form)
