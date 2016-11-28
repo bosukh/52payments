@@ -14,7 +14,8 @@ class SignUpForm(Form):
     first_name = TextField('First Name')
     last_name = TextField('Last Name')
     email = TextField('Email', validators = [Required(), Length(1, 64), Email()])
-    phone = TextField('Phone')
+    #phone = TextField('Phone')
+    id_token = HiddenField('id_token')
     password = PasswordField('Password')
     password_2 = PasswordField('Re-type Password')
 

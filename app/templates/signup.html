@@ -11,14 +11,13 @@
           <li class = 'li_warning' id='warning_first_name'>- First name can only include letters and '</li>
           <li class = 'li_warning' id='warning_last_name'>- Last name can only include letters and '</li>
           <li class = 'li_warning' id='warning_email'>- Email can only include letters, numbers, _, @, and dot.</li>
-          <li class = 'li_warning' id='warning_phone'>- Phone number should only include numbers.</li>
           <li class = 'li_warning' id='warning_password'>- Password needs to be at least 8 charactors long and only include letters, numbers, and special charactor(!@#$%^&*).</li>
           <li class = 'li_warning' id='warning_password_2'>- Passwords must match.</li>
         </ul>
       </div>
       <div id = 'signup-inner-box' class="">
         {% for field in form %}
-          {% if field.name != 'csrf_token'%}
+          {% if field.name != 'csrf_token' and field.name != 'id_token' %}
           <div class="signup-field-text">
             {{ field.label.text }}
           </div>
@@ -34,8 +33,12 @@
       </div>
     </div>
 </form>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
+<meta name="google-signin-client_id" content="456242400193-rvmtrqiuemt0ma9hfedb89fp6iullu9u.apps.googleusercontent.com">
+<script src="{{ url_for('static', filename='js/google_signin.js') }}"></script>
+
 <script type="text/javascript">
-  var field_ids = ['first_name', 'last_name', 'email', 'phone', 'password', 'password_2'];
+  var field_ids = ['first_name', 'last_name', 'email', 'password', 'password_2'];
   var button_id = 'signup-button';
   var all_warning_id = 'warning_all';
 
@@ -45,7 +48,7 @@
   add_validator('first_name', 'text_re');
   add_validator('last_name', 'text_re');
   add_validator('email', 'email_re');
-  add_validator('phone', 'phone_re');
+  //add_validator('phone', 'phone_re');
   add_validator('password', 'password_re');
   var password_match = function() {
     var password = document.getElementById('password');

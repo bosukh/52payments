@@ -93,6 +93,7 @@ def signup():
             return redirect('login')
         user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
         user_data.pop('password_2')
+        user_data.pop('id_token')
         user_data['user_id'] = user_data['email']
         user = User(**user_data)
         user.put()
