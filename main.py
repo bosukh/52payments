@@ -14,7 +14,7 @@ from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
-from app.login_manager import load_user, google_signup_auth
+from app.login_manager import load_user, google_oauth_singin, google_oauth_singup
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
@@ -43,6 +43,21 @@ def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
 
+@app.route('/tokensignin', methods=['POST'])
+def tokensignin():
+    args = {}
+    args['id_token'] = request.form['idtoken']
+    args['email'] = request.form['email']
+    args['first_name'] = request.form['first_name']
+    args['last_name'] = request.form['last_name']
+    user, error = google_oauth(**args)
+    if error and error != 'Your email is already registered.':
+        flash(error)
+    user.authenticated=True
+    login_user(user)
+    current_user = user
+    return args['email']
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Here we use a class of some kind to represent and validate our
@@ -50,21 +65,33 @@ def login():
     # handle this for us, and we use a custom LoginForm to validate.
     form = LoginForm()
     if form.validate_on_submit():
-        user = load_user(form.data['email'])
-        try:
-            input_pw = bt.hashpw(form.data['password'], user.password)
-            if input_pw == user.password:
-                user.authenticated = True
-                login_user(user)
-                current_user = user
-                flash('Logged in successfully.')
-                #next = request.args.get('next')
-                #if not next:
-                #    return abort(400)
-                #return redirect(next or flask.url_for('index'))
-                return redirect(url_for('index'))
-        except ValueError:
+        if form.data['id_token']:
+            user, error = google_oauth_singin(form.data)
+        elif form.data['email'] and form.data['password']:
+            user = load_user(form.data['email'])
+            if not user:
+                error  = 'The given email is not registered'
+            else:
+                try:
+                    input_pw = bt.hashpw(form.data['password'], user.password)
+                    if input_pw == user.password:
+                        user.authenticated = True
+                except ValueError:
+                    error = 'The given password is not correct'
+        else:
+            error = 'You must enter both email and password'
+        if error:
+            flash(error)
             return render_template('login.html', form=form)
+        else:
+            login_user(user)
+            current_user = user
+            flash('Logged in successfully.')
+            #next = request.args.get('next')
+            #if not next:
+            #    return abort(400)
+            #return redirect(next or flask.url_for('index'))
+            return redirect(url_for('index'))
     return render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
@@ -78,7 +105,7 @@ def signup():
     if form.validate_on_submit():
         user_data = form.data
         if user_data['id_token']:
-            user, error = google_signup_auth(**user_data)
+            user, error = google_oauth_signup(**user_data)
         elif user_data['email']:
             user = load_user(user_data['email'])
             error = 'Your email is already registered.'

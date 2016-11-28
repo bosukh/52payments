@@ -6,7 +6,7 @@
 {% block content %}
 <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/login.css') }}">
 
-<form action="" method="post" name="login-form">
+<form id = 'login-form' action="" method="post" name="login-form">
     {{ form.hidden_tag() }}
     <div id="login-box" class="">
       <div id="warning_div">
@@ -43,9 +43,9 @@
   var all_warning_id = 'warning_all';
 
   hide_warnings(field_ids);
-  disable_btn('login-button');
-  add_validator('password', 'password_re');
-  add_validator('email', 'email_re');
+  //disable_btn('login-button');
+  //add_validator('password', 'password_re');
+  //add_validator('email', 'email_re');
 
 </script>
 {% endblock %}

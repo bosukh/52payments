@@ -20,6 +20,7 @@ class SignUpForm(Form):
     password_2 = PasswordField('Re-type Password')
 
 class LoginForm(Form):
+    id_token = HiddenField('id_token')
     email = TextField('Email')
     password = PasswordField('Password')
 

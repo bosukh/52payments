@@ -8,7 +8,7 @@ def load_user(user_id):
     query = User.gql("WHERE user_id = '%s'"%user_id)
     return query.get()
 
-def google_signup_auth(**kargs):
+def google_oauth(**kargs):
     #https://developers.google.com/identity/sign-in/web/backend-auth
     from oauth2client import client, crypt
     id_token=kargs['id_token']
@@ -20,15 +20,32 @@ def google_signup_auth(**kargs):
             raise crypt.AppIdentityError("Wrong issuer.")
     except crypt.AppIdentityError:
         return None, "Invalid Login Credentials"
-    user_id = idinfo['sub']
-    user = load_user(user_id)
+    kargs['user_id'] = idinfo['sub']
+    return kargs, None
+
+def google_oauth_signup(**kargs):
+    kargs, error = google_oauth[kargs]
+    if error:
+        return None, error
+    user = load_user(kargs[user_id])
     if user:
-        error = 'Your email is already registered.'
+        error = 'Your email is already registered'
     else:
         error = None
-        user = User(user_id = user_id,
+        user = User(user_id = kargs['user_id'],
                     email = kargs['email'],
                     first_name = kargs['first_name'],
                     last_name = kargs['last_name'])
         user.put()
     return user, error
+
+def google_oauth_singin(**kargs):
+    kargs, error = google_oauth[kargs]
+    if error:
+        return None, error
+    user = load_user(kargs[user_id])
+    if user:
+        user.authenticated = True
+        return user, None
+    else:
+        return None, 'The given email is not registered'
