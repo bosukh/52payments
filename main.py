@@ -47,6 +47,8 @@ def load_user(email):
     query = User.gql("WHERE email = '%s'"%email)
     return query.get()
 
+from app.login_manager import load_user
+
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
@@ -91,6 +93,7 @@ def signup():
             return redirect('login')
         user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
         user_data.pop('password_2')
+        user_data['user_id'] = user_data['email']
         user = User(**user_data)
         user.put()
         flash('Signup successful')

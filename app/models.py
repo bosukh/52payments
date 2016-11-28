@@ -21,11 +21,12 @@ class Company(ndb.Model):
     featured = ndb.BooleanProperty(default=False)
 
 class User(ndb.Model):
+    user_id = ndb.StringProperty(required=True)
     first_name = ndb.StringProperty(required=True)
     last_name = ndb.StringProperty(required=True)
     email = ndb.StringProperty(required=True)
-    phone = ndb.StringProperty(required=True)
-    password = ndb.StringProperty(required=True)
+    phone = ndb.StringProperty(required=False)
+    password = ndb.StringProperty(required=False)
     authenticated = ndb.BooleanProperty(default=False)
     company_admin = ndb.StringProperty(required=False)
     created = ndb.DateTimeProperty(auto_now_add = True)
