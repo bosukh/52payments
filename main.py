@@ -85,7 +85,7 @@ def signup():
         if error:
             flash(error)
             return render_template('signup.html', form=form)
-        elif not user:            
+        elif not user:
             user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
             user_data.pop('password_2')
             user_data.pop('id_token')

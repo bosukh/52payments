@@ -1,7 +1,8 @@
 from . import login_manager
 from .models import User
 from . import WEB_CLIENT_ID
-
+from flask_login import login_user
+from flask import redirect, url_for
 @login_manager.user_loader
 def load_user(user_id):
     query = User.gql("WHERE user_id = '%s'"%user_id)
