@@ -3,6 +3,7 @@ from .models import User
 from . import WEB_CLIENT_ID
 from flask_login import login_user
 from flask import redirect, url_for
+
 @login_manager.user_loader
 def load_user(user_id):
     query = User.gql("WHERE user_id = '%s'"%user_id)
@@ -24,10 +25,10 @@ def google_oauth(**kargs):
     return kargs, None
 
 def google_oauth_signup(**kargs):
-    kargs, error = google_oauth[kargs]
+    kargs, error = google_oauth(**kargs)
     if error:
         return None, error
-    user = load_user(kargs[user_id])
+    user = load_user(kargs['user_id'])
     if user:
         error = 'Your email is already registered'
     else:
@@ -40,10 +41,10 @@ def google_oauth_signup(**kargs):
     return user, error
 
 def google_oauth_singin(**kargs):
-    kargs, error = google_oauth[kargs]
+    kargs, error = google_oauth(**kargs)
     if error:
         return None, error
-    user = load_user(kargs[user_id])
+    user = load_user(kargs['user_id'])
     if user:
         user.authenticated = True
         return user, None

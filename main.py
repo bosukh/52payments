@@ -14,7 +14,7 @@ from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
-from app.login_manager import load_user, google_oauth_singin, google_oauth_singup
+from app.login_manager import load_user, google_oauth_singin, google_oauth_signup
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
@@ -25,7 +25,6 @@ def search_results():
         search_result = company_search(search_criteria)
         session['search_criteria'] = search_criteria
         print search_criteria
-        #session['search_result'] = search_result
     else:
         search_result = mc_getsert('all_verified_companies', Company.gql('WHERE verified = True').fetch)
     return render_template("search_results.html", companies=search_result)
@@ -43,30 +42,13 @@ def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
 
-@app.route('/tokensignin', methods=['POST'])
-def tokensignin():
-    args = {}
-    args['id_token'] = request.form['idtoken']
-    args['email'] = request.form['email']
-    args['first_name'] = request.form['first_name']
-    args['last_name'] = request.form['last_name']
-    user, error = google_oauth(**args)
-    if error and error != 'Your email is already registered.':
-        flash(error)
-    user.authenticated=True
-    login_user(user)
-    current_user = user
-    return args['email']
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Here we use a class of some kind to represent and validate our
-    # client-side form data. For example, WTForms is a library that will
-    # handle this for us, and we use a custom LoginForm to validate.
     form = LoginForm()
     if form.validate_on_submit():
         if form.data['id_token']:
-            user, error = google_oauth_singin(form.data)
+            user, error = google_oauth_singin(**form.data)
         elif form.data['email'] and form.data['password']:
             user = load_user(form.data['email'])
             if not user:
@@ -84,17 +66,16 @@ def login():
             flash(error)
             return render_template('login.html', form=form)
         else:
-            login_user(user)
-            current_user = user
-            flash('Logged in successfully.')
-            #next = request.args.get('next')
-            #if not next:
-            #    return abort(400)
-            #return redirect(next or flask.url_for('index'))
-            return redirect(url_for('index'))
+            if form.redirect():
+                login_user(user)
+                current_user = user
+                flash('Logged in successfully.')
+                return redirect(url_for('index'))
+            else:
+                return abort(400)
     return render_template('login.html', form=form)
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
     return redirect(url_for('index'))
