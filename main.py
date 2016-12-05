@@ -14,7 +14,7 @@ from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
-from app.login_manager import load_user, google_oauth_singin, google_oauth_signup
+from app.login_manager import load_user, google_oauth, load_user_by_email
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
@@ -42,14 +42,27 @@ def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
 
+@app.route('/google_signin', methods=['POST'])
+def google_signin():
+    args = {}
+    args['id_token'] = request.form.get('id_token', '')
+    args['first_name'] = request.form.get('first_name','')
+    args['last_name'] = request.form.get('last_name','')
+    args['request_type'] = request.referrer.split('/')[-1]
+    user, error = google_oauth(**args)
+    if error:
+        return error
+    login_user(user)
+    current_user = user
+    flash('Logged in successfully.')
+    return ""
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        if form.data['id_token']:
-            user, error = google_oauth_singin(**form.data)
-        elif form.data['email'] and form.data['password']:
+        error = None
+        if form.data['email'] and form.data['password']:
             user = load_user(form.data['email'])
             if not user:
                 error  = 'The given email is not registered'
@@ -85,12 +98,9 @@ def signup():
     form = SignUpForm()
     if form.validate_on_submit():
         user_data = form.data
-        if user_data['id_token']:
-            user, error = google_oauth_signup(**user_data)
-        elif user_data['email']:
-            user = load_user(user_data['email'])
+        user = load_user_by_email(user_data['email'])
+        if user:
             error = 'Your email is already registered.'
-        if error:
             flash(error)
             return render_template('signup.html', form=form)
         elif not user:
@@ -100,8 +110,8 @@ def signup():
             user_data['user_id'] = user_data['email']
             user = User(**user_data)
             user.put()
-        flash('Signup successful')
-        return redirect(url_for('index'))
+        flash('Successfully registered. Please login.')
+        return redirect(url_for('login'))
     return render_template('signup.html', form=form)
 
 @app.route('/register_company', methods=['GET', 'POST'])

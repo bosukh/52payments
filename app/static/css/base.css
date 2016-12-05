@@ -1,4 +1,14 @@
 /* General*/
+.col-2 {
+  width: 16.6%;
+}
+.col-5 {
+  width: 41.6%;
+}
+.row {
+  width: 100%;
+  display: block;
+}
 * {
   font-family: 'Open Sans', sans-serif;
   color: #424242;

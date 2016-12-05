@@ -9,11 +9,14 @@ def load_user(user_id):
     query = User.gql("WHERE user_id = '%s'"%user_id)
     return query.get()
 
+def load_user_by_email(email):
+    query = User.gql("WHERE email = '%s'"%email)
+    return query.get()
+
 def google_oauth(**kargs):
     #https://developers.google.com/identity/sign-in/web/backend-auth
     from oauth2client import client, crypt
-    id_token=kargs['id_token']
-    idinfo = client.verify_id_token(id_token, WEB_CLIENT_ID)
+    idinfo = client.verify_id_token(kargs['id_token'], WEB_CLIENT_ID)
     try:
         if idinfo['aud'] not in [WEB_CLIENT_ID]:
             raise crypt.AppIdentityError("Unrecognized client.")
@@ -22,31 +25,20 @@ def google_oauth(**kargs):
     except crypt.AppIdentityError:
         return None, "Invalid Login Credentials"
     kargs['user_id'] = idinfo['sub']
-    return kargs, None
-
-def google_oauth_signup(**kargs):
-    kargs, error = google_oauth(**kargs)
-    if error:
-        return None, error
-    user = load_user(kargs['user_id'])
-    if user:
-        error = 'Your email is already registered'
-    else:
-        error = None
-        user = User(user_id = kargs['user_id'],
-                    email = kargs['email'],
-                    first_name = kargs['first_name'],
-                    last_name = kargs['last_name'])
-        user.put()
-    return user, error
-
-def google_oauth_singin(**kargs):
-    kargs, error = google_oauth(**kargs)
-    if error:
-        return None, error
-    user = load_user(kargs['user_id'])
-    if user:
+    user = load_user_by_email(kargs['email'])
+    error = None
+    if user and (kargs['request_type'].lower() != 'login'):
+        error = 'Your email is already registered.'
+    elif user and (kargs['request_type'].lower() == 'login'):
         user.authenticated = True
-        return user, None
+    elif not user and (kargs['request_type'].lower() != 'login'):
+        user = User(user_id = kargs['user_id'],
+                    email = idinfo['email'],
+                    first_name = kargs['first_name'] or idinfo['given_name'],
+                    last_name = kargs['last_name'] or idinfo['family_name'])
+        user.put()
+        error = 'Successfully registered. Please login.'
     else:
-        return None, 'The given email is not registered'
+        print kargs['user_id'], kargs['last_name'], kargs['first_name']
+        error = 'Your email is not registered.'
+    return user, error

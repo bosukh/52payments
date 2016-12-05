@@ -45,12 +45,10 @@ class SignUpForm(Form):
     last_name = TextField('Last Name')
     email = TextField('Email', validators = [Required(), Length(1, 64), Email()])
     #phone = TextField('Phone')
-    id_token = HiddenField('id_token')
     password = PasswordField('Password')
     password_2 = PasswordField('Re-type Password')
 
 class LoginForm(RedirectForm):
-    id_token = HiddenField('id_token')
     email = TextField('Email')
     password = PasswordField('Password')
 

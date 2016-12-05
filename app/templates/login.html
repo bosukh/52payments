@@ -19,7 +19,7 @@
 
       <div id = 'login-inner-box' class="">
         {% for field in form %}
-          {% if field.name != 'csrf_token'%}
+          {% if field.name != 'csrf_token' and field.name != 'next' %}
             <div class="login-field-text">
               {{ field.label.text }}
             </div>
@@ -32,10 +32,30 @@
         <div class="button-wrapper">
           <button id='login-button' class='button' type="submit" name="button">Login</button>
         </div>
+        <div class="row">
+          <div class="col-5 left-float">
+            <hr>
+          </div>
+          <div class="col-2 left-float">
+            or
+          </div>
+          <div class="col-5 left-float">
+            <hr>
+          </div>
+        </div>
+        <div class="row">
+          <div id='signin-button' class="g-signin2" data-onsuccess="onSignIn"></div>
+        </div>
       </div>
     </div>
 </form>
-<div id='signin-button' class="g-signin2" data-onsuccess="onSignIn"></div>
+<style media="screen">
+.left-float {
+  float: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+</style>
 
 <script type="text/javascript">
   var field_ids = ['email', 'password'];
@@ -43,9 +63,9 @@
   var all_warning_id = 'warning_all';
 
   hide_warnings(field_ids);
-  //disable_btn('login-button');
-  //add_validator('password', 'password_re');
-  //add_validator('email', 'email_re');
+  disable_btn('login-button');
+  add_validator('password', 'password_re');
+  add_validator('email', 'email_re');
 
 </script>
 {% endblock %}
