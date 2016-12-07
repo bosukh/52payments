@@ -4,6 +4,8 @@ class Company(ndb.Model):
     title = ndb.StringProperty(required = True)
     company_profile_name = ndb.StringProperty(required = True)
     logo_file = ndb.BlobProperty(required = True)
+    website = ndb.StringProperty(required = True)
+    phones = ndb.StringProperty(repeated=True)
     verified = ndb.BooleanProperty(default=False)
     summary = ndb.TextProperty(required = True)
     full_description = ndb.TextProperty(required = True)
@@ -13,12 +15,12 @@ class Company(ndb.Model):
     equipment = ndb.StringProperty(repeated=True)
     pricing_method = ndb.StringProperty(repeated=True)
     pricing_range = ndb.FloatProperty(repeated=True)
-    created = ndb.DateTimeProperty(auto_now_add = True)
-    last_modified = ndb.DateTimeProperty(auto_now = True)
     num_ratings = ndb.IntegerProperty(default = 0, required=False)
     avg_rating = ndb.FloatProperty(default = 0.0, required=False)
     rounded_rating = ndb.IntegerProperty(default = 0, required=False)
     featured = ndb.BooleanProperty(default=False)
+    created = ndb.DateTimeProperty(auto_now_add = True)
+    last_modified = ndb.DateTimeProperty(auto_now = True)
 
 class User(ndb.Model):
     user_id = ndb.StringProperty(required=True)

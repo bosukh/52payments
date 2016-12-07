@@ -24,7 +24,7 @@ def google_oauth(**kargs):
             raise crypt.AppIdentityError("Wrong issuer.")
     except crypt.AppIdentityError:
         return None, "Invalid Login Credentials"
-    kargs['user_id'] = idinfo['sub']
+    kargs['user_id'], kargs['email'] = idinfo['sub'], idinfo['email']
     user = load_user_by_email(kargs['email'])
     error = None
     if user and (kargs['request_type'].lower() != 'login'):

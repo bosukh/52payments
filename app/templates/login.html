@@ -49,13 +49,6 @@
       </div>
     </div>
 </form>
-<style media="screen">
-.left-float {
-  float: left;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-</style>
 
 <script type="text/javascript">
   var field_ids = ['email', 'password'];
@@ -66,6 +59,9 @@
   disable_btn('login-button');
   add_validator('password', 'password_re');
   add_validator('email', 'email_re');
-
+  window.onload = function(){
+    var a = document.getElementById('signin-button');
+    a.childNodes[0].style ='height: 36px; width: 90%; margin:auto;';
+  }
 </script>
 {% endblock %}

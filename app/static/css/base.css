@@ -1,4 +1,10 @@
 /* General*/
+.left-float {
+  float: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 .col-2 {
   width: 16.6%;
 }

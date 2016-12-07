@@ -30,10 +30,23 @@
         <div class="button-wrapper">
           <button id='signup-button' class='button' type="submit" name="button">SignUp</button>
         </div>
+        <div class="row">
+          <div class="col-5 left-float">
+            <hr>
+          </div>
+          <div class="col-2 left-float">
+            or
+          </div>
+          <div class="col-5 left-float">
+            <hr>
+          </div>
+        </div>
+        <div class="row">
+          <div id='signin-button' class="g-signin2" data-onsuccess="onSignIn"></div>
+        </div>
       </div>
     </div>
 </form>
-<div id='signin-button' class="g-signin2" data-onsuccess="onSignIn"></div>
 
 <script type="text/javascript">
   var field_ids = ['first_name', 'last_name', 'email', 'password', 'password_2'];
@@ -57,5 +70,9 @@
     all_required_field_warning(all_warning);
   };
   document.getElementById('password_2').setAttribute('oninput', 'password_match()');
+  window.onload = function(){
+    var a = document.getElementById('signin-button');
+    a.childNodes[0].style ='height: 36px; width: 90%; margin:auto;';
+  }
 </script>
 {% endblock %}

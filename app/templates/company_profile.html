@@ -21,6 +21,19 @@
 
   <div class="company-left-col">
     <div class="company-profile-basic-box">
+      {% if company.title %}
+        Name: {{company.title}}<br>
+      {% endif %}
+      {% if company.website %}
+        Website: {{company.website}}<br>
+      {% endif %}
+      {% if company.phones %}
+        {% for phone in company.phones %}
+          {{ phone }} <br>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="company-profile-basic-box">
       {% if company.pricing_range %}
         Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
       {% endif %}

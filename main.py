@@ -124,6 +124,8 @@ def register_company():
         company_form['pricing_range'] = [company_form['pricing_range_lower'],company_form['pricing_range_upper']]
         company_form.pop('pricing_range_lower', None)
         company_form.pop('pricing_range_upper', None)
+        if company_form.get('phones'):
+            company_form['phones'] = company_form['phones'].split(',')
         company = Company(**company_form)
         company.put()
         time.sleep(1)

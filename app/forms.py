@@ -82,6 +82,9 @@ class CompanyForm(Form):
                     ]
     title = TextField('Title')
     company_profile_name = TextField('Url End Point')
+    website = TextField('Website')
+    phones = TextAreaField('Phone Numbers With Name (separated by commas)',
+                            default= 'General: 000-0000-0000, Customer Service: 000-0000-0000')
     logo_file = FileField('Logo File (.svg)')
     summary = TextAreaField('Summary (100 Words Limit)')
     full_description = TextAreaField('Full Description')
