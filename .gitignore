@@ -1,1 +1,5 @@
 *.pyc
+config.py
+appengine_config.py
+*.yaml
+lib/
