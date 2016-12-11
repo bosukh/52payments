@@ -36,13 +36,13 @@ class RedirectForm(Form):
             return redirect(self.next.data)
 
 class ReviewForm(Form):
-    rating = HiddenField('rating')
-    title = StringField('Title')
-    content = TextAreaField('Your Review')
+    rating = HiddenField('Rating', validators = [Required()])
+    title = StringField('Title', validators = [Required()])
+    content = TextAreaField('Your Review', validators = [Required()])
 
 class SignUpForm(Form):
-    first_name = TextField('First Name')
-    last_name = TextField('Last Name')
+    first_name = TextField('First Name', validators = [Required()])
+    last_name = TextField('Last Name', validators = [Required()])
     email = TextField('Email', validators = [Required(), Length(1, 64), Email()])
     #phone = TextField('Phone')
     password = PasswordField('Password')

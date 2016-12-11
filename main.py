@@ -1,5 +1,5 @@
 import time
-
+import logging
 from flask import Flask, make_response, abort, g
 from flask import render_template, flash, redirect, session, url_for, request, g
 from config import basedir
@@ -18,13 +18,19 @@ from app.login_manager import load_user, google_oauth, load_user_by_email
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
+@app.route('/temp', methods=['GET'])
+def temp():
+    return render_template('temp.html')
+
 @app.route('/search_results', methods=['GET'])
 def search_results():
     if request.args['search_criteria']:
         search_criteria = parse_search_criteria(request.args['search_criteria'])
         search_result = company_search(search_criteria)
-        session['search_criteria'] = search_criteria
-        print search_criteria
+        for company in search_result:
+            company.avg_rating = round(company.avg_rating, 1)
+            session['search_criteria'] = search_criteria
+        logging.debug(search_criteria) 
     else:
         search_result = mc_getsert('all_verified_companies', Company.gql('WHERE verified = True').fetch)
     return render_template("search_results.html", companies=search_result)
@@ -149,17 +155,29 @@ def company_write_review(company_profile_name):
         return redirect(url_for('company', company_profile_name = company_profile_name))
     return render_template('write_review.html', form=form)
 
-@app.route('/company/<company_profile_name>')
+@app.route('/company/<company_profile_name>', methods = ['GET', 'POST'])
 def company(company_profile_name):
     company = load_company(company_profile_name)
+    form = ReviewForm()
+    if form.validate_on_submit():
+        review = form.data
+        review['rating'] = int(review['rating'])
+        review['user'] = load_user(current_user.user_id).key
+        review['company'] = load_company(company_profile_name).key
+        review = Review(**review)
+        review.put()
+        flash('Your review is submitted.')
+        time.sleep(1)
+        return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
         reviews = [review.to_dict() for review in reviews]
+        logging.debug(reviews)
         for review in reviews:
             user = review['user'].get()
             review['user_name'] = user.first_name +" " + user.last_name
         return render_template('company_profile.html',
-                                company = company, reviews = reviews)
+                                company = company, reviews = reviews, form=form)
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
@@ -194,7 +212,7 @@ def admindecision():
             review.approve()
             return 'approved'
         else:
-            review.delete()
+            review.key.delete()
             return 'declined'
 
 @app.route("/img/<company_profile_name>")

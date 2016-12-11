@@ -23,7 +23,7 @@ var get_search_result_base = function(func = 0) {
     adjust_height();
   }
   var url = '/search_results?' + 'search_criteria='+encodeURIComponent(search_criteria.value)
-  var xhr = create_xhr('GET', url, after_todo);
+  xhr = create_xhr('GET', url, after_todo);
   xhr.send();
   if (func) {
     func();

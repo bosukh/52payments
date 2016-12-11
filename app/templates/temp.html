@@ -1,0 +1,8 @@
+<script src="{{ url_for('static', filename='js/base.js') }}"></script>
+<script type="text/javascript">
+var method = 'GET';
+var url = 'http://localhost:8080//company_write_review/52payments';
+var after = function() {console.log(this.response);}
+var x = create_xhr(method, url, after);
+x.send()
+</script>

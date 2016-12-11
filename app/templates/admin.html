@@ -12,7 +12,7 @@
     var urlsafe = document.getElementById('urlsafe').value;
     var type = document.getElementById('type').value;
     //xhr.open('POST', 'https://52payments.com/admindecision');
-    xhr.open('POST', 'http://localhost:8080/admindecision');
+    xhr.open('POST', '/admindecision');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
         currentDOM.style.display = 'none';
@@ -42,6 +42,7 @@
     decline.setAttribute('id', 'search-button');
     decline.addEventListener('click', function(){
       send_decision('false');
+      currentDOM = this.parentElement.parentElement.parentElement;
     });
     divElem.appendChild(decline);
     divElem.appendChild(approve);

@@ -5,6 +5,7 @@ var password_re = /[a-zA-Z0-9!@#\$%\^&\*]{8,}$/
 var field_ids = [];
 var p_tags = document.getElementsByTagName('p');
 var p_tags_trimmed_parts = {};
+
 function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
@@ -36,11 +37,17 @@ var add_validator = function(dom_id, re_name){
   elem.setAttribute('oninput', function_call);
 };
 
-var check_all_field = function(field_ids){
+var check_all_field = function(field_ids, warnings = false){
   var bad = 0;
   for (var i = 0; i < field_ids.length; i++){
-    if (document.getElementById('warning_'+field_ids[i]).style.display != 'none'|| document.getElementById(field_ids[i]).value == ''){
-      bad = 1
+    if (warnings){
+      if (document.getElementById('warning_'+field_ids[i]).style.display != 'none'|| document.getElementById(field_ids[i]).value == ''){
+        bad = 1
+      };
+    } else {
+      if (document.getElementById(field_ids[i]).value == ''){
+        bad = 1
+      };
     };
   };
   return bad == 1
@@ -76,7 +83,7 @@ var func = function(elem, re) {
   var input = elem.value;
   var message = document.getElementById("warning_"+elem.id);
   toggle_warning(input.match(re), message);
-  var all_warning = check_all_field(field_ids);
+  var all_warning = check_all_field(field_ids, true);
   all_required_field_warning(all_warning);
 };
 
@@ -108,7 +115,7 @@ var add_cont_reading_btn = function(){
       cont_reading_btn.className = 'cont_reading_btn';
       cont_reading_btn.setAttribute('onclick', 'cont_reading(this, '+ i +')');
       cont_reading_btn.innerHTML = 'Continue Reading';
-      p_tags[0].appendChild(cont_reading_btn);
+      p_tags[i].appendChild(cont_reading_btn);
     };
   };
 }

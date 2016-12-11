@@ -9,6 +9,9 @@
   <div class="search-result-left-col">
     <img src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="90%">
     <br><br>
+      {% if company.title %}
+        Name: {{company.title}}<br>
+      {% endif %}
       {% if company.pricing_range %}
         Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
       {% endif %}
@@ -19,7 +22,7 @@
       {% for i in range(5-company.rounded_rating)%}
         <span class='rating-star'>☆</span>
       {% endfor %}
-      {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
+      {{company.avg_rating}} ({{company.num_ratings}}) <br>
       √ Verified With 52Payments <br>
   </div>
   <div class="search-result-right-col">
