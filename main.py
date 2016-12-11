@@ -30,9 +30,9 @@ def search_results():
         for company in search_result:
             company.avg_rating = round(company.avg_rating, 1)
             session['search_criteria'] = search_criteria
-        logging.debug(search_criteria) 
+        logging.debug(search_criteria)
     else:
-        search_result = mc_getsert('all_verified_companies', Company.gql('WHERE verified = True').fetch)
+        search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
     return render_template("search_results.html", companies=search_result)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -166,7 +166,7 @@ def company(company_profile_name):
         review['company'] = load_company(company_profile_name).key
         review = Review(**review)
         review.put()
-        flash('Your review is submitted.')
+        flash('Your review is submitted. It should be up soon.')
         time.sleep(1)
         return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:

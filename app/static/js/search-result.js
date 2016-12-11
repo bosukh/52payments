@@ -10,6 +10,7 @@ var adjust_height = function(){
   };
 }
 var get_search_result_base = function(func = 0) {
+  document.getElementById('loader').style = 'display: block;'
   var after_todo = function(){
     if (document.getElementById('search-result')){
       document.getElementById('search-result').innerHTML = xhr.responseText;
@@ -19,6 +20,7 @@ var get_search_result_base = function(func = 0) {
       elem.innerHTML = xhr.responseText;
       document.getElementById('content-container').appendChild(elem);
     }
+    document.getElementById('loader').style = 'display: none;'
     add_cont_reading_btn();
     adjust_height();
   }

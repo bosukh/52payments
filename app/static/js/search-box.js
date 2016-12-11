@@ -55,47 +55,65 @@ var select_items_title = function(items_title){
   fill_items(types[current_type], items);
 }
 
-if (sessionStorage.getItem('Business Types')){
-  var biz_type = sessionStorage.getItem('Business Types').split(',');
-} else {
-  var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
-                  'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
-                  'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];
-};
-if (sessionStorage.getItem('Complimentary Services')){
-  var srv_type = sessionStorage.getItem('Complimentary Services').split(',');
-} else {
-  var srv_type = ['Marketing', 'Analytics', 'Recurling Bill',
-                  'Chargeback', 'Security', 'Other'];
-};
-if (sessionStorage.getItem('Equipments')){
-  var equip_type = sessionStorage.getItem('Equipments').split(',');
-} else {
-  var equip_type = ['Verifone', 'Ingenico', 'Other'];
-};
-if (sessionStorage.getItem('Pricing Method')){
-  var pricing_type = sessionStorage.getItem('Pricing Method').split(',');
-} else {
-  var pricing_type = ['Tiered', 'Interchange Plus',
-                      'Flat', 'Custom'];
-};
-var types = {
-  "Business Types" : biz_type,
-  "Complimentary Services" : srv_type,
-  "Equipments" : equip_type,
-  "Pricing Method" : pricing_type
+var get_criteria_list = function(){
+  if (sessionStorage.getItem('Business Types')){
+    var biz_type = sessionStorage.getItem('Business Types').split(',');
+  } else {
+    var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
+                    'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
+                    'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];
+  };
+  if (sessionStorage.getItem('Complimentary Services')){
+    var srv_type = sessionStorage.getItem('Complimentary Services').split(',');
+  } else {
+    var srv_type = ['Marketing', 'Analytics', 'Recurling Bill',
+                    'Chargeback', 'Security', 'Other'];
+  };
+  if (sessionStorage.getItem('Equipments')){
+    var equip_type = sessionStorage.getItem('Equipments').split(',');
+  } else {
+    var equip_type = ['Verifone', 'Ingenico', 'Other'];
+  };
+  if (sessionStorage.getItem('Pricing Method')){
+    var pricing_type = sessionStorage.getItem('Pricing Method').split(',');
+  } else {
+    var pricing_type = ['Tiered', 'Interchange Plus',
+                        'Flat', 'Custom'];
+  };
+  types = {
+    "Business Types" : biz_type,
+    "Complimentary Services" : srv_type,
+    "Equipments" : equip_type,
+    "Pricing Method" : pricing_type
+  }
+  return types
 }
-var search_criteria = document.getElementById('search_criteria');
-var current_type = "Business Types";
-var items = document.getElementById('items');
-var selected_items = document.getElementById('selected-items');
-if (sessionStorage.getItem('selected_item_list')){
-  var selected_item_list = sessionStorage.getItem('selected_item_list').split(',');
-  document.getElementById('chosen-title').style.opacity= 1;
-  fill_items(selected_item_list, selected_items, 1);
-  search_criteria.value = selected_item_list.join(',');
-} else {
-  var selected_item_list = [];
-};
+var get_selected_item_list = function(){
+  if (sessionStorage.getItem('selected_item_list')){
+    selected_item_list = sessionStorage.getItem('selected_item_list').split(',');
+    document.getElementById('chosen-title').style.opacity= 1;
+    fill_items(selected_item_list, selected_items, 1);
+    search_criteria.value = selected_item_list.join(',');
+  } else {
+    selected_item_list = [];
+  };
+  return selected_item_list
+}
 
-fill_items(biz_type, items);
+var init_vars = function(){
+  items = document.getElementById('items');
+  selected_items = document.getElementById('selected-items');
+  search_criteria = document.getElementById('search_criteria');
+  types = get_criteria_list();
+  selected_item_list = get_selected_item_list();
+  if (!current_type){
+    current_type = "Business Types";
+  };
+}
+
+var init_search_box = function() {
+  init_vars();
+  fill_items(types[current_type], items);
+}
+var types, search_criteria, current_type, items, selected_items, selected_item_list
+init_search_box();

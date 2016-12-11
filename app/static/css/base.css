@@ -1,3 +1,18 @@
+.loader {
+    margin:auto; 
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #424242; /* Blue */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 /* General*/
 .left-float {
   float: left;
@@ -116,7 +131,7 @@ input {
 /* Small Processor box*/
 .basic-title {
   width:100%;
-  margin-top: 80px;
+  margin-top: 30px;
   border-top: 1px solid #CAC9C9;
 }
 .box-row{

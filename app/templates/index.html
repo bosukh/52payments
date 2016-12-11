@@ -11,11 +11,18 @@
       {% include 'small_company_box.html' %}
     {% endfor %}
   </div>
+  <div id='loader' style='display:none;' class="loader"></div>
   <script src="{{ url_for('static', filename='js/search-result.js') }}"></script>
 <script type="text/javascript">
   var featured_title = document.getElementById('featured-title');
   var featured = document.getElementById('featured-companies');
-  var xhr;
+  var clear_search_criteria = function() {
+    sessionStorage.clear();
+    items.innerHTML = '';
+    selected_items.innerHTML = ''
+    document.getElementById('chosen-title').style.opacity= 0;
+    init_search_box();
+  }
   var get_search_result = function(){
     get_search_result_base(function() {
       featured_title.remove();
