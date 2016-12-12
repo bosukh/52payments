@@ -21,6 +21,7 @@ var select = function(item){
   item.parentElement.remove();
   document.getElementById('chosen-title').style.opacity= 1;
   search_criteria.value = selected_item_list.join(',');
+  toggle_clear_all_btn();
 }
 var deselect = function(item){
   var item = item.parentElement.parentElement;
@@ -39,6 +40,7 @@ var deselect = function(item){
     document.getElementById('chosen-title').style.opacity= 0;
   };
   search_criteria.value = selected_item_list.join(',');
+  toggle_clear_all_btn();
 }
 var select_items_title = function(items_title){
   current_type = items_title.innerHTML;
@@ -101,6 +103,7 @@ var get_selected_item_list = function(){
 }
 
 var init_vars = function(){
+  clear_all_btn = document.getElementById('clear-all');
   items = document.getElementById('items');
   selected_items = document.getElementById('selected-items');
   search_criteria = document.getElementById('search_criteria');
@@ -110,9 +113,16 @@ var init_vars = function(){
     current_type = "Business Types";
   };
 }
-
+var toggle_clear_all_btn = function() {
+  if (!selected_item_list || selected_item_list.length==0){
+    clear_all_btn.style = 'display:none;'
+  } else {
+    clear_all_btn.style = 'display:block;'
+  };
+}
 var init_search_box = function() {
   init_vars();
+  toggle_clear_all_btn();
   fill_items(types[current_type], items);
 }
 var types, search_criteria, current_type, items, selected_items, selected_item_list

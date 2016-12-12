@@ -2,7 +2,7 @@ import time
 import logging
 from flask import Flask, make_response, abort, g
 from flask import render_template, flash, redirect, session, url_for, request, g
-from config import basedir
+from config import ALLOWED_ORIGINS
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
@@ -18,10 +18,16 @@ from app.login_manager import load_user, google_oauth, load_user_by_email
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
-@app.route('/temp', methods=['GET'])
-def temp():
-    return render_template('temp.html')
+def check_referrer_origin(referrer):
+    for url in ALLOWED_ORIGINS:
+        if referrer[:len(url)] == url:
+            return True
+    return False
 
+def load_company(company_profile_name):
+    query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
+    return query.get()
+    
 @app.route('/search_results', methods=['GET'])
 def search_results():
     if request.args['search_criteria']:
@@ -44,9 +50,6 @@ def index():
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
 
-def load_company(company_profile_name):
-    query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
-    return query.get()
 
 @app.route('/google_signin', methods=['POST'])
 def google_signin():
@@ -97,7 +100,11 @@ def login():
 @app.route('/logout', methods=['GET'])
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    logging.debug(request.referrer)
+    referrer = request.referrer
+    if not check_referrer_origin(referrer):
+        referrer = None;
+    return redirect(referrer or url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -139,36 +146,23 @@ def register_company():
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
     return render_template('register_company.html', form = form)
 
-@app.route('/company_write_review/<company_profile_name>', methods=['GET', 'POST'])
-@login_required # Make it accessible only by customer account
-def company_write_review(company_profile_name):
-    form = ReviewForm()
-    if form.validate_on_submit():
-        review = form.data
-        review['rating'] = int(review['rating'])
-        review['user'] = load_user(current_user.email).key
-        review['company'] = load_company(company_profile_name).key
-        review = Review(**review)
-        review.put()
-        flash('Your review is submitted.')
-        time.sleep(1)
-        return redirect(url_for('company', company_profile_name = company_profile_name))
-    return render_template('write_review.html', form=form)
-
 @app.route('/company/<company_profile_name>', methods = ['GET', 'POST'])
 def company(company_profile_name):
     company = load_company(company_profile_name)
     form = ReviewForm()
     if form.validate_on_submit():
-        review = form.data
-        review['rating'] = int(review['rating'])
-        review['user'] = load_user(current_user.user_id).key
-        review['company'] = load_company(company_profile_name).key
-        review = Review(**review)
-        review.put()
-        flash('Your review is submitted. It should be up soon.')
-        time.sleep(1)
-        return redirect(url_for('company', company_profile_name = company_profile_name))
+        if not current_user or not current_user.is_authenticated:
+            flash('You need to log-in.')
+        else:
+            review = form.data
+            review['rating'] = int(review['rating'])
+            review['user'] = load_user(current_user.user_id).key
+            review['company'] = load_company(company_profile_name).key
+            review = Review(**review)
+            review.put()
+            flash('Your review is submitted. It should be up soon.')
+            time.sleep(1)
+            return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
         reviews = [review.to_dict() for review in reviews]

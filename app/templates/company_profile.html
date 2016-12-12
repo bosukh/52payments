@@ -2,11 +2,6 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
-<div>
-  <a href="#">
-    <button id='small-search-button' class= 'button' type="button" name="button">Search</button>
-  </a>
-</div>
 
 <div class="company-profile-container">
   <div class="company-profile-top-row">
@@ -14,9 +9,15 @@
     <a href="#">
       <button id='company-apply-button' class= 'button' type="button" name="button">Apply</button>
     </a>
+    {% if current_user.is_authenticated and current_user%}
     <a href="javascript:show_review_box()">
       <button onclick='on_write_review()' id='company-review-button' class= 'button' type="button" name="button">Write a Review</button>
     </a>
+    {% else %}
+    <a href="javascript:alert_login_required()">
+      <button id='company-review-button' class= 'button' type="button" name="button">Write a Review</button>
+    </a>
+    {% endif %}
   </div>
 
   <div class="company-left-col">
