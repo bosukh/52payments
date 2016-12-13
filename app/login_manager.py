@@ -1,3 +1,4 @@
+import logging
 from . import login_manager
 from .models import User
 from . import WEB_CLIENT_ID
@@ -25,8 +26,9 @@ def google_oauth(**kargs):
     except crypt.AppIdentityError:
         return None, "Invalid Login Credentials"
     kargs['user_id'], kargs['email'] = idinfo['sub'], idinfo['email']
-    user = load_user_by_email(kargs['email'])
+    user = load_user(kargs['user_id'])
     error = None
+    logging.debug(kargs['request_type'])
     if user and (kargs['request_type'].lower() != 'login'):
         error = 'Your email is already registered.'
     elif user and (kargs['request_type'].lower() == 'login'):
@@ -39,6 +41,5 @@ def google_oauth(**kargs):
         user.put()
         error = 'Successfully registered. Please login.'
     else:
-        print kargs['user_id'], kargs['last_name'], kargs['first_name']
         error = 'Your email is not registered.'
     return user, error

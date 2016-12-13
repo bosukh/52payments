@@ -65,8 +65,8 @@
     var password = document.getElementById('password');
     var password_2 = document.getElementById('password_2');
     var message = document.getElementById("warning_password_2");
-    toggle_warning(password_2.value == password.value, message);
-    var all_warning = check_all_field(field_ids);
+    toggle_warning(password_2.value === password.value, message);
+    var all_warning = check_all_field(field_ids, true);
     all_required_field_warning(all_warning);
   };
   document.getElementById('password_2').setAttribute('oninput', 'password_match()');

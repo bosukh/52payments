@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm as Form
 from wtforms import IntegerField, FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
-from wtforms.validators import Length, Email, Required
+from wtforms.validators import Length, Email, DataRequired, EqualTo, URL, Regexp
 from flask_wtf.file import FileField
 from urlparse import urlparse, urljoin
 from flask import request, url_for
@@ -36,21 +36,21 @@ class RedirectForm(Form):
             return redirect(self.next.data)
 
 class ReviewForm(Form):
-    rating = HiddenField('Rating', validators = [Required()])
-    title = StringField('Title', validators = [Required()])
-    content = TextAreaField('Your Review', validators = [Required()])
+    rating = HiddenField('Rating', validators = [DataRequired()])
+    title = StringField('Title', validators = [DataRequired()])
+    content = TextAreaField('Your Review', validators = [DataRequired()])
 
 class SignUpForm(Form):
-    first_name = TextField('First Name', validators = [Required()])
-    last_name = TextField('Last Name', validators = [Required()])
-    email = TextField('Email', validators = [Required(), Length(1, 64), Email()])
+    first_name = TextField('First Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
+    last_name = TextField('Last Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
+    email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])
     #phone = TextField('Phone')
-    password = PasswordField('Password')
-    password_2 = PasswordField('Re-type Password')
+    password = PasswordField('Password', validators = [DataRequired(), Length(8, 30), EqualTo('password_2', message='Passwords have to match')])
+    password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
 class LoginForm(RedirectForm):
-    email = TextField('Email')
-    password = PasswordField('Password')
+    email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])
+    password = PasswordField('Password', validators = [DataRequired(), Length(8, 30)])
 
 class SearchForm(Form):
     search_criteria = HiddenField('search_criteria')

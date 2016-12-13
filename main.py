@@ -27,7 +27,7 @@ def check_referrer_origin(referrer):
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
-    
+
 @app.route('/search_results', methods=['GET'])
 def search_results():
     if request.args['search_criteria']:
@@ -109,8 +109,13 @@ def logout():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignUpForm()
+    logging.debug(form.data)
+    logging.debug(form.validate_on_submit())
     if form.validate_on_submit():
         user_data = form.data
+        if user_data['password'] != user_data['password_2']:
+            flash('Passwords have to match.')
+            return render_template('signup.html', form=form)
         user = load_user_by_email(user_data['email'])
         if user:
             error = 'Your email is already registered.'
@@ -119,7 +124,6 @@ def signup():
         elif not user:
             user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
             user_data.pop('password_2')
-            user_data.pop('id_token')
             user_data['user_id'] = user_data['email']
             user = User(**user_data)
             user.put()

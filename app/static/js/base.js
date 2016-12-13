@@ -108,7 +108,7 @@ var cont_reading = function(a_tag, index){
   };
 }
 var collapse_reading = function(){
-  
+
 }
 var add_callapse_btn = function(){
   var collapse_reading_btn = document.createElement('a');
@@ -116,9 +116,6 @@ var add_callapse_btn = function(){
   collapse_reading_btn.setAttribute('onclick', 'collapse_reading(this, '+ index +')');
   collapse_reading_btn.innerHTML = 'Collapse';
   p_tags[index].appendChild(collapse_reading_btn);
-}
-var add_cont_reading_btn = function(a_tag, index){
-
 }
 
 var add_cont_reading_btn = function(){

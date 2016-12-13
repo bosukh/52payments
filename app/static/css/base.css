@@ -1,5 +1,5 @@
 .loader {
-    margin:auto; 
+    margin:auto;
     border: 8px solid #f3f3f3; /* Light grey */
     border-top: 8px solid #424242; /* Blue */
     border-radius: 50%;
@@ -103,7 +103,7 @@ input {
 }
 /* Search Box*/
 .search-box {
-  overflow: auto;
+  overflow: hidden;
   border-top: 1px solid #CAC9C9;
 }
 .search-checkbox-row {
