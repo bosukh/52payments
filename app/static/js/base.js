@@ -1,3 +1,15 @@
+var mode; //deploy
+if (location.hostname == 'localhost'){
+  mode = 'local';
+} else{
+  mode = 'deploy';
+};
+if (mode == 'deploy'){
+  if (location.protocol != 'https:'){
+   location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+  };
+};
+
 var text_re = /^[a-zA-Z']+$/;
 var email_re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 var phone_re = /^[0-9]+$/;
