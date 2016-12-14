@@ -2,82 +2,25 @@ from time import sleep
 import logging
 from flask import Flask, make_response, abort, g
 from flask import render_template, flash, redirect, session, url_for, request, g
-from config import ALLOWED_ORIGINS
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from app import app, login_manager
-from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
+from app.forms import GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
 from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
-from app.login_manager import load_user, google_oauth, load_user_by_email
+from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect
+from app.redirect_check import *
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
-login_required_list = ['my_account', 'register_company', 'admin', 'admindecision']
-
-def check_referrer_auth_requirement(referrer):
-    for route in login_required_list:
-        if referrer.find(route) > -1:
-            return True
-    return False
-
-def check_referrer_origin(referrer):
-    for url in ALLOWED_ORIGINS:
-        if referrer[:len(url)] == url:
-            return True
-    return False
 
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
-
-@app.route('/add_tests', methods=['GET', 'POST'])
-def add_tests():
-    summary = '''
-                Lorem Ipsum is simply dummy text of the printing and
-                typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s,
-                when an unknown printer took a galley of type and
-                scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap
-                into electronic typesetting, remaining essentially
-                unchanged. It was popularised in the 1960s with the
-                release of Letraset sheets containing Lorem Ipsum
-                passages, and more recently with desktop publishing
-                software like Aldus PageMaker including versions of
-                Lorem Ipsum.
-                '''
-    biz_type = ['Retail', 'Restaurant', 'E-Commerce', 'Healthcare/Medical', 'Mobile', 'Professional/Personal Services', 'Non-Profit', 'High-Risk', 'High-Volume', 'Other']
-    srv_type = ['Marketing', 'Analytics', 'Recurling Bill', 'Chargeback', 'Security', 'Other']
-    equip_type = ['Verifone', 'Ingenico', 'Other']
-    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom']
-    form = TestForm()
-    if form.validate_on_submit():
-        company_form = form.data
-        company_form['logo_file'] = request.files['logo_file'].read()
-        contact = {}
-        contact.update(company_form)
-        for i in range(1, 10):
-            contact['title'] = '52PAYMENTS_' + str(i)
-            contact['company_profile_name'] = '52payments_' + str(i)
-            contact['website'] = 'www.52payments.com'
-            contact['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
-            contact['summary'] = summary
-            contact['full_description'] = summary*(i%4+1)
-            contact['year_founded'] = 2010+i%4
-            contact['provided_srvs'] = biz_type
-            contact['complementary_srvs'] = srv_type
-            contact['equipment'] = equip_type
-            contact['pricing_method'] = pricing_type
-            contact['pricing_range'] = [1, 1+i]
-            temp =Company(**contact)
-            temp.put()
-        return redirect(url_for('index'))
-    return render_template("add_tests.html", form = form)
 
 @app.route('/search_results', methods=['GET'])
 def search_results():
@@ -106,51 +49,38 @@ def index():
 def my_account():
     return render_template("my_account.html")
 
-@app.route('/google_signin', methods=['POST'])
-def google_signin():
-    args = {}
-    args['id_token'] = request.form.get('id_token', '')
-    args['first_name'] = request.form.get('first_name','')
-    args['last_name'] = request.form.get('last_name','')
-    args['request_type'] = request.referrer.split('/')[-1]
-    user, error = google_oauth(**args)
-    if error:
-        return error
-    login_user(user)
-    current_user = user
-    flash('Logged in successfully.')
-    return ""
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.referrer.find('login')==-1:
+        session['initial_referrer'] = request.referrer
     form = LoginForm()
+    google_login_form =GoogleLoginForm()
     if form.validate_on_submit():
-        error = None
-        if form.data['email'] and form.data['password']:
-            user = load_user(form.data['email'])
-            if not user:
-                error  = 'The given email is not registered'
-            else:
-                try:
-                    input_pw = bt.hashpw(form.data['password'], user.password)
-                    if input_pw == user.password:
-                        user.authenticated = True
-                except ValueError:
-                    error = 'The given password is not correct'
-        else:
-            error = 'You must enter both email and password'
+        user, error = validate_user(form)
         if error:
             flash(error)
-            return render_template('login.html', form=form)
+            return render_template('login.html', form=form, google_login_form= google_login_form)
         else:
-            if form.redirect():
-                login_user(user)
-                current_user = user
-                flash('Logged in successfully.')
-                return redirect(url_for('index'))
+            current_user, redirect_route = login_user_with_redirect(user, form, session.get('initial_referrer'))
+            if current_user:
+                return redirect(redirect_route or url_for('index'))
             else:
                 return abort(400)
-    return render_template('login.html', form=form)
+    if google_login_form.validate_on_submit():
+        args = {}
+        args['id_token'] = google_login_form.data['id_token']
+        args['request_type'] = 'login'
+        user, error = google_oauth(**args)
+        if error:
+            flash(error)
+            return render_template('login.html', form=form, google_login_form= google_login_form)
+        current_user, redirect_route = login_user_with_redirect(user, google_login_form, session.get('initial_referrer'))
+        if current_user:
+            return redirect(redirect_route or url_for('index'))
+        else:
+            return abort(400)
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form, google_login_form= google_login_form)
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -172,7 +102,7 @@ def signup():
         if user_data['password'] != user_data['password_2']:
             flash('Passwords have to match.')
             return render_template('signup.html', form=form)
-        user = load_user_by_email(user_data['email'])
+        user = load_user(user_data['email'])
         if user:
             error = 'Your email is already registered.'
             flash(error)
@@ -221,7 +151,6 @@ def company(company_profile_name):
             review = Review(**review)
             review.put()
             flash('Your review is submitted. It should be up soon.')
-            sleep(1)
             return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
@@ -276,3 +205,46 @@ def img(company_profile_name):
     response.headers['Content-Type'] = 'image/svg+xml'
     return response
 ###################################################
+@app.route('/add_tests', methods=['GET', 'POST'])
+def add_tests():
+    summary = '''
+                Lorem Ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s,
+                when an unknown printer took a galley of type and
+                scrambled it to make a type specimen book. It has
+                survived not only five centuries, but also the leap
+                into electronic typesetting, remaining essentially
+                unchanged. It was popularised in the 1960s with the
+                release of Letraset sheets containing Lorem Ipsum
+                passages, and more recently with desktop publishing
+                software like Aldus PageMaker including versions of
+                Lorem Ipsum.
+                '''
+    biz_type = ['Retail', 'Restaurant', 'E-Commerce', 'Healthcare/Medical', 'Mobile', 'Professional/Personal Services', 'Non-Profit', 'High-Risk', 'High-Volume', 'Other']
+    srv_type = ['Marketing', 'Analytics', 'Recurling Bill', 'Chargeback', 'Security', 'Other']
+    equip_type = ['Verifone', 'Ingenico', 'Other']
+    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom']
+    form = TestForm()
+    if form.validate_on_submit():
+        company_form = form.data
+        company_form['logo_file'] = request.files['logo_file'].read()
+        contact = {}
+        contact.update(company_form)
+        for i in range(1, 10):
+            contact['title'] = '52PAYMENTS_' + str(i)
+            contact['company_profile_name'] = '52payments_' + str(i)
+            contact['website'] = 'www.52payments.com'
+            contact['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
+            contact['summary'] = summary
+            contact['full_description'] = summary*(i%4+1)
+            contact['year_founded'] = 2010+i%4
+            contact['provided_srvs'] = biz_type
+            contact['complementary_srvs'] = srv_type
+            contact['equipment'] = equip_type
+            contact['pricing_method'] = pricing_type
+            contact['pricing_range'] = [1, 1+i]
+            temp =Company(**contact)
+            temp.put()
+        return redirect(url_for('index'))
+    return render_template("add_tests.html", form = form)

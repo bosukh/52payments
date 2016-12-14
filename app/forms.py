@@ -1,3 +1,4 @@
+import logging
 from flask_wtf import FlaskForm as Form
 from wtforms import IntegerField, FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
 from wtforms.validators import Length, Email, DataRequired, EqualTo, URL, Regexp
@@ -51,6 +52,9 @@ class SignUpForm(Form):
 class LoginForm(RedirectForm):
     email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Password', validators = [DataRequired(), Length(8, 30)])
+
+class GoogleLoginForm(RedirectForm):
+    id_token = HiddenField('id_token', validators = [DataRequired()])
 
 class SearchForm(Form):
     search_criteria = HiddenField('search_criteria')
