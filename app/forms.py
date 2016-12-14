@@ -55,6 +55,9 @@ class LoginForm(RedirectForm):
 class SearchForm(Form):
     search_criteria = HiddenField('search_criteria')
 
+class TestForm(Form):
+    logo_file = FileField('Logo File (.svg)')
+
 class CompanyForm(Form):
     biz_type = [('Retail','Retail'),
                 ('Restaurant','Restaurant'),

@@ -159,6 +159,7 @@ input {
 }
 
 .button {
+  font-family: 'Open Sans', sans-serif;
   text-align: center;
   background: white;
   border-color: #465A92;

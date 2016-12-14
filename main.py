@@ -1,4 +1,4 @@
-import time
+from time import sleep
 import logging
 from flask import Flask, make_response, abort, g
 from flask import render_template, flash, redirect, session, url_for, request, g
@@ -8,7 +8,7 @@ from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from app import app, login_manager
-from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
+from app.forms import CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
 from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
@@ -17,6 +17,13 @@ from app.memcache import mc_getsert
 from app.login_manager import load_user, google_oauth, load_user_by_email
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
+login_required_list = ['my_account', 'register_company', 'admin', 'admindecision']
+
+def check_referrer_auth_requirement(referrer):
+    for route in login_required_list:
+        if referrer.find(route) > -1:
+            return True
+    return False
 
 def check_referrer_origin(referrer):
     for url in ALLOWED_ORIGINS:
@@ -27,6 +34,50 @@ def check_referrer_origin(referrer):
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
     return query.get()
+
+@app.route('/add_tests', methods=['GET', 'POST'])
+def add_tests():
+    summary = '''
+                Lorem Ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s,
+                when an unknown printer took a galley of type and
+                scrambled it to make a type specimen book. It has
+                survived not only five centuries, but also the leap
+                into electronic typesetting, remaining essentially
+                unchanged. It was popularised in the 1960s with the
+                release of Letraset sheets containing Lorem Ipsum
+                passages, and more recently with desktop publishing
+                software like Aldus PageMaker including versions of
+                Lorem Ipsum.
+                '''
+    biz_type = ['Retail', 'Restaurant', 'E-Commerce', 'Healthcare/Medical', 'Mobile', 'Professional/Personal Services', 'Non-Profit', 'High-Risk', 'High-Volume', 'Other']
+    srv_type = ['Marketing', 'Analytics', 'Recurling Bill', 'Chargeback', 'Security', 'Other']
+    equip_type = ['Verifone', 'Ingenico', 'Other']
+    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom']
+    form = TestForm()
+    if form.validate_on_submit():
+        company_form = form.data
+        company_form['logo_file'] = request.files['logo_file'].read()
+        contact = {}
+        contact.update(company_form)
+        for i in range(1, 10):
+            contact['title'] = '52PAYMENTS_' + str(i)
+            contact['company_profile_name'] = '52payments_' + str(i)
+            contact['website'] = 'www.52payments.com'
+            contact['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
+            contact['summary'] = summary
+            contact['full_description'] = summary*(i%4+1)
+            contact['year_founded'] = 2010+i%4
+            contact['provided_srvs'] = biz_type
+            contact['complementary_srvs'] = srv_type
+            contact['equipment'] = equip_type
+            contact['pricing_method'] = pricing_type
+            contact['pricing_range'] = [1, 1+i]
+            temp =Company(**contact)
+            temp.put()
+        return redirect(url_for('index'))
+    return render_template("add_tests.html", form = form)
 
 @app.route('/search_results', methods=['GET'])
 def search_results():
@@ -50,6 +101,10 @@ def index():
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
 
+@app.route('/my_account', methods=['GET'])
+@login_required
+def my_account():
+    return render_template("my_account.html")
 
 @app.route('/google_signin', methods=['POST'])
 def google_signin():
@@ -102,8 +157,9 @@ def logout():
     logout_user()
     logging.debug(request.referrer)
     referrer = request.referrer
-    if not check_referrer_origin(referrer):
+    if not check_referrer_origin(referrer) or check_referrer_auth_requirement(referrer):
         referrer = None;
+    flash('Logged out successfully. Thanks.')
     return redirect(referrer or url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -145,7 +201,7 @@ def register_company():
             company_form['phones'] = company_form['phones'].split(',')
         company = Company(**company_form)
         company.put()
-        time.sleep(1)
+        sleep(1)
         flash('Info Submitted')
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
     return render_template('register_company.html', form = form)
@@ -165,7 +221,7 @@ def company(company_profile_name):
             review = Review(**review)
             review.put()
             flash('Your review is submitted. It should be up soon.')
-            time.sleep(1)
+            sleep(1)
             return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
@@ -179,7 +235,6 @@ def company(company_profile_name):
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
-
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin
@@ -213,10 +268,11 @@ def admindecision():
             review.key.delete()
             return 'declined'
 
-@app.route("/img/<company_profile_name>")
+@app.route("/img/<company_profile_name>", methods=['GET'])
 def img(company_profile_name):
     company = load_company(company_profile_name)
     company = company.logo_file
     response = make_response(company)
     response.headers['Content-Type'] = 'image/svg+xml'
     return response
+###################################################

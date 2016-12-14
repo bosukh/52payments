@@ -7,9 +7,9 @@
     <script src="{{ url_for('static', filename='js/google_signin.js') }}"></script>
     <script src="{{ url_for('static', filename='js/base.js') }}"></script>
     <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/normalize.css') }}">
     <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/base.css') }}">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <title>52 Payments</title>
   </head>
   <body>
@@ -19,8 +19,9 @@
         {% if current_user.is_authenticated %}
           <div style='display:none;' class="g-signin2"></div>
           <li class="nav_li"><a class="nav_a" onclick= 'javascript:signOut()' href="{{url_for('logout')}}">Sign-out</a></li>
+          <li class="nav_li"><a class="nav_a" href="{{url_for('my_account')}}">My Account</a></li>
         {% else %}
-          <li class="nav_li"><a class="nav_a" href="{{ url_for('signup')}}">Sign-up</a></li>
+          <li class="nav_li"><a class="nav_a" href="{{url_for('signup')}}">Sign-up</a></li>
           <li class="nav_li"><a class="nav_a" href="{{url_for('login')}}">Sign-in</a></li>
         {% endif %}
         <li class="nav_li"><a class="nav_a" href="#">About</a></li>
