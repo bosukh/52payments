@@ -79,7 +79,6 @@ def login():
             return redirect(redirect_route or url_for('index'))
         else:
             return abort(400)
-        return redirect(url_for('index'))
     return render_template('login.html', form=form, google_login_form= google_login_form)
 
 @app.route('/logout', methods=['GET'])
@@ -95,8 +94,7 @@ def logout():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignUpForm()
-    logging.debug(form.data)
-    logging.debug(form.validate_on_submit())
+    google_login_form =GoogleLoginForm()
     if form.validate_on_submit():
         user_data = form.data
         if user_data['password'] != user_data['password_2']:
@@ -115,7 +113,17 @@ def signup():
             user.put()
         flash('Successfully registered. Please login.')
         return redirect(url_for('login'))
-    return render_template('signup.html', form=form)
+    if google_login_form.validate_on_submit():
+        args = {}
+        args['id_token'] = google_login_form.data['id_token']
+        args['request_type'] = 'signup'
+        user, error = google_oauth(**args)
+        if error:
+            flash(error)
+            return render_template('signup.html', form=form, google_login_form= google_login_form)
+        flash('Successfully registered. Please login.')
+        return redirect(url_for('login'))
+    return render_template('signup.html', form=form, google_login_form= google_login_form)
 
 @app.route('/register_company', methods=['GET', 'POST'])
 @login_required # make it accessible only by business account

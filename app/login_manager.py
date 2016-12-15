@@ -73,7 +73,6 @@ def google_oauth(**kargs):
                     first_name = kargs['first_name'] or idinfo['given_name'],
                     last_name = kargs['last_name'] or idinfo['family_name'])
         user.put()
-        error = 'Successfully registered. Please login.'
     else:
         error = 'Your email is not registered.'
     return user, error
