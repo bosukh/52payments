@@ -7,7 +7,7 @@ from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from app import app, login_manager
-from app.forms import GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
+from app.forms import ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
 from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
@@ -15,6 +15,27 @@ from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
 from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect
 from app.redirect_check import *
+from google.appengine.api import mail
+
+def send_password_mail(user, link):
+    name = user.first_name + ' '+ user.last_name
+    message = mail.EmailMessage(
+        sender='admin@52payments.com',
+        subject="Your Password Is Now Re-set")
+    message.to = "%s <%s>"%(name, user.email)
+    body = '''Dear %s:
+    Your password has been re-set for 52payments.
+    Here is the new password. Please change your password upon login.
+
+    New Password:%s
+
+    If you did not request your password to be re-setted, please use the following link to let us know and change password.
+
+    %s
+    '''%(user.Name, 'New Password', 'Link')
+    message.body = body
+    message.send()
+
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
@@ -49,6 +70,13 @@ def index():
 def my_account():
     return render_template("my_account.html")
 
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    form = ForgotPasswordForm()
+    if form.validate_on_submit()
+        user = load_user(form.data['email'])
+
+    return render_template('forgot_password.html', form=form)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.referrer.find('login')==-1:
@@ -132,9 +160,10 @@ def register_company():
     if form.validate_on_submit():
         company_form = form.data
         company_form['logo_file'] = request.files['logo_file'].read()
-        company_form['pricing_range'] = [company_form['pricing_range_lower'],company_form['pricing_range_upper']]
-        company_form.pop('pricing_range_lower', None)
-        company_form.pop('pricing_range_upper', None)
+        for col in ['pricing', 'rate', 'per_transaction']:
+            company_form[col +'_range'] = [company_form[col + '_range_lower'],company_form[col + '_range_upper']]
+            company_form.pop(col + '_range_lower', None)
+            company_form.pop(col + '_range_upper', None)
         if company_form.get('phones'):
             company_form['phones'] = company_form['phones'].split(',')
         company = Company(**company_form)

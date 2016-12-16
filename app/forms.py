@@ -41,6 +41,11 @@ class ReviewForm(Form):
     title = StringField('Title', validators = [DataRequired()])
     content = TextAreaField('Your Review', validators = [DataRequired()])
 
+class ForgotPasswordForm(Form):
+    first_name = TextField('First Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
+    last_name = TextField('Last Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
+    email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])
+
 class SignUpForm(Form):
     first_name = TextField('First Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
     last_name = TextField('Last Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
@@ -87,12 +92,13 @@ class CompanyForm(Form):
                     ('Flat', 'Flat'),
                     ('Custom', 'Custom')
                     ]
-    title = TextField('Title')
-    company_profile_name = TextField('Url End Point')
-    website = TextField('Website')
+    title = TextField('Title', validators = [DataRequired()])
+    company_profile_name = TextField('Url End Point', validators = [DataRequired()])
+    website = TextField('Website', validators = [DataRequired()])
+    landing_page = TextField('Landing Page for Apply', validators = [DataRequired()])
     phones = TextAreaField('Phone Numbers With Name (separated by commas)',
                             default= 'General: 000-0000-0000, Customer Service: 000-0000-0000')
-    logo_file = FileField('Logo File (.svg)')
+    logo_file = FileField('Logo File, 350 x 75 would look the best. (.svg)')
     summary = TextAreaField('Summary (100 Words Limit)')
     full_description = TextAreaField('Full Description')
     year_founded = IntegerField('Year Founded')
@@ -102,3 +108,7 @@ class CompanyForm(Form):
     pricing_method = SelectMultipleField('Pricing Method', choices = pricing_type)
     pricing_range_lower = FloatField('Lower Range For Pricing')
     pricing_range_upper = FloatField('Upper Range For Pricing')
+    rate_range_upper = FloatField('Upper Range For Discount Rate')
+    rate_range_lower = FloatField('Lower Range For Discount Rate')
+    per_transaction_range_upper = FloatField('Upper Range For Per Transaction')
+    per_transaction_range_lower = FloatField('Lower Range For Per Trasaction')

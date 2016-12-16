@@ -5,8 +5,8 @@
 
 <div class="company-profile-container">
   <div class="company-profile-top-row">
-    <img id="company-profile-logo" src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="200px">
-    <a href="#">
+    <img id="company-profile-logo" src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
+    <a href="{{company.landing_page}}" target = '_blank'>
       <button id='company-apply-button' class= 'button' type="button" name="button">Apply</button>
     </a>
     {% if current_user.is_authenticated and current_user%}
@@ -37,6 +37,10 @@
     <div class="company-profile-basic-box">
       {% if company.pricing_range %}
         Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
+      {% endif %}
+      {% if company.rate_range and company.per_transaction_range %}
+        Detailed Pricing Range: <br>{{company.rate_range[0]}}% + {{company.per_transaction_range[0]}}$
+                                ~ {{company.rate_range[1]}}% + {{company.per_transaction_range[1]}}$<br>
       {% endif %}
       Overall User Rating <br>
       {% for i in range(company.rounded_rating)%}
