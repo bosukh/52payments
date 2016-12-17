@@ -15,26 +15,7 @@ from app.search import parse_search_criteria, company_search
 from app.memcache import mc_getsert
 from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect
 from app.redirect_check import *
-from google.appengine.api import mail
-
-def send_password_mail(user, link):
-    name = user.first_name + ' '+ user.last_name
-    message = mail.EmailMessage(
-        sender='admin@52payments.com',
-        subject="Your Password Is Now Re-set")
-    message.to = "%s <%s>"%(name, user.email)
-    body = '''Dear %s:
-    Your password has been re-set for 52payments.
-    Here is the new password. Please change your password upon login.
-
-    New Password:%s
-
-    If you did not request your password to be re-setted, please use the following link to let us know and change password.
-
-    %s
-    '''%(user.Name, 'New Password', 'Link')
-    message.body = body
-    message.send()
+from app.emails import email_templates, send_email
 
 app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
@@ -72,11 +53,43 @@ def my_account():
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
-    form = ForgotPasswordForm()
-    if form.validate_on_submit()
+    from uuid import uuid1
+    def check_user():
         user = load_user(form.data['email'])
-
+        if not user:
+            flash('Your email is not registered. Please sign up.')
+            return False
+        else:
+            if not user.first_name.lower() == form.data['first_name'] or user.last_name.lower() == form.data['last_name']:
+                flash('Entered name does not match the email.')
+            return False
+        return True
+    form = ForgotPasswordForm()
+    if form.validate_on_submit():
+        if check_user():
+            code = uuid1().get_hex()
+            logging.debug(code)
+            memcache.add(code, user.user_id, time=60*10)
+            link = 'https://52payments.com/reset_password/%s'%code
+            subject = email_templates['forgot_password']['subject']
+            body = email_templates['forgot_password']['body']%(user.first_name, link)
+            send_email(user, subject, body)
+            flash('Password re-set link is sent to your email. Please check you email.')
+        return render_template('forgot_password.html', form=form)
     return render_template('forgot_password.html', form=form)
+
+@app.route('/reset_password/<code>', methods=['GET'])
+def reset_password(code):
+    user_id = memcache.get(code)
+    if user_id:
+        user = load_user(user)
+        login_user(user)
+        current_user = user
+        flash('Please change your password.')
+        return redirect(url_for('my_account'))
+    logging.debug(code)
+    return render_template('forgot_password.html', form=form)
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.referrer.find('login')==-1:
