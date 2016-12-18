@@ -279,22 +279,25 @@ def add_tests():
     if form.validate_on_submit():
         company_form = form.data
         company_form['logo_file'] = request.files['logo_file'].read()
-        contact = {}
-        contact.update(company_form)
+        company = {}
+        company.update(company_form)
         for i in range(1, 10):
-            contact['title'] = '52PAYMENTS_' + str(i)
-            contact['company_profile_name'] = '52payments_' + str(i)
-            contact['website'] = 'www.52payments.com'
-            contact['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
-            contact['summary'] = summary
-            contact['full_description'] = summary*(i%4+1)
-            contact['year_founded'] = 2010+i%4
-            contact['provided_srvs'] = biz_type
-            contact['complementary_srvs'] = srv_type
-            contact['equipment'] = equip_type
-            contact['pricing_method'] = pricing_type
-            contact['pricing_range'] = [1, 1+i]
-            temp =Company(**contact)
+            company['title'] = '52PAYMENTS_' + str(i)
+            company['company_profile_name'] = '52payments_' + str(i)
+            company['website'] = 'www.52payments.com'
+            company['landing_page'] = 'www.52payments.com'
+            company['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
+            company['summary'] = summary
+            company['full_description'] = summary*(i%4+1)
+            company['year_founded'] = 2010+i%4
+            company['provided_srvs'] = biz_type
+            company['complementary_srvs'] = srv_type
+            company['equipment'] = equip_type
+            company['pricing_method'] = pricing_type
+            company['pricing_range'] = [1, 1+i]
+            company['rate_range'] = [1, 1+i]
+            company['per_transaction_range'] = [0.1, 0.1+i*0.1]
+            temp =Company(**company)
             temp.put()
         return redirect(url_for('index'))
     return render_template("add_tests.html", form = form)

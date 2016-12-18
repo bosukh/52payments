@@ -59,7 +59,7 @@
     }
     var rating_input = document.getElementById('rating');
     var rating_text = document.getElementById('rating_text');
-    rating_input.value = 0;
+    rating_input.value = '';
     var ratings = []
     for (var i=1; i< 6;i++){
       ratings.push(document.getElementById('rating_'+ i));
@@ -77,6 +77,7 @@
           for (var q = rating_num; q < 5 ; q++){
             ratings[q].innerHTML = '☆';
           };
+          check_all();
           };
       })(rating, i));
     }

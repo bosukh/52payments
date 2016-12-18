@@ -57,11 +57,11 @@ var check_all_field = function(field_ids, warnings = false){
   for (var i = 0; i < field_ids.length; i++){
     if (warnings){
       if (document.getElementById('warning_'+field_ids[i]).style.display != 'none'|| document.getElementById(field_ids[i]).value == ''){
-        bad = 1
+        bad = 1;
       };
     } else {
       if (document.getElementById(field_ids[i]).value == ''){
-        bad = 1
+        bad = 1;
       };
     };
   };
