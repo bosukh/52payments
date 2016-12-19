@@ -1,5 +1,7 @@
-from time import sleep
 import logging
+import time
+from time import sleep
+from uuid import uuid1
 from flask import Flask, make_response, abort, g
 from flask import render_template, flash, redirect, session, url_for, request, g
 from google.appengine.ext import ndb
@@ -7,7 +9,7 @@ from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from app import app, login_manager
-from app.forms import ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
+from app.forms import VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
 from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
@@ -46,14 +48,47 @@ def index():
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
 
-@app.route('/my_account', methods=['GET'])
+@app.route('/my_account', methods=['GET', 'POST'])
 @login_required
 def my_account():
-    return render_template("my_account.html")
+    verify_email_form = VerifyEmailForm()
+    if verify_email_form.validate_on_submit():
+        if verify_email_form.data['verify_email'] != current_user.email:
+            abort(400)
+        code = uuid1().get_hex()
+        memcache.add(code, current_user.user_id, time=time.time()+60*10)
+        link = 'https://52payments.com/verify_email/%s'%code
+        subject = email_templates['verify_email']['subject']
+        body = email_templates['verify_email']['body']%(current_user.first_name, link)
+        send_email(current_user, subject, body)
+        flash('Email verification email is sent. Please check your email.')
+        return redirect(url_for('my_account'))
+    user = current_user.to_dict()
+    user.pop('password')
+    reviews = Review.query(Review.user==current_user.key).order(-Review.created).fetch(limit=None)
+    reviews = [review.to_dict() for review in reviews]
+    for review in reviews:
+        review['user_name'] = user['first_name'] +' '+ user['last_name']
+        company = review['company'].get()
+        review['company_name'] = company.title
+        review['company_profile_name'] = company.company_profile_name
+    return render_template("my_account.html", user= user, reviews=reviews,
+                           verify_email_form = verify_email_form)
+
+@app.route('/verify_email/<code>', methods=['GET'])
+def verify_email():
+    user_id = memcache.get(code)
+    if user_id:
+        user = load_user(user)
+        user.email_verified = True
+        user.put()
+        flash('Your email has been verified. Thank you')
+    else:
+        flash('Your email verification link is expired. Please try again.')
+    return redirect(url_for('index'))
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
-    from uuid import uuid1
     def check_user():
         user = load_user(form.data['email'])
         if not user:
@@ -69,12 +104,12 @@ def forgot_password():
         if check_user():
             code = uuid1().get_hex()
             logging.debug(code)
-            memcache.add(code, user.user_id, time=60*10)
+            memcache.add(code, user.user_id, time=time.time()+60*10)
             link = 'https://52payments.com/reset_password/%s'%code
             subject = email_templates['forgot_password']['subject']
             body = email_templates['forgot_password']['body']%(user.first_name, link)
             send_email(user, subject, body)
-            flash('Password re-set link is sent to your email. Please check you email.')
+            flash('Password re-set link is sent to your email. Please check your email.')
         return render_template('forgot_password.html', form=form)
     return render_template('forgot_password.html', form=form)
 
@@ -205,7 +240,6 @@ def company(company_profile_name):
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
         reviews = [review.to_dict() for review in reviews]
-        logging.debug(reviews)
         for review in reviews:
             user = review['user'].get()
             review['user_name'] = user.first_name +" " + user.last_name

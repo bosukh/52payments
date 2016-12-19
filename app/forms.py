@@ -54,6 +54,11 @@ class SignUpForm(Form):
     password = PasswordField('Password', validators = [DataRequired(), Length(8, 30), EqualTo('password_2', message='Passwords have to match')])
     password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
+class EditInfoForm(SignUpForm):
+    phone = TextField('Phone')
+    company_name = TextField('company_name')
+    old_password = PasswordField('Password', validators = [DataRequired(), Length(8, 30)])
+
 class LoginForm(RedirectForm):
     email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])
     password = PasswordField('Password', validators = [DataRequired(), Length(8, 30)])
@@ -63,6 +68,9 @@ class GoogleLoginForm(RedirectForm):
 
 class SearchForm(Form):
     search_criteria = HiddenField('search_criteria')
+
+class VerifyEmailForm(Form):
+    verify_email = HiddenField('verify_email', validators = [DataRequired()])
 
 class TestForm(Form):
     logo_file = FileField('Logo File (.svg)')

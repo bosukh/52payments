@@ -2,24 +2,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3> Hi Name</h3>
+<h3> Hi, {{user.first_name}}</h3>
 
 <div id = 'featured-companies' style='overflow:visible;' class="box-row">
   <div style='overflow:visible;' class="small-company-box">
-      <h4>My Info</h4>
-      <hr>
-      hi
+    <h4>My Info</h4>
+    <hr>
+    <p>
+      <span class='plain-value'>
+        <b>First Name</b>: <br> {{user.first_name}}
+      </span>
+    </p>
+    <p>
+      <span class='plain-value'>
+        <b>Last Name:</b> <br> {{user.last_name}}
+      </span>
+    </p>
+    <p>
+      <span class='plain-value'>
+        <b>Email:</b> <br> <span id ='user-email'>{{user.email}}</span>
+        <br>
+        {% if user.email_verified %}
+          <i>Your email is verified.</i>
+        {% else %}
+          <i>Your email is not verified.</i>
+          <a href="javascript:submit_verify_email()">Verify</a>
+      </span>
+      {% endif %}
+    </p>
+    <p>
+      <span class='plain-value'>
+        <b>Phone:</b> <br> {{user.phone}}
+      </span>
+    </p>
+    <p>
+      <span class='plain-value'>
+        <b>Company Name:</b> <br> {{user.company_name}}
+      </span>
+    </p>
+    <p>
+      <span class='plain-value'>
+        {% if user.email == user.user_id %}
+        <b>Password:</b> <br> xxxxxxxxxx
+        {% endif %}
+      </span>
+    </p>
+    <a style='float:right;' href="#">Edit</a>
   </div>
-  <div style='overflow:visible;' class="small-company-box">
-      <h4>My Submissions</h4>
-      <hr>
-      hi
-  </div>
-  <div style='overflow:visible;' class="small-company-box">
-      <h4>My Reviews</h4> 
-      <hr>
-      hi
-      <br>
+  <div style='overflow:visible; max-width:650px;' class="small-company-box">
+    <h4>My Reviews</h4>
+    <hr>
+    {% if reviews %}
+      {% include 'review.html' %}
+    {% else %}
+      <p>
+        You did not write any reviews yet.
+      </p>
+    {% endif %}
+    <br>
   </div>
 </div>
+<form id='verify-email-form' method="post" name='verify-email-form' style='display:none;'>
+  {{ verify_email_form.hidden_tag() }}
+  {% for field in verify_email_form %}
+    {% if field.name != 'csrf_token' and field.name != 'next' %}
+        {{field}}
+    {% endif %}
+  {% endfor %}
+</form>
+
+<script type="text/javascript">
+var submit_verify_email = function(){
+  document.getElementById('verify_email').value = document.getElementById('user-email').innerHTML;
+  document.getElementById('verify-email-form').submit();
+}
+</script>
 {% endblock %}

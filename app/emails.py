@@ -9,10 +9,23 @@ email_templates = {
 
                         %s
 
-                        Thanks,
-                        Sincerely
+                        Thank you
+                        Sincerely,
+                        52Payments
+                        '''},
+    'verify_email':{'subject': "Link to Your Email Verification for 52Payments.",
+                    'body': '''Dear %s:
+                    Thank you for using 52payments.
+                    This is a link to verify your email you used to sign up for 52payments.
+                    Please note that the link will expire in about 10 minutes.
 
-                        '''}
+                    %s
+
+                    Thank you
+                    Sincerely,
+                    52Payments
+                    '''
+                    }
 }
 def send_email(user, subject, body, sender='admin@52payments.com'):
     name = user.first_name + ' '+ user.last_name
