@@ -1,13 +1,26 @@
+/*Login*/
+.form-inner-box {
+  width: 75%;
+  max-width: 280px;
+  margin: auto;
+  margin-bottom: 30px;
+}
+
+.form-box {
+  border: 1px solid #CAC9C9;
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+  margin-top: 40px;
+}
+
 p {
   line-height: 1.4em;
 }
-.small-font {
-  font-size:14px;
-}
 .loader {
     margin:auto;
-    border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #424242; /* Blue */
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #424242;
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -44,10 +57,7 @@ p {
 .col-12{
   width:100%;
 }
-.row {
-  width: 100%;
-  display: inline-block;
-}
+
 .flex-row {
   width: 100%;
   display: flex;
@@ -65,14 +75,9 @@ input {
   cursor: pointer;
   text-decoration: underline;
 }
-.li_warning {
-  color: red;
-  text-align: left;
-  display: block
-}
 #content-container {
   margin: auto;
-  max-width: 1140px;
+  max-width: 1120px;
 }
 /* Top menu */
 #logo {
@@ -107,6 +112,12 @@ input {
   text-align: center;
   color: red;
 }
+.li_warning {
+  color: red;
+  text-align: left;
+  display: block
+}
+
 /* Search Box*/
 .search-box {
   overflow: hidden;
@@ -117,13 +128,7 @@ input {
   -ms-text-justify: distribute-all-lines;
   text-justify: distribute-all-lines;
 }
-.checkbox{
-  width: 250px;
-  vertical-align: top;
-  display: inline-block;
-  *display: inline;
-  zoom: 1
-}
+
 #search-button {
   border-style:solid;
   border-width: 1px;
@@ -167,8 +172,6 @@ input {
 .button {
   font-family: 'Open Sans', sans-serif;
   text-align: center;
-  background: white;
-  border-color: #465A92;
   width: 90%;
   height: 40px;
   cursor: pointer;
@@ -250,28 +253,6 @@ input {
   border-radius: 100px;
 }
 
-/* Signup*/
-#signup-inner-box {
-  width: 70%;
-  max-width: 250px;
-  margin: auto;
-  margin-bottom: 30px;
-}
-.signup-field {
-}
-.signup-field-text {
-  text-align: left;
-  margin-top: 10px;
-}
-
-#signup-box {
-  border: 1px solid #CAC9C9;
-  text-align: center;
-  max-width: 400px;
-  margin: auto;
-  margin-top: 40px;
-}
-
 /* Review page*/
 #page-moves {
   text-align: center;
@@ -302,6 +283,7 @@ input {
   float:left;
   margin-right: 20px;
   padding: 10px;
+  text-align: center;
 }
 .selected {
   border-top: 1px #9DAACE solid;
@@ -312,16 +294,16 @@ input {
 .search-nav{
   border-bottom: 1px #9DAACE solid;
   width: 100%;
-  display:inline-block;
+  margin:auto;
 }
 .items{
   margin-top: 10px;
-  display: inline-block;
 }
 .items-title {
   text-decoration: none;
   cursor: pointer;
   cursor: hand;
+  color:#424242;
 }
 .search-row{
   float:left;
@@ -332,6 +314,7 @@ input {
   background-color: #EAF6F7;
 }
 #chosen-title{
+  margin-top: 15px;
   border-bottom: 1px #92C0C4 solid;
   opacity: 0;
 }

@@ -8,12 +8,13 @@
     <script src="{{ url_for('static', filename='js/base.js') }}"></script>
     <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/normalize.css/normalize.css') }}">
+    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/milligram/dist/milligram.min.css') }}">
     <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/base.css') }}">
     <title>52 Payments</title>
   </head>
   <body>
-    <div>
+    <div style='border-bottom:1px solid #d6c9ca;'>
       <ul class="nav_ul">
         <a class="nav_a" href="{{url_for('index')}}"><img id="logo" src="{{ url_for('static', filename='logo-compressed.svg') }}" alt="52paymments_logo" width="200px"></a>
         {% if current_user.is_authenticated %}
@@ -28,7 +29,6 @@
         <li class="nav_li"><a class="nav_a" href="{{url_for('index')}}">Search</a></li>
       </ul>
     </div>
-    <hr>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
     <div class="warning">

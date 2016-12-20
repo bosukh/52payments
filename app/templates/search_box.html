@@ -1,38 +1,40 @@
 <div class="search-box">
   <div class="search-row">
-    <div id='search-nav' class="search-nav">
-      <div class="selected items-title-div">
+    <div id='search-nav' class="search-nav row">
+      <div style='padding:10px;' class="selected items-title-div column">
         <a class= 'items-title' onclick="javascript:select_items_title(this)">Business Types</a>
       </div>
-      <div class="items-title-div">
+      <div style='padding:10px;' class="items-title-div column">
         <a class="items-title" onclick="javascript:select_items_title(this)">Pricing Method</a>
       </div>
-      <div class="items-title-div">
+      <div style='padding:10px;' class="items-title-div column">
         <a class="items-title" onclick="javascript:select_items_title(this)">Equipments</a>
       </div>
-      <div class="items-title-div">
+      <div style='padding:10px;' class="items-title-div column">
         <a class="items-title" onclick="javascript:select_items_title(this)">Complimentary Services</a>
       </div>
     </div>
-    <div class="search-row">
-      *Select search criteria (Not selecting any will return all results)
+    <div class="row">
+      <div class="column">
+        *Select search criteria (Not selecting any will return all results)
+      </div>
     </div>
     <div id = 'items' class="items">
     </div>
   </div>
   <div class="search-row">
-    <div id='chosen-title' class="search-nav">
+    <div id='chosen-title' class="search-nav row">
     </div>
-    <div id = 'selected-items' class="items">
+    <div style='margin-left:0px;' id = 'selected-items' class="items row">
     </div>
     <form action='/search_results' method="get" name="search-box-form">
       {{ form.search_criteria }}
-      <div id='clear-all' class="button-wrapper button">
+      <div id='clear-all' class="button-wrapper">
         <a style='float:right;' href="javascript:clear_search_criteria()">
           Clear All
         </a>
       </div>
-      <div class="button-wrapper button">
+      <div class="button-wrapper">
         <a href="javascript:get_search_result()">
           <button id='small-search-button' class= 'button' type="button" name="button">Search</button>
         </a>
