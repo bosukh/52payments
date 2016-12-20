@@ -311,8 +311,10 @@ input {
   width: 100%;
 }
 .selected-item{
-  border-color: #C3E0E3;
-  background-color: #C3E0E3;
+  border-color: #5E989D;
+  background-color: #5E989D;
+  text-transform: uppercase;
+  color:white;
 }
 #chosen-title{
   margin-top: 15px;

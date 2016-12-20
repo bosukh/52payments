@@ -11,7 +11,7 @@ var fill_items = function(list_, items, selected = 0){
     };
     items.appendChild(item);
   };
-}
+};
 var select = function(item){
   pop(types[current_type], item.innerHTML);
   sessionStorage.setItem(current_type, types[current_type]);
