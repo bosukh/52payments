@@ -3,3 +3,5 @@ config.py
 appengine_config.py
 *.yaml
 lib/
+node_modules/
+app/static/bower_components/
