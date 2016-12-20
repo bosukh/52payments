@@ -1,14 +1,15 @@
 var fill_items = function(list_, items, selected = 0){
   for (var i = 0; i < list_.length; i++){
-    var item = document.createElement('div');
+    var item = document.createElement('button');
     item.className = 'item';
     if (selected){
       item.className = 'item selected-item';
-      item.innerHTML = list_[i] + ' <span style="font-weight:bold;"><a class="items-title" onclick="javascript:deselect(this)">×</a></span>';
+      item.onclick = function(){deselect(this)};
     } else{
       item.setAttribute("id", list_[i]);
-      item.innerHTML = '<a class="items-title" onclick="javascript:select(this)">' + list_[i] + '</a>';
+      item.onclick = function(){select(this)};
     };
+    item.innerHTML = list_[i];
     items.appendChild(item);
   };
 };
@@ -18,14 +19,13 @@ var select = function(item){
   selected_item_list.push(current_type + ': '+ item.innerHTML);
   sessionStorage.setItem('selected_item_list', selected_item_list);
   fill_items([current_type + ': '+ item.innerHTML], selected_items, 1);
-  item.parentElement.remove();
+  item.remove();
   document.getElementById('chosen-title').style.opacity= 1;
   search_criteria.value = selected_item_list.join(',');
   toggle_clear_all_btn();
 }
 var deselect = function(item){
-  var item = item.parentElement.parentElement;
-  var selected_item_name = item.innerHTML.split('<span')[0].trim();
+  var selected_item_name = item.innerHTML.trim();
   var type = selected_item_name.split(': ')[0];
   var item_name = selected_item_name.split(': ')[1];
   pop(selected_item_list, selected_item_name);
@@ -49,7 +49,7 @@ var select_items_title = function(items_title){
   for (var i = 0; i < items_titles.length; i++){
     items_titles[i].className = 'items-title-div column';
   };
-  items_title.className = 'selected items-title-div column'
+  items_title.className = 'selected items-title-div column';
   var current_num = items.childNodes.length
   for (var i = 1; i < current_num; i++){
     items.childNodes[1].remove();
