@@ -302,8 +302,14 @@ def img(company_profile_name):
     response.headers['Content-Type'] = 'image/svg+xml'
     return response
 ###################################################
+from random import choice
 @app.route('/add_tests', methods=['GET', 'POST'])
 def add_tests():
+    def choose(list_, iter=5):
+        temp = [choice(list_) for _ in range(iter)]
+        temp = set(temp)
+        return list(temp)
+
     summary = '''
                 Lorem Ipsum is simply dummy text of the printing and
                 typesetting industry. Lorem Ipsum has been the
@@ -337,13 +343,13 @@ def add_tests():
             company['summary'] = summary
             company['full_description'] = summary*(i%4+1)
             company['year_founded'] = 2010+i%4
-            company['provided_srvs'] = biz_type
-            company['complementary_srvs'] = srv_type
-            company['equipment'] = equip_type
-            company['pricing_method'] = pricing_type
-            company['pricing_range'] = [1, 1+i]
-            company['rate_range'] = [1, 1+i]
-            company['per_transaction_range'] = [0.1, 0.1+i*0.1]
+            company['provided_srvs'] = choose(biz_type)
+            company['complementary_srvs'] = choose(srv_type)
+            company['equipment'] = choose(equip_type)
+            company['pricing_method'] = choose(pricing_type)
+            company['pricing_range'] = [1, 1+i%5]
+            company['rate_range'] = [1, 1+i%5]
+            company['per_transaction_range'] = [0.1, 0.1+(i%5)*0.1]
             temp =Company(**company)
             temp.put()
         return redirect(url_for('index'))
