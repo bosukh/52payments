@@ -119,17 +119,6 @@ var cont_reading = function(a_tag, index){
     adjust_height();
   };
 }
-var collapse_reading = function(){
-
-}
-var add_callapse_btn = function(){
-  var collapse_reading_btn = document.createElement('a');
-  collapse_reading_btn.className = 'cont_reading_btn';
-  collapse_reading_btn.setAttribute('onclick', 'collapse_reading(this, '+ index +')');
-  collapse_reading_btn.innerHTML = 'Collapse';
-  p_tags[index].appendChild(collapse_reading_btn);
-}
-
 var add_cont_reading_btn = function(){
   p_tags = document.getElementsByTagName('p');
   p_tags_trimmed_parts = {};

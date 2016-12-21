@@ -1,51 +1,56 @@
-<div id = 'search-result-title' class="basic-title">
-  <h2>Search Results</h2>
-</div>
-{% if not companies %}
-<h3>No Matching Result</h3>
-{% endif %}
-{% for company in companies %}
-<div id='search-result-box' class="company-profile-container">
-  <div class="search-result-left-col">
-    <img src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="100%">
-    <br><br>
-      {% if company.pricing_range %}
-        Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
-      {% endif %}
-      Overall User Rating <br>
-      {% for i in range(company.rounded_rating)%}
-        <span class='rating-star'>★</span>
-      {% endfor %}
-      {% for i in range(5-company.rounded_rating)%}
-        <span class='rating-star'>☆</span>
-      {% endfor %}
-      {{company.avg_rating}} ({{company.num_ratings}}) <br>
-      √ Verified With 52Payments <br>
+<div id = 'search-result-title' style = 'margin-top: 30px;' class="row">
+  <div class="column">
+    <h4>Search Results</h4>
   </div>
-  <div class="search-result-right-col">
-    <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}">
-      <button style = 'float:right;' id= 'company-profile-button' class= 'search-result-button button' type="button" name="button">View Full Profile</button>
-    </a>
-    <a href="#">
-      <button style = 'float:right;' id='company-apply-button' class= 'search-result-button button' type="button" name="button">Apply</button>
-    </a>
-    {% if company.title %}
-      <h2 id='company-title'>{{ company.title }}</h2>
-    {% endif %}
-    {% if company.pricing_method %}
-      <b>Pricing Method</b>: {{', '.join(company.pricing_method)}}
-    {% endif %}
-    <br>
-    {% if company.provided_srvs %}
-      <b>Provided Services</b>: {{', '.join(company.provided_srvs)}}
-    {% endif %}
-    <br><br>
-    {% if company.summary %}
-    <p>
-      {{company.summary}}
-    </p>
-    {% endif %}
+  <div class="column">
+    <a style='float:right;' href="#">sort</a>
+  </div>
+</div>
+{{^size}}
+<h5>No Matching Result</h5>
+{{/size}}
+
+<div style='padding:0px; margin:0px;' class="company-profile-container">
+  <div class="search-result-left-col row">
+    <div class="column">
+      <img src="/img/{{company_profile_name}}" alt="company_logo" width="100%">
+      <br><br>
+      {{#pricing_range}}
+      Pricing Range: {{lower_pricing_range}}% ~ {{upper_pricing_range}}%<br>
+      {{/pricing_range}}
+      Overall User Rating <br>
+      {{#rounded_rating}}
+      <span class='rating-star'>{{.}}</span>
+      {{/rounded_rating}}
+      {{avg_rating}} ({{num_ratings}}) <br>
+      √ Verified With 52Payments <br>
+    </div>
+  </div>
+  <div class="search-result-right-col row">
+    <div style='padding-left:0px;' class="column">
+      <a href="/company/{{company_profile_name}}">
+        <button style = 'float:right;' id= 'company-profile-button' class= 'search-result-button button' type="button" name="button">View Full Profile</button>
+      </a>
+      <a href="{{landing_page}}">
+        <button style = 'float:right;' id='company-apply-button' class= 'search-result-button button' type="button" name="button">Apply</button>
+      </a>
+      {{#title}}
+      <h5 id='company-title'>{{title }}</h5>
+      {{/title}}
+      {{#pricing_method}}
+      <b>Pricing Method</b>: {{pricing_method}}
+      {{/pricing_method}}
+      <br>
+      {{#provided_srvs}}
+      <b>Provided Services</b>: {{provided_srvs}}
+      {{/provided_srvs}}
+      <br><br>
+      {{#summary}}
+      <p>
+        {{summary}}
+      </p>
+      {{/summary}}
+    </div>
   </div>
 </div>
 <br><br>
-{% endfor %}
