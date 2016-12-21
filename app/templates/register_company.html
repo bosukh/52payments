@@ -2,15 +2,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="search-box">
+  <div class="">
+    <br><br>
     <form action="" method="post" name="search-box-form" enctype="multipart/form-data">
         {{ form.hidden_tag() }}
         <div id="search-box-checks" class="search-checkbox-row'">
           {% for field in form %}
             {% if field.name != 'csrf_token'%}
-              <div class="checkbox">
-                {{ field }}
+              <div>
                 {{ field.label.text }}
+                {{ field }}
               </div>
             {% endif %}
           {% endfor %}
@@ -20,5 +21,11 @@
         </div>
     </form>
   </div>
-
+<script type="text/javascript">
+  window.onload = function(){
+    for (id of ['provided_srvs', 'complementary_srvs', 'equipment', 'pricing_method']){
+      document.getElementById(id).style.height='100%';
+    }
+  }
+</script>
 {% endblock %}
