@@ -23,7 +23,7 @@ var get_search_result_base = function(func = 0) {
     document.getElementById('loader').style = 'display: none;'
     add_cont_reading_btn();
     adjust_height();
-  }
+  };
   var url = '/search_results?' + 'search_criteria='+encodeURIComponent(search_criteria.value)
   xhr = create_xhr('GET', url, after_todo);
   xhr.send();

@@ -1,21 +1,23 @@
-<div class="small-company-box">
-  <img class="company-logo" src="/img/{{company.company_profile_name}}" alt="{{company.title}}">
-  <h5 class="company-title">{{company.title}}</h5>
+<div class="small-company-box row">
+  <img style='border-bottom: 1px solid #CAC9C9; padding-bottom:1rem;' class="column" src="/img/{{company.company_profile_name}}" alt="{{company.title}}">
+  <div class="column">
+    <h5 class="company-title">{{company.title}}</h5>
     Overall User Rating <br>
     {% for i in range(company.rounded_rating)%}
-      <span class='rating-star'>★</span>
+    <span class='rating-star'>★</span>
     {% endfor %}
     {% for i in range(5-company.rounded_rating)%}
-      <span class='rating-star'>☆</span>
+    <span class='rating-star'>☆</span>
     {% endfor %}
     {{bjs().round(company.avg_rating)}}  ({{company.num_ratings}}) <br>
     √ Verified With 52Payments <br>
     <p>
       {{company.summary}}
     </p>
-  <div class="button-wrapper">
+  </div>
+  <div style='text-align:center;'>
     <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}">
-    <button class= 'button' type="button" name="button">View Company Profile</button>
+    <button style='width:90%;' class= 'button' type="button" name="button">View Company Profile</button>
     </a>
   </div>
 </div>

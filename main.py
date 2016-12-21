@@ -2,7 +2,7 @@ import logging
 import time
 from time import sleep
 from uuid import uuid1
-from flask import Flask, make_response, abort, g
+from flask import Flask, make_response, abort, g, jsonify
 from flask import render_template, flash, redirect, session, url_for, request, g
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
@@ -38,6 +38,19 @@ def search_results():
     else:
         search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
     return render_template("search_results.html", companies=search_result)
+
+@app.route('/get_all_companies', methods=['GET'])
+def get_all_companies():
+    search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
+    res = []
+    for company in search_result:
+        company = company.to_dict()
+        company.pop('created')
+        company.pop('last_modified')
+        company.pop('logo_file')
+        res.append(company)
+    return jsonify(res)
+
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])

@@ -1,18 +1,10 @@
 <div class="search-box">
   <div class="search-row">
     <div id='search-nav' class="search-nav row">
-      <div style='padding:10px;' class="selected items-title-div column">
-        <a class= 'items-title' onclick="javascript:select_items_title(this)">Business Types</a>
-      </div>
-      <div style='padding:10px;' class="items-title-div column">
-        <a class="items-title" onclick="javascript:select_items_title(this)">Pricing Method</a>
-      </div>
-      <div style='padding:10px;' class="items-title-div column">
-        <a class="items-title" onclick="javascript:select_items_title(this)">Equipments</a>
-      </div>
-      <div style='padding:10px;' class="items-title-div column">
-        <a class="items-title" onclick="javascript:select_items_title(this)">Complimentary Services</a>
-      </div>
+      <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Business Types</button>
+      <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Pricing Method</button>
+      <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Equipments</button>
+      <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Complimentary Services</button>
     </div>
     <div class="row">
       <div class="column">
@@ -25,7 +17,7 @@
   <div class="search-row">
     <div id='chosen-title' class="search-nav row">
     </div>
-    <div style='margin-left:0px;' id = 'selected-items' class="items row">
+    <div style='margin-left:0px;' id = 'selected-items' class="items">
     </div>
     <form action='/search_results' method="get" name="search-box-form">
       {{ form.search_criteria }}

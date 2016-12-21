@@ -44,12 +44,11 @@ var deselect = function(item){
 }
 var select_items_title = function(items_title){
   current_type = items_title.innerHTML;
-  items_title = items_title.parentElement;
-  var items_titles = document.getElementsByClassName('items-title-div');
+  var items_titles = document.getElementsByClassName('items-title');
   for (var i = 0; i < items_titles.length; i++){
-    items_titles[i].className = 'items-title-div column';
+    items_titles[i].className = 'items-title';
   };
-  items_title.className = 'selected items-title-div column';
+  items_title.className = 'items-title selected';
   var current_num = items.childNodes.length
   for (var i = 1; i < current_num; i++){
     items.childNodes[1].remove();

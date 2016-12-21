@@ -128,6 +128,7 @@ input {
   -ms-text-justify: distribute-all-lines;
   text-justify: distribute-all-lines;
 }
+
 #search-button {
   border-style:solid;
   border-width: 1px;
@@ -138,6 +139,11 @@ input {
 }
 
 /* Small Processor box*/
+.basic-title {
+  width:100%;
+  margin-top: 30px;
+  border-top: 1px solid #CAC9C9;
+}
 .box-row{
   overflow: auto;
   text-align: center;
@@ -153,15 +159,23 @@ input {
   text-align: left;
   vertical-align: top;
 }
-
+.company-logo {
+  padding: 5px 20px 15px 20px;
+  width: calc(100% - 40px);
+  height: calc(100% - 20px);
+  border-bottom: 1px solid #CAC9C9;
+}
 .company-title {
   margin: 5px 0 5px 0;
 }
 
 .button {
   font-family: 'Open Sans', sans-serif;
-  border-color:#8679A9;
-  background-color:#8679A9;
+  text-align: center;
+  width: 90%;
+  height: 40px;
+  cursor: pointer;
+  cursor: hand;
 }
 .button-wrapper{
   margin: auto;
@@ -182,7 +196,6 @@ input {
   margin: 0; padding: 30px 0;
 
 }
-
 /*Comapny Profile*/
 #user_name {
   float: right;
@@ -245,18 +258,23 @@ input {
 .page-move {
   margin: auto;
 }
+
 /* index */
 .a{
   display: inline-block;
   float:left;
 }
 .item{
+  font-size: 15px;
   float: left;
+  padding: 10px;
   margin-right: 20px;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-color: #9daace;
-  background-color: #9daace;
+  margin-top: 10px;
+  border-radius: 7px;
+  border-width: 1px;
+  border-color: #9DAACE;
+  border-style: solid;
+  background-color: #EFF1F9;
 }
 .items-title-div{
   margin-top: 10px;
@@ -266,8 +284,10 @@ input {
   text-align: center;
 }
 .selected {
-  border-color: #8679A9 !important;
-  background-color: #8679A9 !important;
+  border-top: 1px #9DAACE solid;
+  border-left: 1px #9DAACE solid;
+  border-right: 1px #9DAACE solid;
+  background-color: #CAD2E8;
 }
 .search-nav{
   border-bottom: 1px #9DAACE solid;
@@ -278,28 +298,18 @@ input {
   margin-top: 10px;
 }
 .items-title {
-  border-color: white;
-  background-color: white;
-  color: #424242;
-  margin-bottom: 0.5rem;
-  margin-top: 0.5rem;
-}
-.items-title_ {
   text-decoration: none;
-  text-transform: uppercase;
-  color:#424242;
   cursor: pointer;
   cursor: hand;
+  color:#424242;
 }
 .search-row{
   float:left;
   width: 100%;
 }
 .selected-item{
-  border-color: #5E989D;
-  background-color: #5E989D;
-  text-transform: uppercase;
-  color:white;
+  border-color: #C3E0E3;
+  background-color: #EAF6F7;
 }
 #chosen-title{
   margin-top: 15px;
@@ -307,12 +317,18 @@ input {
   opacity: 0;
 }
 
+
 /* Search-box */
+
 .search-result-button {
   margin-top: 10px;
 }
 #company-title{
   margin-top: 10px;
+}
+#company-profile-button {
+  width: 130px;
+  float: right;
 }
 #search-result-box {
   padding: 0px;
