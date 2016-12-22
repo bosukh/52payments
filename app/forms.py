@@ -55,6 +55,9 @@ class SignUpForm(Form):
     password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
 class EditInfoForm(SignUpForm):
+    first_name = TextField('First Name', validators = [Regexp(regex='^\w+$')])
+    last_name = TextField('Last Name', validators = [Regexp(regex='^\w+$')])
+    email = TextField('Email', validators = [Length(1, 64), Email()])
     phone = TextField('Phone')
     company_name = TextField('company_name')
     old_password = PasswordField('Password', validators = [DataRequired(), Length(8, 30)])

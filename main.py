@@ -34,7 +34,6 @@ def search_results():
         for company in search_result:
             company.avg_rating = round(company.avg_rating, 1)
             session['search_criteria'] = search_criteria
-        logging.debug(search_criteria)
     else:
         search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
     return render_template("search_results.html", companies=search_result)
@@ -51,13 +50,13 @@ def get_all_companies():
         res.append(company)
     return jsonify(res)
 
-
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     form = SearchForm()
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
+    #companies = Company.query(Company.featured==True).fetch(limit=3)
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
 

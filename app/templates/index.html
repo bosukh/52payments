@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script src="{{ url_for('static', filename='bower_components/mustache.js/mustache.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/search.js') }}"></script>
   <h3>Welcome to 52Payments!</h3>
   <div class="search-box">
@@ -28,9 +27,16 @@
       <form action='/search_results' method="get" name="search-box-form">
         {{ form.search_criteria }}
         <div id='clear-all' class="button-wrapper">
-          <a style='float:right;' href="javascript:clear_search_criteria()">
-            Clear All
-          </a>
+              <a style='float:right;' href="javascript:clear_search_criteria()">
+                Clear All
+              </a>
+          <div class="row">
+            <div class="column">
+              <a href="javascript:get_search_result()">
+                <button style='float:right;' type="button" class="button">Submit</button>
+              </a>
+            </div>
+          </div>
         </div>
       </form>
     </div>
@@ -48,15 +54,6 @@
   </div>
   <script src="{{ url_for('static', filename='js/search-result.js') }}"></script>
 <script type="text/javascript">
-  if (sessionStorage.getItem('data_all')){
-    data.all = JSON.parse(sessionStorage.getItem('data_all'))
-  }
-  if (data.all == undefined){
-    search.get_all();
-  }
-  var res_div = document.getElementById('search-result');
-  var featured_div = document.getElementById('featured-companies');
-  var loader_div = document.getElementById('loader');
   var types, search_criteria, current_type, items, selected_items, selected_item_list
   init_search_box();
   var featured_title = document.getElementById('featured-title');
@@ -68,10 +65,14 @@
     document.getElementById('chosen-title').style.opacity= 0;
     init_search_box();
   }
-  if (search_criteria!=undefined & search_criteria.value != ''){
-    featured_div.innerHTML = '';
-    search.toggle_loader()
-    search.render();
+  var get_search_result = function(){
+    get_search_result_base(function() {
+      featured_title.remove();
+      featured.remove();
+    });
+  }
+  if (typeof(search_criteria)!='undefined' & search_criteria.value != ''){
+    get_search_result();
   } else {
     add_cont_reading_btn();
   };

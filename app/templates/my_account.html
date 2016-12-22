@@ -1,6 +1,6 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
-
+<script src="{{ url_for('static', filename='bower_components/mustache.js/mustache.min.js') }}"></script>
 {% block content %}
 <h3> Hi, {{user.first_name}}</h3>
 
@@ -10,40 +10,40 @@
     <hr>
     <p>
       <span class='plain-value'>
-        <b>First Name</b>: <br> {{user.first_name}}
+        <b>First Name</b>: <br> <span id='user-first-name'>{{user.first_name}}</span>
       </span>
     </p>
     <p>
       <span class='plain-value'>
-        <b>Last Name:</b> <br> {{user.last_name}}
+        <b>Last Name:</b> <br> <span id='user-last-name'>{{user.last_name}}</span>
       </span>
     </p>
     <p>
       <span class='plain-value'>
-        <b>Email:</b> <br> <span id ='user-email'>{{user.email}}</span>
+        <b>Email:</b> <br> <span id='user-email'>{{user.email}}</span>
         <br>
         {% if user.email_verified %}
           <i>Your email is verified.</i>
         {% else %}
           <i>Your email is not verified.</i>
-          <a href="javascript:submit_verify_email()">Verify</a>
+          <a href="javascript:account.submit_verify_email()">Verify</a>
       </span>
       {% endif %}
     </p>
     <p>
       <span class='plain-value'>
-        <b>Phone:</b> <br> {{user.phone}}
+        <b>Phone:</b> <br> <span id='user-phone'>{{user.phone}}</span>
       </span>
     </p>
     <p>
       <span class='plain-value'>
-        <b>Company Name:</b> <br> {{user.company_name}}
+        <b>Company Name:</b> <br> <span id='user-company-name'>{{user.company_name}}</span>
       </span>
     </p>
     <p>
       <span class='plain-value'>
         {% if user.email == user.user_id %}
-        <b>Password:</b> <br> xxxxxxxxxx
+        <b>Password:</b> <br> xxxxxxxxxx <span id='user-password'></span>
         {% endif %}
       </span>
     </p>
@@ -72,9 +72,33 @@
 </form>
 
 <script type="text/javascript">
-var submit_verify_email = function(){
-  document.getElementById('verify_email').value = document.getElementById('user-email').innerHTML;
-  document.getElementById('verify-email-form').submit();
+var account = {
+  submit_verify_email:function(){
+    document.getElementById('verify_email').value = document.getElementById('user-email').innerHTML;
+    document.getElementById('verify-email-form').submit();
+  },
+  get_vars:function(){
+    account.infos = {
+      'first_name' : document.getElementById('user-first-name'),
+      'last_name' : document.getElementById('user-last-name'),
+      'email' : document.getElementById('user-email'),
+      'phone' : document.getElementById('user-phone'),
+      'company_name' : document.getElementById('user-company-name'),
+      'password' : document.getElementById('user-password')
+    };
+  },
+  edit_info:function(){
+    account.get_vars();
+    for (k in account.infos){
+      if (account.infos.hasOwnProperty(k) & account.infos[k]){
+        var input_elem = document.createElement('input');
+        input_elem.id = 'input_' + account.infos[k].id;
+        input_elem.value = account.infos[k].innerHTML;
+        account.infos[k].innerHTML = '';
+        account.infos[k].appendChild(input_elem);
+      }
+    }
+  }
 }
 </script>
 {% endblock %}
