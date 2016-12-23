@@ -47,7 +47,7 @@
         {% endif %}
       </span>
     </p>
-    <a style='float:right;' href="#">Edit</a>
+    <a id='edit-button' style='float:right;' href="javascript:account.edit_info()">Edit</a>
   </div>
   <div style='overflow:visible; max-width:650px;' class="small-company-box">
     <h4>My Reviews</h4>
@@ -90,12 +90,17 @@ var account = {
   edit_info:function(){
     account.get_vars();
     for (k in account.infos){
-      if (account.infos.hasOwnProperty(k) & account.infos[k]){
-        var input_elem = document.createElement('input');
-        input_elem.id = 'input_' + account.infos[k].id;
-        input_elem.value = account.infos[k].innerHTML;
-        account.infos[k].innerHTML = '';
-        account.infos[k].appendChild(input_elem);
+      if (account.infos.hasOwnProperty(k)){
+        if (!account.infos[k]){
+        } else {
+          var input_elem = document.createElement('input');
+          if (account.infos[k].innerHTML != 'None'){
+            input_elem.value = account.infos[k].innerHTML;
+          }
+          input_elem.id = 'input_' + account.infos[k].id;
+          account.infos[k].innerHTML = '';
+          account.infos[k].appendChild(input_elem);
+        }
       }
     }
   }
