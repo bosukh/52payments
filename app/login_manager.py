@@ -23,11 +23,10 @@ def login_user_with_redirect(user, form, referrer):
         current_user = user
     else:
         return None, None
-    if not check_referrer_origin(referrer) or check_referrer_auth_requirement(referrer, ['signup', 'signout']):
+    if not check_referrer_origin(referrer) or check_referrer_auth_requirement(referrer, ['signup', 'signout', 'reset_password', 'forgot_password']):
         referrer = None;
     flash('Logged in successfully.')
     return user, referrer
-
 
 def validate_user(form):
     error = None
@@ -70,7 +69,8 @@ def google_oauth(**kargs):
         user = User(user_id = kargs['user_id'],
                     email = idinfo['email'],
                     first_name = kargs['first_name'] or idinfo['given_name'],
-                    last_name = kargs['last_name'] or idinfo['family_name'])
+                    last_name = kargs['last_name'] or idinfo['family_name'],
+                    email_verified=True)
         user.put()
     else:
         error = 'Your email is not registered.'

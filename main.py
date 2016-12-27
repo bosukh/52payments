@@ -38,18 +38,6 @@ def search_results():
         search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
     return render_template("search_results.html", companies=search_result)
 
-@app.route('/get_all_companies', methods=['GET'])
-def get_all_companies():
-    search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
-    res = []
-    for company in search_result:
-        company = company.to_dict()
-        company.pop('created')
-        company.pop('last_modified')
-        company.pop('logo_file')
-        res.append(company)
-    return jsonify(res)
-
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -104,11 +92,7 @@ def verify_email():
     else:
         flash('Your email verification link is expired. Please try again.')
     return redirect(url_for('index'))
-@app.route('/change_password', methods=['GET', 'POST'])
-@fresh_login_required
-def change_password():
-    form = ChangePasswordForm()
-    return render_template('change_password.html', form=form)
+
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     def check_user():
@@ -117,13 +101,14 @@ def forgot_password():
             flash('Your email is not registered. Please sign up.')
             return False
         else:
-            if not user.first_name.lower() == form.data['first_name'] or user.last_name.lower() == form.data['last_name']:
+            if user.first_name.lower() != form.data['first_name'].lower() or user.last_name.lower() != form.data['last_name'].lower():
                 flash('Entered name does not match the email.')
-            return False
-        return True
+                return False
+        return user
     form = ForgotPasswordForm()
     if form.validate_on_submit():
-        if check_user():
+        user = check_user()
+        if user:
             code = uuid1().get_hex()
             logging.debug(code)
             memcache.add(code, user.user_id, time=time.time()+60*10)
@@ -132,20 +117,26 @@ def forgot_password():
             body = email_templates['forgot_password']['body']%(user.first_name, link)
             send_email(user, subject, body)
             flash('Password re-set link is sent to your email. Please check your email.')
-        return render_template('forgot_password.html', form=form)
+        return redirect(url_for('index'))
     return render_template('forgot_password.html', form=form)
 
-@app.route('/reset_password/<code>', methods=['GET'])
+@app.route('/reset_password/<code>', methods=['GET', 'POST'])
 def reset_password(code):
     user_id = memcache.get(code)
-    if user_id:
-        user = load_user(user)
-        login_user(user)
-        current_user = user
+    form = ChangePasswordForm()
+    if user_id and not form.validate_on_submit():
         flash('Please change your password.')
-        return redirect(url_for('my_account'))
-    logging.debug(code)
-    return render_template('forgot_password.html', form=form)
+        return render_template('change_password.html', form = form)
+    elif user_id and form.validate_on_submit():
+        user = load_user(user_id)
+        user.password = bt.hashpw(form.data['password'], bt.gensalt())
+        user.put()
+        memcache.delete(code)
+        flash('Your password is changed. Please login')
+        return redirect(url_for('login'))
+    else:
+        flash('Your link is expired or incorrect. Please try again')
+        return redirect(url_for('forgot_password'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

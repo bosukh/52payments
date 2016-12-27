@@ -61,7 +61,6 @@ class EditInfoForm(Form):
     company_name = TextField('Company Name')
 
 class ChangePasswordForm(Form):
-    old_password = PasswordField('Old Password', validators = [DataRequired(), Length(8, 30)])
     password = PasswordField('New Password', validators = [DataRequired(), Length(8, 30), EqualTo('password_2', message='Passwords have to match')])
     password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
