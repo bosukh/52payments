@@ -29,7 +29,6 @@ def login_user_with_redirect(user, form, referrer):
     return user, referrer
 
 
-
 def validate_user(form):
     error = None
     if not form.data['email'] or not form.data['password']:

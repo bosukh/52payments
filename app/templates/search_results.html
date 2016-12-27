@@ -2,7 +2,7 @@
   <div class="column">
     <h4>Search Results</h4>
   </div>
-  <div class="column">
+  <div style = 'display:none;' class="column">
     <a style='float:right;' href="#">sort</a>
   </div>
 </div>
@@ -34,7 +34,7 @@
       <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}">
         <button style = 'float:right;' id= 'company-profile-button' class= 'search-result-button button' type="button" name="button">View Full Profile</button>
       </a>
-      <a href="#">
+      <a href="{{company.landing_page}}" target='_blank'>
         <button style = 'float:right;' id='company-apply-button' class= 'search-result-button button' type="button" name="button">Apply</button>
       </a>
       {% if company.title %}

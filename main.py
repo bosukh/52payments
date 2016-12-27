@@ -7,9 +7,9 @@ from flask import render_template, flash, redirect, session, url_for, request, g
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_login import fresh_login_required, LoginManager, login_user, logout_user, current_user, login_required
 from app import app, login_manager
-from app.forms import VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
+from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
 from app.models import Company, User, Review
 from app.momentjs import momentjs
 from app.basejs import basejs
@@ -64,6 +64,12 @@ def index():
 @login_required
 def my_account():
     verify_email_form = VerifyEmailForm()
+    edit_info_form = EditInfoForm()
+    if edit_info_form.validate_on_submit():
+        user_info = edit_info_form.data
+        for k, v in user_info.iteritems():
+            exec "current_user.%s = '%s'"%(k, str(v))
+        current_user.put()
     if verify_email_form.validate_on_submit():
         if verify_email_form.data['verify_email'] != current_user.email:
             abort(400)
@@ -85,7 +91,7 @@ def my_account():
         review['company_name'] = company.title
         review['company_profile_name'] = company.company_profile_name
     return render_template("my_account.html", user= user, reviews=reviews,
-                           verify_email_form = verify_email_form)
+                           verify_email_form = verify_email_form, edit_info_form=edit_info_form)
 
 @app.route('/verify_email/<code>', methods=['GET'])
 def verify_email():
@@ -98,7 +104,11 @@ def verify_email():
     else:
         flash('Your email verification link is expired. Please try again.')
     return redirect(url_for('index'))
-
+@app.route('/change_password', methods=['GET', 'POST'])
+@fresh_login_required
+def change_password():
+    form = ChangePasswordForm()
+    return render_template('change_password.html', form=form)
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     def check_user():
@@ -226,6 +236,9 @@ def register_company():
             company_form.pop(col + '_range_upper', None)
         if company_form.get('phones'):
             company_form['phones'] = company_form['phones'].split(',')
+        if company_form.get('landing_page'):
+            if company_form['landing_page'].find('http://') == -1:
+                company_form['landing_page'] = 'http://' + company_form['landing_page']
         company = Company(**company_form)
         company.put()
         sleep(1)
@@ -337,7 +350,7 @@ def add_tests():
             company['title'] = '52PAYMENTS_' + str(i)
             company['company_profile_name'] = '52payments_' + str(i)
             company['website'] = 'www.52payments.com'
-            company['landing_page'] = 'www.52payments.com'
+            company['landing_page'] = 'http://www.52payments.com'
             company['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
             company['summary'] = summary
             company['full_description'] = summary*(i%4+1)

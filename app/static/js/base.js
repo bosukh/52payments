@@ -48,7 +48,7 @@ var disable_btn = function(dom_id){
 
 var add_validator = function(dom_id, re_name){
   var elem = document.getElementById(dom_id);
-  var function_call = 'func(' + dom_id + ',' + re_name + ')'
+  var function_call = 'func(this,' + re_name + ')'
   elem.setAttribute('oninput', function_call);
 };
 

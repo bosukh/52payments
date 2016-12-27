@@ -50,17 +50,20 @@ class SignUpForm(Form):
     first_name = TextField('First Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
     last_name = TextField('Last Name', validators = [DataRequired(), Regexp(regex='^\w+$')])
     email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])
-    #phone = TextField('Phone')
     password = PasswordField('Password', validators = [DataRequired(), Length(8, 30), EqualTo('password_2', message='Passwords have to match')])
     password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
-class EditInfoForm(SignUpForm):
+class EditInfoForm(Form):
     first_name = TextField('First Name', validators = [Regexp(regex='^\w+$')])
     last_name = TextField('Last Name', validators = [Regexp(regex='^\w+$')])
     email = TextField('Email', validators = [Length(1, 64), Email()])
     phone = TextField('Phone')
-    company_name = TextField('company_name')
-    old_password = PasswordField('Password', validators = [DataRequired(), Length(8, 30)])
+    company_name = TextField('Company Name')
+
+class ChangePasswordForm(Form):
+    old_password = PasswordField('Old Password', validators = [DataRequired(), Length(8, 30)])
+    password = PasswordField('New Password', validators = [DataRequired(), Length(8, 30), EqualTo('password_2', message='Passwords have to match')])
+    password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
 class LoginForm(RedirectForm):
     email = TextField('Email', validators = [DataRequired(), Length(1, 64), Email()])

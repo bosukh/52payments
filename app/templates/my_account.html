@@ -8,37 +8,52 @@
   <div style='overflow:visible;' class="small-company-box">
     <h4>My Info</h4>
     <hr>
+    <ul id="warnings">
+      <li class = 'li_warning' id='warning_first_name'>- First name can only include letters and '</li>
+      <li class = 'li_warning' id='warning_last_name'>- Last name can only include letters and '</li>
+      <li class = 'li_warning' id='warning_email'>- Email can only include letters, numbers, _, @, and dot.</li>
+      <li class = 'li_warning' id='warning_phone'>- Phone can only include numbers.</li>
+    </ul>
+    <form id='edit_info_form' method="post">
+        {{ edit_info_form.hidden_tag() }}
     <p>
       <span class='plain-value'>
-        <b>First Name</b>: <br> <span id='user-first-name'>{{user.first_name}}</span>
+        <b>First Name</b>: <br> <span id='user-first_name'>{{user.first_name}}</span>
       </span>
+      {{edit_info_form.first_name}}
     </p>
     <p>
       <span class='plain-value'>
-        <b>Last Name:</b> <br> <span id='user-last-name'>{{user.last_name}}</span>
+        <b>Last Name:</b> <br> <span id='user-last_name'>{{user.last_name}}</span>
       </span>
+      {{edit_info_form.last_name}}
     </p>
     <p>
       <span class='plain-value'>
         <b>Email:</b> <br> <span id='user-email'>{{user.email}}</span>
         <br>
-        {% if user.email_verified %}
+        <span id='email-verify-div'>
+          {% if user.email_verified %}
           <i>Your email is verified.</i>
-        {% else %}
+          {% else %}
           <i>Your email is not verified.</i>
           <a href="javascript:account.submit_verify_email()">Verify</a>
+          {% endif %}
+        </span>
       </span>
-      {% endif %}
+      {{edit_info_form.email}}
     </p>
     <p>
       <span class='plain-value'>
         <b>Phone:</b> <br> <span id='user-phone'>{{user.phone}}</span>
       </span>
+      {{edit_info_form.phone}}
     </p>
     <p>
       <span class='plain-value'>
-        <b>Company Name:</b> <br> <span id='user-company-name'>{{user.company_name}}</span>
+        <b>Company Name:</b> <br> <span id='user-company_name'>{{user.company_name}}</span>
       </span>
+      {{edit_info_form.company_name}}
     </p>
     <p>
       <span class='plain-value'>
@@ -47,7 +62,17 @@
         {% endif %}
       </span>
     </p>
-    <a id='edit-button' style='float:right;' href="javascript:account.edit_info()">Edit</a>
+    <a id='edit-button' style='float:right;' href="javascript:account.edit_info()">
+      Edit
+    </a>
+    <a id='save-button' style='float:right; display:none;' href="javascript:account.save_edit()">
+      Save
+    </a>
+    <br>
+    <a id='cancel-button' style='float:right; display:none;' href="javascript:account.cancel_edit()">
+      Cancel
+    </a>
+  </form>
   </div>
   <div style='overflow:visible; max-width:650px;' class="small-company-box">
     <h4>My Reviews</h4>
@@ -72,38 +97,88 @@
 </form>
 
 <script type="text/javascript">
+var field_ids = ['first_name', 'last_name', 'email', 'phone'];
+hide_warnings(field_ids);
 var account = {
+  hide_fields:function(){
+    for (var k in account.input_fields){
+      if (account.input_fields.hasOwnProperty(k)){
+        account.input_fields[k].style.display = 'none';
+      }
+    }
+  },
   submit_verify_email:function(){
     document.getElementById('verify_email').value = document.getElementById('user-email').innerHTML;
     document.getElementById('verify-email-form').submit();
   },
   get_vars:function(){
-    account.infos = {
-      'first_name' : document.getElementById('user-first-name'),
-      'last_name' : document.getElementById('user-last-name'),
-      'email' : document.getElementById('user-email'),
-      'phone' : document.getElementById('user-phone'),
-      'company_name' : document.getElementById('user-company-name'),
-      'password' : document.getElementById('user-password')
-    };
+    account.fields = ['first_name', 'last_name', 'email', 'phone', 'company_name'];
+    account.input_fields = {};
+    account.infos = {};
+    for (let k of account.fields){
+      account.input_fields[k] = document.getElementById(k);
+      account.infos[k] = document.getElementById('user-'+k);
+    }
+    account.edit_btn = document.getElementById('edit-button');
+    account.edit_form = document.getElementById('edit_info_form');
+    account.save_btn = document.getElementById('save-button');
+    account.cancel_btn = document.getElementById('cancel-button');
+    account.email_verify = document.getElementById('email-verify-div');
   },
   edit_info:function(){
-    account.get_vars();
+    account.email_verify.style.display = 'none';
+    account.edit_btn.style.display = 'none';
+    account.save_btn.style.display = '';
+    account.cancel_btn.style.display = '';
+    for (var k in account.infos){
+      if (account.infos.hasOwnProperty(k)){
+        if (!account.infos[k]){
+        } else {
+          if (account.infos[k].innerHTML != 'None'){
+            account.input_fields[k].value = account.infos[k].innerHTML;
+          }
+          account.infos[k].style.display='none';
+          account.input_fields[k].style.display = '';
+        }
+      }
+    }
+    add_validator('first_name', 'text_re');
+    add_validator('last_name', 'text_re');
+    add_validator('email', 'email_re');
+    add_validator('phone', 'phone_re');
+  },
+  cancel_edit: function(){
+    account.email_verify.style.display = '';
+    account.edit_btn.style.display = '';
+    account.save_btn.style.display = 'none';
+    account.cancel_btn.style.display = 'none';
     for (k in account.infos){
       if (account.infos.hasOwnProperty(k)){
         if (!account.infos[k]){
         } else {
-          var input_elem = document.createElement('input');
-          if (account.infos[k].innerHTML != 'None'){
-            input_elem.value = account.infos[k].innerHTML;
-          }
-          input_elem.id = 'input_' + account.infos[k].id;
-          account.infos[k].innerHTML = '';
-          account.infos[k].appendChild(input_elem);
+          account.infos[k].style.display='';
+          account.input_fields[k].style.display='none';
         }
       }
     }
+  },
+  save_edit:function(){
+    account.email_verify.style.display = '';
+    account.edit_btn.style.display = '';
+    account.save_btn.style.display = 'none';
+    account.cancel_btn.style.display = 'none';
+    account.edit_form.submit();
+  },
+  toggle_edit_btn:function(){
+    account.get_vars();
+    if (account.edit_btn.lower() == 'edit') {
+      account.edit_info();
+    } else {
+    }
   }
-}
+};
+account.get_vars();
+account.hide_fields();
+
 </script>
 {% endblock %}
