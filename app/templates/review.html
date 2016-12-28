@@ -1,6 +1,6 @@
 {% for review in reviews%}
 <div class="review">
-  <h3>{{review.title}}
+  <h5>{{review.title}}
     &nbsp;&nbsp;&nbsp;&nbsp;
     {% for i in range(review.rating)%}
       <span class='rating-star'>★</span>
@@ -9,13 +9,12 @@
       <span class='rating-star'>☆</span>
     {% endfor %}
     {{review.rating}}
-
     <span id='user_name'>
       <em>{{ momentjs(review.created).calendar() }} by
         {{review.user_name}}
       </em>
     </span>
-  </h3>
+  </h5>
   <p>
     <em>
       {% if review.company_name %}

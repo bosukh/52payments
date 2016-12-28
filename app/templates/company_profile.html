@@ -57,7 +57,7 @@
     <div class="company-profile-basic-box">
       Pricing Method: <br>
       {% for method in company.pricing_method%}
-      - {{method}} <br>
+      &nbsp;&nbsp;- {{method}} <br>
       {% endfor %}
     </div>
     {% endif %}
@@ -66,17 +66,16 @@
     <div class="company-profile-basic-box">
       Provided Services: <br>
       {% for srvs in company.provided_srvs%}
-      - {{srvs}} <br>
+      &nbsp;&nbsp;- {{srvs}} <br>
       {% endfor %}
     </div>
     {% endif %}
-
 
     {% if company.complementary_srvs %}
     <div class="company-profile-basic-box">
       Complementary Services: <br>
       {% for srvs in company.complementary_srvs%}
-      - {{srvs}} <br>
+      &nbsp;&nbsp;- {{srvs}} <br>
       {% endfor %}
     </div>
     {% endif %}
@@ -85,7 +84,7 @@
     <div class="company-profile-basic-box">
       Equipment <br>
       {% for equip in company.equipment%}
-      - {{equip}} <br>
+      &nbsp;&nbsp;- {{equip}} <br>
       {% endfor %}
     </div>
     {% endif %}
