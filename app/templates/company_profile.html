@@ -35,6 +35,17 @@
       {% endif %}
     </div>
     <div class="company-profile-basic-box">
+      Overall User Rating: <br>
+      {% for i in range(company.rounded_rating)%}
+      <span class='rating-star'>★</span>
+      {% endfor %}
+      {% for i in range(5-company.rounded_rating)%}
+      <span class='rating-star'>☆</span>
+      {% endfor %}
+      {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
+      √ Verified With 52Payments <br>
+    </div>
+    <div class="company-profile-basic-box">
       {% if company.pricing_range %}
         Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
       {% endif %}
@@ -42,15 +53,6 @@
         Detailed Pricing Range: <br>{{company.rate_range[0]}}% + {{company.per_transaction_range[0]}}$
                                 ~ {{company.rate_range[1]}}% + {{company.per_transaction_range[1]}}$<br>
       {% endif %}
-      Overall User Rating <br>
-      {% for i in range(company.rounded_rating)%}
-        <span class='rating-star'>★</span>
-      {% endfor %}
-      {% for i in range(5-company.rounded_rating)%}
-        <span class='rating-star'>☆</span>
-      {% endfor %}
-      {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
-      √ Verified With 52Payments <br>
     </div>
 
     {% if company.pricing_method %}
@@ -93,7 +95,7 @@
     {% include 'write_review.html' %}
     <div class="company-profile-basic-box">
       {% if company.title %}
-        <h2>{{ company.title }}</h2>
+        <h4>{{ company.title }}</h4>
       {% endif %}
       {{company.full_description}}
     </div>

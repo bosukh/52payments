@@ -140,7 +140,7 @@ def reset_password(code):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.referrer.find('login')==-1:
+    if request.referrer and request.referrer.find('login')==-1:
         session['initial_referrer'] = request.referrer
     form = LoginForm()
     google_login_form =GoogleLoginForm()
@@ -214,12 +214,16 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html', form=form, google_login_form= google_login_form)
 
-@app.route('/register_company', methods=['GET', 'POST'])
-@login_required # make it accessible only by business account
-def register_company():
-    form = CompanyForm()
+@app.route('/register_company/<code>', methods=['GET', 'POST'])
+def register_company(code):
+    load_company(code)
+    form = CompanyForm(company_profile_name='asd')
     if form.validate_on_submit():
         company_form = form.data
+        company_form['company_profile_name'] = company_form['company_profile_name'].lower()
+        if load_company(company_form['company_profile_name']):
+            flash('The entered Url End Point is taken.')
+            return render_template('register_company.html', form = form)
         company_form['logo_file'] = request.files['logo_file'].read()
         for col in ['pricing', 'rate', 'per_transaction']:
             company_form[col +'_range'] = [company_form[col + '_range_lower'],company_form[col + '_range_upper']]
