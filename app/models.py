@@ -1,4 +1,34 @@
 from google.appengine.ext import ndb
+from datetime import datetime
+
+class TempCode(ndb.Model):
+    code = ndb.StringProperty(required=True, indexed=True)
+    value = ndb.StringProperty(required=True, indexed=False)
+    created = ndb.DateTimeProperty(auto_now_add = True, indexed=False)
+
+    @classmethod
+    def verify_code(self, code, time = 0, delete=True):
+        def time_diff(a, time):
+            if time > 0:
+                res = datetime.now() - a
+                return res.seconds <= time
+            return True
+        temp_code = self.load_code(code)
+        if temp_code:
+            value = temp_code.value
+            valid = time_diff(temp_code.created, time)
+            if delete:
+                temp_code.key.delete()
+            if value and valid:
+                return value
+            else:
+                return False
+        return False
+
+    @classmethod
+    def load_code(self, code):
+        query = self.gql("WHERE code = '%s'"%code)
+        return query.get()
 
 class Company(ndb.Model):
     title = ndb.StringProperty(required = True, indexed=True)

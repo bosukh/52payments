@@ -10,7 +10,7 @@ from bcrypt import bcrypt as bt
 from flask_login import fresh_login_required, LoginManager, login_user, logout_user, current_user, login_required
 from app import app, login_manager
 from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
-from app.models import Company, User, Review
+from app.models import Company, User, Review, TempCode
 from app.momentjs import momentjs
 from app.basejs import basejs
 from app.search import parse_search_criteria, company_search
@@ -62,7 +62,8 @@ def my_account():
         if verify_email_form.data['verify_email'] != current_user.email:
             abort(400)
         code = uuid1().get_hex()
-        memcache.add(code, current_user.user_id, time=time.time()+60*10)
+        temp_code = TempCode(code=code, value=current_user.user_id)
+        temp_code.put()
         link = 'https://52payments.com/verify_email/%s'%code
         subject = email_templates['verify_email']['subject']
         body = email_templates['verify_email']['body']%(current_user.first_name, link)
@@ -82,13 +83,13 @@ def my_account():
                            verify_email_form = verify_email_form, edit_info_form=edit_info_form)
 
 @app.route('/verify_email/<code>', methods=['GET'])
-def verify_email():
-    user_id = memcache.get(code)
-    if user_id:
-        user = load_user(user)
+def verify_email(code):
+    value = TempCode.verify_code(code, 600)
+    if value:
+        user = load_user(value)
         user.email_verified = True
         user.put()
-        flash('Your email has been verified. Thank you')
+        flash('Your email is now verified. Thank you')
     else:
         flash('Your email verification link is expired. Please try again.')
     return redirect(url_for('index'))
@@ -110,8 +111,8 @@ def forgot_password():
         user = check_user()
         if user:
             code = uuid1().get_hex()
-            logging.debug(code)
-            memcache.add(code, user.user_id, time=time.time()+60*10)
+            temp_code = TempCode(code=code, value=user.user_id)
+            temp_code.put()
             link = 'https://52payments.com/reset_password/%s'%code
             subject = email_templates['forgot_password']['subject']
             body = email_templates['forgot_password']['body']%(user.first_name, link)
@@ -122,21 +123,22 @@ def forgot_password():
 
 @app.route('/reset_password/<code>', methods=['GET', 'POST'])
 def reset_password(code):
-    user_id = memcache.get(code)
+    user_id = TempCode.verify_code(code, 600, delete=False)
     form = ChangePasswordForm()
     if user_id and not form.validate_on_submit():
         flash('Please change your password.')
         return render_template('change_password.html', form = form)
     elif user_id and form.validate_on_submit():
+        temp_code = TempCode.load_code(code)
+        temp_code.key.delete()
         user = load_user(user_id)
         user.password = bt.hashpw(form.data['password'], bt.gensalt())
         user.put()
-        memcache.delete(code)
         flash('Your password is changed. Please login')
         return redirect(url_for('login'))
     else:
         flash('Your link is expired or incorrect. Please try again')
-        return redirect(url_for('forgot_password'))
+        return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -216,8 +218,10 @@ def signup():
 
 @app.route('/register_company/<code>', methods=['GET', 'POST'])
 def register_company(code):
-    load_company(code)
-    form = CompanyForm(company_profile_name='asd')
+    company_profile_name = TempCode.verify_code(code, delete=False)
+    if not company_profile_name:
+        abort(400)
+    form = CompanyForm(company_profile_name=company_profile_name)
     if form.validate_on_submit():
         company_form = form.data
         company_form['company_profile_name'] = company_form['company_profile_name'].lower()
@@ -236,6 +240,8 @@ def register_company(code):
                 company_form['landing_page'] = 'http://' + company_form['landing_page']
         company = Company(**company_form)
         company.put()
+        temp_code = TempCode.load_code(code)
+        temp_code.key.delete()
         sleep(1)
         flash('Info Submitted')
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
