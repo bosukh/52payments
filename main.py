@@ -278,6 +278,8 @@ def company(company_profile_name):
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin
 def admin():
+    if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+        abort(400)
     reviews = Review.query().filter(Review.approved ==False).order(-Review.created).fetch(limit=None)
     dict_reviews = []
     for review in reviews:
@@ -294,6 +296,8 @@ def admin():
 @app.route('/admindecision', methods=['POST'])
 @login_required # only admin
 def admindecision():
+    if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+        abort(400)
     urlsafe = request.form['urlsafe']
     key = ndb.Key(urlsafe = urlsafe)
     obj_type = request.form['type']
@@ -317,7 +321,10 @@ def img(company_profile_name):
 ###################################################
 from random import choice
 @app.route('/add_tests', methods=['GET', 'POST'])
+@login_required
 def add_tests():
+    if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+        abort(400)
     def choose(list_, iter=5):
         temp = [choice(list_) for _ in range(iter)]
         temp = set(temp)

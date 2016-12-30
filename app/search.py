@@ -22,5 +22,5 @@ def company_search(search_criteria):
         criteria = search_criteria.get(col)
         if criteria:
             where_clause.append("%s IN (%s)"%(col_name, "'" + "', '".join(criteria) + "'"))
-    gql_query += ' AND '.join(where_clause) + " ORDER BY pricing_range"
+    gql_query += ' AND '.join(where_clause) + " ORDER BY pricing_range ASC"
     return Company.gql(gql_query).fetch()
