@@ -13,7 +13,7 @@
 <div style='padding:0px; margin:0px;' class="company-profile-container">
   <div class="search-result-left-col row">
     <div class="column">
-      <img src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="100%">
+      <img class='logo' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="100%">
       <br><br>
       {% if company.pricing_range %}
       Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>

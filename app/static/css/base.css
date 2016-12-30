@@ -36,6 +36,10 @@ p {
 }
 
 /* General*/
+.footer {
+  margin:auto;
+  margin-top:5rem;
+}
 .left-float {
   float: left;
   margin-top: 10px;
@@ -78,19 +82,12 @@ input {
   cursor: pointer;
   text-decoration: underline;
 }
-#content-container {
-  margin: auto;
-  max-width: 1120px;
-}
 /* Top menu */
-#logo {
-  padding-left: 10px;
-  cursor: pointer;
-}
 
 .nav_ul {
   list-style-type: none;
-  margin: 10px;
+  margin: 0px;
+  margin-top: 10px;
   padding: 0;
   overflow: hidden;
 }
@@ -178,6 +175,10 @@ input {
 
 }
 
+#logo {
+  width:20rem;
+  height:auto;
+}
 /*Comapny Profile*/
 #user_name {
   float: right;
@@ -214,11 +215,13 @@ input {
   max-width:740px;
   float: right;
 }
-#company-profile-logo{
-  width: 100%;
-  height: 100%;
-  max-width: 350px;
-  max-height: 75px;
+.logo {
+  width: 30rem;
+  height: 6.42rem;
+}
+.square-logo{
+  width:5rem;
+  height:5rem;
 }
 #company-apply-button, #company-review-button {
   float: right;

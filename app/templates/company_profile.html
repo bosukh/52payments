@@ -5,7 +5,7 @@
 
 <div class="company-profile-container">
   <div class="company-profile-top-row">
-    <img id="company-profile-logo" src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
+    <img id="company-profile-logo" class='logo' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
     <a href="{{company.landing_page}}" target = '_blank'>
       <button id='company-apply-button' class= 'button' type="button" name="button">Apply</button>
     </a>
