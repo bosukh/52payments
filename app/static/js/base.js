@@ -120,7 +120,7 @@ var cont_reading = function(a_tag, index){
   };
 }
 var add_cont_reading_btn = function(){
-  p_tags = document.getElementsByTagName('p');
+  p_tags = document.getElementsByClassName('trim');
   p_tags_trimmed_parts = {};
   for (var i = 0; i < p_tags.length; i++){
     if (p_tags[i].innerHTML.trim().length > 300) {

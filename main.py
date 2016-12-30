@@ -188,14 +188,11 @@ def signup():
     google_login_form =GoogleLoginForm()
     if form.validate_on_submit():
         user_data = form.data
-        if user_data['password'] != user_data['password_2']:
-            flash('Passwords have to match.')
-            return render_template('signup.html', form=form)
         user = load_user(user_data['email'])
         if user:
             error = 'Your email is already registered.'
             flash(error)
-            return render_template('signup.html', form=form)
+            return render_template('signup.html', form=form, google_login_form= google_login_form)
         elif not user:
             user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
             user_data.pop('password_2')

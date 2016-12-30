@@ -7,18 +7,20 @@
         </div>
         <div style = 'display:inline-block;' class="row">
           {{form.rating}}
-          <div class="rating rating-star">
-            <span style='margin-right:10px;' class='rating-star' id='rating_5'>☆</span>
-            <span class='rating-star' id='rating_4'>☆</span>
-            <span class='rating-star' id='rating_3'>☆</span>
-            <span class='rating-star' id='rating_2'>☆</span>
-            <span class='rating-star' id='rating_1'>☆</span>
+          <div class="column-75">
+            <div class="rating rating-star">
+              <span style='margin-right:10px;' class='rating-star' id='rating_5'>☆</span>
+              <span class='rating-star' id='rating_4'>☆</span>
+              <span class='rating-star' id='rating_3'>☆</span>
+              <span class='rating-star' id='rating_2'>☆</span>
+              <span class='rating-star' id='rating_1'>☆</span>
+            </div>
+            <div id= 'rating_text' class="">
+            </div>
           </div>
-          <div id= 'rating_text' class="">
+          <div class="column">
+              <button style ='float:right;' onclick='close_write_review()' id='' class= 'button' type="button" name="button">Close</button>
           </div>
-            <a style='float:right;' href="#">
-              <button style ='width:100%;' onclick='close_write_review()' id='' class= 'button' type="button" name="button">Close</button>
-            </a>
         </div>
         <div class="row">
             {{form.title.label.text}}:
