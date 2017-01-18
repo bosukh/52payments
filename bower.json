@@ -16,7 +16,6 @@
     "tests"
   ],
   "dependencies": {
-    "milligram": "^1.2.4",
-    "mustache.js": "mustache#^2.3.0"
+    "milligram": "^1.2.4"
   }
 }

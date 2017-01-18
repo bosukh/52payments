@@ -130,22 +130,6 @@ input {
 }
 
 /* Small Processor box*/
-.box-row{
-  overflow: auto;
-  text-align: center;
-}
-.small-company-box{
-  overflow: auto;
-  width: 100%;
-  height: 100%;
-  max-width: 300px;
-  display: inline-block;
-  margin-left: 35px;
-  margin-right: 35px;
-  text-align: left;
-  vertical-align: top;
-}
-
 .company-title {
   margin: 5px 0 5px 0;
 }
@@ -216,8 +200,8 @@ input {
   float: right;
 }
 .logo {
-  width: 30rem;
-  height: 6.42rem;
+  width: 35rem;
+  height: 7.5rem;
 }
 .square-logo{
   width:5rem;

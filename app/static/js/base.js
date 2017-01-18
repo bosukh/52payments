@@ -15,7 +15,7 @@ var email_re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@
 var phone_re = /^[0-9]+$/;
 var password_re = /[a-zA-Z0-9!@#\$%\^&\*]{8,}$/
 var field_ids = [];
-var p_tags = document.getElementsByTagName('p');
+var p_tags;
 var p_tags_trimmed_parts = {};
 
 var alert_login_required = function(){
@@ -118,19 +118,36 @@ var cont_reading = function(a_tag, index){
   if (typeof(adjust_height) != 'undefined'){
     adjust_height();
   };
-}
+};
 var add_cont_reading_btn = function(){
-  p_tags = document.getElementsByClassName('trim');
+  p_tags = document.querySelectorAll("[class^='trim']");
   p_tags_trimmed_parts = {};
   for (var i = 0; i < p_tags.length; i++){
-    if (p_tags[i].innerHTML.trim().length > 300) {
-      p_tags_trimmed_parts[i] = p_tags[i].innerHTML.trim().slice(300);
-      p_tags[i].innerHTML = p_tags[i].innerHTML.trim().slice(0, 300);
+    var char_num;
+    for (class_name of p_tags[i].classList){
+      if (class_name.slice(0, 4) == 'trim'){
+        char_num = parseInt(class_name.split('-')[1]);
+      }
+    }
+    if (char_num == undefined){
+      char_num = 300;
+    }
+    text = p_tags[i].innerHTML.trim();
+    if (text.length > char_num) {
+      var front = text.slice(0, char_num);
+      var back = text.slice(char_num);
+      if (back[0]!=' ' & front[front.length-1] !=' '){
+        var temp = front.split(' ');
+        front = temp.slice(0, temp.length - 1).join(' ');
+        back = temp[temp.length-1] + back;
+      }
+      p_tags_trimmed_parts[i] = back;
+      p_tags[i].innerHTML = front + ' ';
       var cont_reading_btn = document.createElement('a');
       cont_reading_btn.className = 'cont_reading_btn';
       cont_reading_btn.setAttribute('onclick', 'cont_reading(this, '+ i +')');
       cont_reading_btn.innerHTML = 'Continue Reading';
       p_tags[i].appendChild(cont_reading_btn);
-    };
-  };
+    }
+  }
 }

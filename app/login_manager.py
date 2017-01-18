@@ -49,8 +49,10 @@ def validate_user(form):
 def google_oauth(**kargs):
     #https://developers.google.com/identity/sign-in/web/backend-auth
     from oauth2client import client, crypt
-    idinfo = client.verify_id_token(kargs['id_token'], WEB_CLIENT_ID)
+    logging.debug(kargs)
+    logging.debug(WEB_CLIENT_ID)
     try:
+        idinfo = client.verify_id_token(kargs['id_token'], WEB_CLIENT_ID)
         if idinfo['aud'] not in [WEB_CLIENT_ID]:
             raise crypt.AppIdentityError("Unrecognized client.")
         if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
