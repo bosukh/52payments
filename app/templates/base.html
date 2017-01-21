@@ -18,7 +18,7 @@
   </head>
   <body>
     <div style='border-bottom:1px solid #d6c9ca;'>
-      <div class="row" style = 'max-width: 1120px; margin:auto'>
+      <div class="row" style = 'max-width: 1130px; margin:auto; padding-left:5px; padding-right:5px;'>
         <div class="column">
           <ul class="nav_ul">
             <a class="nav_a" href="{{url_for('index')}}"><img id="logo" class='logo' src="{{ url_for('static', filename='side_logo.svg') }}" alt="52paymments_logo"></a>
@@ -30,7 +30,6 @@
             <li class="nav_li"><a class="nav_a" href="{{url_for('signup')}}">Sign-up</a></li>
             <li class="nav_li"><a class="nav_a" href="{{url_for('login')}}">Sign-in</a></li>
             {% endif %}
-            <li class="nav_li"><a class="nav_a" href="#">About</a></li>
             <li class="nav_li"><a class="nav_a" href="{{url_for('index')}}">Search</a></li>
           </ul>
         </div>

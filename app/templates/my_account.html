@@ -4,8 +4,8 @@
 {% block content %}
 <h3> Hi, {{user.first_name}}</h3>
 
-<div id = 'featured-companies' style='overflow:visible;' class="box-row">
-  <div style='overflow:visible;' class="small-company-box">
+<div class="row">
+  <div class="column">
     <h4>My Info</h4>
     <hr>
     <ul id="warnings">
@@ -75,7 +75,7 @@
     </a>
   </form>
   </div>
-  <div style='overflow:visible; max-width:650px;' class="small-company-box">
+  <div class="column">
     <h4>My Reviews</h4>
     <hr>
     {% if reviews %}

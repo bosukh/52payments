@@ -1,3 +1,8 @@
+* {
+    box-sizing: border-box;
+}
+@media (min-width: 40.0rem) {
+}
 /*Login*/
 hr {
   border-top: 0.1rem solid #CAC9C9;
@@ -100,7 +105,7 @@ input {
   display: block;
   text-align: center;
   color: #424242;
-  padding: 14px 16px;
+  padding: 1rem 1rem;
   text-decoration: none;
 }
 .rating-star {
