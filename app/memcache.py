@@ -1,6 +1,5 @@
 from google.appengine.api import memcache
 
-
 def mc_upsert(key, data):
     if not key or not data:
         return False

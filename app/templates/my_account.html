@@ -1,11 +1,9 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
-<script src="{{ url_for('static', filename='bower_components/mustache.js/mustache.min.js') }}"></script>
 {% block content %}
-<h3> Hi, {{user.first_name}}</h3>
-
+<br>
 <div class="row">
-  <div class="column">
+  <div class="column left-col">
     <h4>My Info</h4>
     <hr>
     <ul id="warnings">
@@ -75,16 +73,22 @@
     </a>
   </form>
   </div>
-  <div class="column">
+  <div class="column right-col">
     <h4>My Reviews</h4>
     <hr>
-    {% if reviews %}
-      {% include 'review.html' %}
-    {% else %}
-      <p>
-        You did not write any reviews yet.
-      </p>
-    {% endif %}
+    <div id='review-box'>
+      {% if reviews %}
+        {% include 'review.html' %}
+      {% else %}
+        <p>
+          You did not write any reviews yet.
+        </p>
+      {% endif %}
+      <div id = 'page-moves'>
+        <a id ='prev' class='page-move' style="display:none;" href="#">Prev</a>
+        <a id ='next' class='page-move' style="display:none;" href="#">Next</a>
+      </div>
+    </div>
     <br>
   </div>
 </div>
@@ -96,90 +100,5 @@
     {% endif %}
   {% endfor %}
 </form>
-
-<script type="text/javascript">
-var field_ids = ['first_name', 'last_name', 'email', 'phone'];
-hide_warnings(field_ids);
-var account = {
-  hide_fields:function(){
-    for (var k in account.input_fields){
-      if (account.input_fields.hasOwnProperty(k)){
-        account.input_fields[k].style.display = 'none';
-      }
-    }
-  },
-  submit_verify_email:function(){
-    document.getElementById('verify_email').value = document.getElementById('user-email').innerHTML;
-    document.getElementById('verify-email-form').submit();
-  },
-  get_vars:function(){
-    account.fields = ['first_name', 'last_name', 'email', 'phone', 'company_name'];
-    account.input_fields = {};
-    account.infos = {};
-    for (let k of account.fields){
-      account.input_fields[k] = document.getElementById(k);
-      account.infos[k] = document.getElementById('user-'+k);
-    }
-    account.edit_btn = document.getElementById('edit-button');
-    account.edit_form = document.getElementById('edit_info_form');
-    account.save_btn = document.getElementById('save-button');
-    account.cancel_btn = document.getElementById('cancel-button');
-    account.email_verify = document.getElementById('email-verify-div');
-  },
-  edit_info:function(){
-    account.email_verify.style.display = 'none';
-    account.edit_btn.style.display = 'none';
-    account.save_btn.style.display = '';
-    account.cancel_btn.style.display = '';
-    for (var k in account.infos){
-      if (account.infos.hasOwnProperty(k)){
-        if (!account.infos[k]){
-        } else {
-          if (account.infos[k].innerHTML != 'None'){
-            account.input_fields[k].value = account.infos[k].innerHTML;
-          }
-          account.infos[k].style.display='none';
-          account.input_fields[k].style.display = '';
-        }
-      }
-    }
-    add_validator('first_name', 'text_re');
-    add_validator('last_name', 'text_re');
-    add_validator('email', 'email_re');
-    add_validator('phone', 'phone_re');
-  },
-  cancel_edit: function(){
-    account.email_verify.style.display = '';
-    account.edit_btn.style.display = '';
-    account.save_btn.style.display = 'none';
-    account.cancel_btn.style.display = 'none';
-    for (k in account.infos){
-      if (account.infos.hasOwnProperty(k)){
-        if (!account.infos[k]){
-        } else {
-          account.infos[k].style.display='';
-          account.input_fields[k].style.display='none';
-        }
-      }
-    }
-  },
-  save_edit:function(){
-    account.email_verify.style.display = '';
-    account.edit_btn.style.display = '';
-    account.save_btn.style.display = 'none';
-    account.cancel_btn.style.display = 'none';
-    account.edit_form.submit();
-  },
-  toggle_edit_btn:function(){
-    account.get_vars();
-    if (account.edit_btn.lower() == 'edit') {
-      account.edit_info();
-    } else {
-    }
-  }
-};
-account.get_vars();
-account.hide_fields();
-
-</script>
+<script src="{{ url_for('static', filename='js/my_account.min.js') }}"></script>
 {% endblock %}

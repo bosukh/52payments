@@ -1,21 +1,29 @@
 {% for review in reviews%}
 <div class="review">
-  <h5>{{review.title}}
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    {% for i in range(review.rating)%}
+  <div class="row" style='margin-left:0px;'>
+    <h5 style='margin-bottom:0px;'>
+      {{review.title}}
+    </h5>
+  </div>
+  <div class="">
+    <h5 style='margin-bottom:0px;'>
+      {% for i in range(review.rating)%}
       <span class='rating-star'>★</span>
-    {% endfor %}
-    {% for i in range(5-review.rating)%}
+      {% endfor %}
+      {% for i in range(5-review.rating)%}
       <span class='rating-star'>☆</span>
-    {% endfor %}
-    {{review.rating}}
-    <span id='user_name'>
-      <em>{{ momentjs(review.created).calendar() }} by
-        {{review.user_name}}
-      </em>
-    </span>
-  </h5>
-  <p class='trim'>
+      {% endfor %}
+      {{review.rating}}
+      <span id='user_name' style='float:right; font-size:1.5rem;'>
+        <em>{{ review.created}} by
+          {{review.user_name}}
+        </em>
+      </span>
+    </h5>
+  </div>
+  <div class="row" style='margin-left:0px;'>
+  </div>
+  <p class='trim-300'>
     <em>
       {% if review.company_name %}
       Review for <a href="{{url_for('company', company_profile_name = review.company_profile_name)}}">{{review.company_name}}</a>
@@ -23,13 +31,10 @@
     </em>
     <br>
     {{review.content}}
-  </p><br><br>
+  </p>
   <div class="decision-area">
     <input id = 'urlsafe' type="hidden" name="urlsafe" value="{{review.urlsafe}}">
     <input id = 'type' type="hidden" name="type" value="review">
   </div>
 </div>
 {% endfor %}
-<script type="text/javascript">
-  add_cont_reading_btn();
-</script>

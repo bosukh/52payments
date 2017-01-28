@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
   <head>
     <meta charset="utf-8">
@@ -7,21 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google-signin-client_id" content="456242400193-rvmtrqiuemt0ma9hfedb89fp6iullu9u.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="{{ url_for('static', filename='js/google_signin.js') }}"></script>
     <script src="{{ url_for('static', filename='js/base.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/normalize.css/normalize.css') }}">
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/milligram/dist/milligram.min.css') }}">
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/normalize.css/normalize.min.css') }}">
+    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/milligram/dist/milligram-customized.min.css') }}">
+    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/base.min.css') }}">
     <title>52 Payments</title>
   </head>
   <body>
-    <div style='border-bottom:1px solid #d6c9ca;'>
-      <div class="row" style = 'max-width: 1130px; margin:auto; padding-left:5px; padding-right:5px;'>
+    <div style='border-bottom:0.1rem solid #d6c9ca;'>
+      <div class="row" style = 'max-width: 1130px; margin:auto; padding-left:0.5rem; padding-right:0.5rem;'>
         <div class="column">
           <ul class="nav_ul">
-            <a class="nav_a" href="{{url_for('index')}}"><img id="logo" class='logo' src="{{ url_for('static', filename='side_logo.svg') }}" alt="52paymments_logo"></a>
+            <a id= 'nav-square-logo' class="nav_a" href="{{url_for('index')}}"><img class='square-logo' src="{{ url_for('static', filename='square_logo.svg') }}" alt="52paymments_logo"></a>
+            <a id= 'nav-side-logo' style='display:none;' class="nav_a" href="{{url_for('index')}}"><img style='max-width:20rem;' class='side-logo' src="{{ url_for('static', filename='side_logo.svg') }}" alt="52paymments_logo"></a>
             {% if current_user.is_authenticated %}
             <div style='display:none;' class="g-signin2"></div>
             <li class="nav_li"><a class="nav_a" onclick= 'javascript:signOut()' href="{{url_for('logout')}}">Sign-out</a></li>
@@ -37,20 +34,20 @@
     </div>
     {% with messages = get_flashed_messages() %}
     {% if messages %}
-    <div class="warning">
+    <div style='text-align: center; color:red;'>
       {% for message in messages %}
           {{ message }} <br>
       {% endfor %}
     </div>
     {% endif %}
     {% endwith %}
-    <div id='content-container' style = 'max-width: 1130px; margin:auto; padding-left:5px; padding-right:5px;'>
+    <div id='content-container' style = 'max-width: 1130px; margin:auto; padding-left:0.5rem; padding-right:0.5rem;'>
       {% block content %}{% endblock %}
     </div>
     <footer class='footer' style = 'max-width: 1130px;'>
       <div class="row">
-        <img class='square-logo' style='margin-right:1rem; margin-left:2rem;' src="{{ url_for('static', filename='square_logo.svg') }}" alt="52paymments_logo"/>
-        <p>
+        <img id= 'footer-logo' class='square-logo' style='margin-left:2rem;' src="{{ url_for('static', filename='square_logo.svg')}}" alt="52paymments_logo"/>
+        <p style='margin-left:1rem;'>
           © 2016-2017 52Payments. All Rights Reserved
           <br>
           - <a class="nav_a" href="/index">
@@ -67,7 +64,6 @@
           </a>
         </p>
       </div>
-
     </footer>
   </body>
 </html>

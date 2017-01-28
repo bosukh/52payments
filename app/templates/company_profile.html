@@ -3,24 +3,27 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="company-profile-container">
-  <div class="company-profile-top-row">
-    <img id="company-profile-logo" class='logo' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
-    <a href="{{company.landing_page}}" target = '_blank'>
-      <button id='company-apply-button' class= 'button' type="button" name="button">Apply</button>
-    </a>
-    {% if current_user.is_authenticated and current_user%}
-    <a href="javascript:show_review_box()">
-      <button onclick='on_write_review()' id='company-review-button' class= 'button' type="button" name="button">Write a Review</button>
-    </a>
-    {% else %}
-    <a href="javascript:alert_login_required()">
-      <button id='company-review-button' class= 'button' type="button" name="button">Write a Review</button>
-    </a>
-    {% endif %}
+<div class="large-company-profile-container">
+  <div class="row" style='align-items:flex-end;'>
+    <img id="company-profile-logo" class='side-logo' style='align-self:flex-start; padding-right:1rem;' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
+    <div class="row" style='flex-direction:row;'>
+      <a href="{{company.landing_page}}" target = '_blank'>
+        <button class='company-apply-button' style = 'display:flex; margin-left:1rem;' type="button" name="apply-button">Apply</button>
+      </a>
+      {% if current_user.is_authenticated and current_user%}
+      <a href="javascript:show_review_box()">
+        <button id='company-review-button' style = 'display:flex; margin-left:1rem;' onclick='on_write_review()' class='company-review-button' type="button" name="button">Write a Review</button>
+      </a>
+      {% else %}
+      <a href="javascript:alert_login_required()">
+        <button style = 'display:flex; margin-left:1rem;'id='company-review-button' class='company-review-button' type="button" name="wirte-review-button">Write a Review</button>
+      </a>
+      {% endif %}
+    </div>
   </div>
-
-  <div class="company-left-col">
+  {% include 'write_review.html' %}
+  <div class="row">
+  <div class="column left-col">
     <div class="company-profile-basic-box">
       {% if company.title %}
         Name: {{company.title}}<br>
@@ -43,7 +46,6 @@
       <span class='rating-star'>☆</span>
       {% endfor %}
       {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
-      √ Verified With 52Payments <br>
     </div>
     <div class="company-profile-basic-box">
       {% if company.pricing_range %}
@@ -91,17 +93,16 @@
     </div>
     {% endif %}
   </div>
-  <div id='company-right-col' class="company-right-col">
-    {% include 'write_review.html' %}
-    <div class="company-profile-basic-box">
+  <div class="column right-col company-profile-basic-box">
+    <div>
       {% if company.title %}
         <h4>{{ company.title }}</h4>
       {% endif %}
-      {{company.full_description}}
+      <p class='trim-1000'>
+        {{company.full_description}}
+      </p>
     </div>
-  </div>
-  <div id='review-box' class="company-right-col">
-    <div class="company-profile-basic-box">
+    <div id='review-box' class='company-profile-basic-box'>
       {% if reviews %}
         {% include 'review.html' %}
       {% else %}
@@ -109,66 +110,31 @@
           Threre's no review for the company yet.
         </p>
       {% endif %}
-    </div>
-    <div id = 'page-moves'>
-      <a id ='prev' class='page-move' style="display:none;" href="#">Prev</a>
-      <a id ='next' class='page-move' style="display:none;" href="#">Next</a>
+      <div id = 'page-moves'>
+        <a id ='prev' class='page-move' style="display:none;" href="#">Prev</a>
+        <a id ='next' class='page-move' style="display:none;" href="#">Next</a>
+      </div>
     </div>
   </div>
 </div>
-<script type="text/javascript">
-
-var on_write_review = function() {
-  document.getElementById('title').style = 'width:calc(100% - 8px);' ;
-  document.getElementById('content').style = 'width:100%;';
-  var width_ = document.getElementById('write-review-box').offsetWidth;
-  document.getElementById('content').style = 'width: 100%; height:200px;'
-  disable_btn('review-submit-button');
-}
-</script>
-
+</div>
 <script type="text/javascript">
   var page = 0;
   var next_page, prev_page;
-
   var reviews = document.getElementsByClassName('review');
-
-  var hide_all = function(reviews){
-    for (var i = 0; i < reviews.length; i++){
-      reviews[i].style.display = 'none';
-    };
+  function on_write_review() {
+    document.getElementById('title').style = 'width:calc(100% - 8px);' ;
+    document.getElementById('content').style = 'width:100%;';
+    var width_ = document.getElementById('write-review-box').offsetWidth;
+    document.getElementById('content').style = 'width: 100%; height:200px;'
+    disable_btn('review-submit-button');
   }
-  var create_page_moves = function(page, reviews){
-    next_page = page+1;
-    prev_page = page-1;
-    var next = document.getElementById('next');
-    next.setAttribute('href', 'javascript:display_current_page(next_page, reviews)');
-    next.style.display = 'none';
-    var prev = document.getElementById('prev');
-    prev.setAttribute('href', 'javascript:display_current_page(prev_page, reviews)');
-    prev.style.display = 'none';
-    if (page != 0){
-      prev.style.display = 'inline-block';
-    };
-    if (reviews.length/3 > page+1){
-      next.style.display = 'inline-block';
-    };
-  }
-  var display_current_page = function(page, reviews){
-    hide_all(reviews);
-    for (var i = page*3; i < (page+1)*3 && i < reviews.length; i++){
-      reviews[i].style.display = 'block';
-    }
-    create_page_moves(page, reviews);
+  function show_review_box(){
+    document.getElementById('write-review-box').style = 'display:block;';
+    check_all();
   }
   display_current_page(page, reviews);
-</script>
-
-<script type="text/javascript">
-var show_review_box = function(){
-  document.getElementById('write-review-box').style = 'display:block;';
-  check_all();
-}
+  add_cont_reading_btn();
 </script>
 
 {% endblock %}

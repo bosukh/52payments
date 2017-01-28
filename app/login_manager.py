@@ -1,18 +1,21 @@
 import logging
+
 from flask_login import login_user, current_user
 from flask import redirect, url_for, flash
 from bcrypt import bcrypt as bt
+
 from . import login_manager
 from . import WEB_CLIENT_ID
 from .models import User
 from .redirect_check import *
+
 @login_manager.user_loader
 def load_user(user_id):
-    query = User.gql("WHERE user_id = '%s'"%user_id)
+    query = User.gql("WHERE user_id = '%s'"%str(user_id))
     return query.get()
 
 def load_user_by_email(email):
-    query = User.gql("WHERE email = '%s'"%email)
+    query = User.gql("WHERE email = '%s'"%str(email))
     return query.get()
 
 def login_user_with_redirect(user, form, referrer):
@@ -30,7 +33,8 @@ def login_user_with_redirect(user, form, referrer):
 
 def validate_user(form):
     error = None
-    if not form.data['email'] or not form.data['password']:
+    logging.debug(11111111111111111)
+    if not form.data.get('email') or not form.data.get('password'):
         return None, 'You must enter both email and password'
     user = load_user(form.data['email'])
     if not user:
@@ -49,8 +53,6 @@ def validate_user(form):
 def google_oauth(**kargs):
     #https://developers.google.com/identity/sign-in/web/backend-auth
     from oauth2client import client, crypt
-    logging.debug(kargs)
-    logging.debug(WEB_CLIENT_ID)
     try:
         idinfo = client.verify_id_token(kargs['id_token'], WEB_CLIENT_ID)
         if idinfo['aud'] not in [WEB_CLIENT_ID]:

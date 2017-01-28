@@ -1,5 +1,4 @@
 import logging
-import time
 from time import sleep
 from uuid import uuid1
 from flask import Flask, make_response, abort, g, jsonify
@@ -8,34 +7,33 @@ from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
 from flask_login import fresh_login_required, LoginManager, login_user, logout_user, current_user, login_required
+
 from app import app, login_manager
 from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
 from app.models import Company, User, Review, TempCode
-from app.momentjs import momentjs
 from app.basejs import basejs
-from app.search import parse_search_criteria, company_search
+from app.search import search_company
 from app.memcache import mc_getsert
 from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 
-app.jinja_env.globals['momentjs'] = momentjs
 app.jinja_env.globals['bjs'] = basejs
 
 def load_company(company_profile_name):
-    query = Company.gql("WHERE company_profile_name = '%s'"%company_profile_name)
+    query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
     return query.get()
+def reviews_for_display(reviews):
+    reviews = [review.to_dict() for review in reviews]
+    for review in reviews:
+        user = review['user'].get()
+        review['user_name'] = user.first_name +" " + user.last_name
+        review['created'] = review['created'].strftime('%b %d, %Y')
+    return reviews
 
 @app.route('/search_results', methods=['GET'])
 def search_results():
-    if request.args['search_criteria']:
-        search_criteria = parse_search_criteria(request.args['search_criteria'])
-        search_result = company_search(search_criteria)
-        for company in search_result:
-            company.avg_rating = round(company.avg_rating, 1)
-            session['search_criteria'] = search_criteria
-    else:
-        search_result = mc_getsert('all_verified_companies', Company.gql('').fetch)
+    search_result = search_company(request.args.get('search_criteria'))
     return render_template("search_results.html", companies=search_result)
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,6 +42,7 @@ def index():
     form = SearchForm()
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
+
     #companies = Company.query(Company.featured==True).fetch(limit=3)
     companies = Company.query().fetch(limit=3)
     return render_template("index.html", companies = companies, form = form)
@@ -64,7 +63,7 @@ def my_account():
         code = uuid1().get_hex()
         temp_code = TempCode(code=code, value=current_user.user_id)
         temp_code.put()
-        link = 'https://52payments.com/verify_email/%s'%code
+        link = 'https://52payments.com/verify_email/%s'%str(code)
         subject = email_templates['verify_email']['subject']
         body = email_templates['verify_email']['body']%(current_user.first_name, link)
         send_email(current_user, subject, body)
@@ -73,9 +72,8 @@ def my_account():
     user = current_user.to_dict()
     user.pop('password')
     reviews = Review.query(Review.user==current_user.key).order(-Review.created).fetch(limit=None)
-    reviews = [review.to_dict() for review in reviews]
+    reviews = reviews_for_display(reviews)
     for review in reviews:
-        review['user_name'] = user['first_name'] +' '+ user['last_name']
         company = review['company'].get()
         review['company_name'] = company.title
         review['company_profile_name'] = company.company_profile_name
@@ -262,10 +260,7 @@ def company(company_profile_name):
             return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
-        reviews = [review.to_dict() for review in reviews]
-        for review in reviews:
-            user = review['user'].get()
-            review['user_name'] = user.first_name +" " + user.last_name
+        reviews = reviews_for_display(reviews)
         return render_template('company_profile.html',
                                 company = company, reviews = reviews, form=form)
     else:
@@ -277,7 +272,7 @@ def company(company_profile_name):
 def admin():
     if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
         abort(400)
-    reviews = Review.query().filter(Review.approved ==False).order(-Review.created).fetch(limit=None)
+    reviews = Review.query().filter(Review.approved ==None).order(-Review.created).fetch(limit=None)
     dict_reviews = []
     for review in reviews:
         urlsafe = review.key.urlsafe()
@@ -286,7 +281,6 @@ def admin():
         user = review['user'].get()
         review['user_name'] = user.first_name + ' ' +user.last_name
         dict_reviews.append(review)
-    print dict_reviews
     return render_template('admin.html',
                             reviews=dict_reviews)
 

@@ -1,24 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script src="{{ url_for('static', filename='js/search.js') }}"></script>
-  <h3>Welcome to 52Payments!</h3>
+  <h1>52Payments is currently in development. We will launch our website soon.</h1>
   <div class="search-box">
     <div class="search-row">
       <div id='search-nav' class="search-nav row">
-        <div class="column-75">
-          <button class= 'items-title selected' type="button" onclick="javascript:select_items_title(this)">Business Types</button>
-          <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Pricing Method</button>
+        <div class="column">
+          <button class= 'items-title selected' type="button" onclick="javascript:select_items_title(this)">Pricing Method</button>
+          <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Business Types</button>
           <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Equipments</button>
           <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Complimentary Services</button>
-        </div>
-        <div class="column">
-          <button onclick='javascript:get_search_result()' style='float:right; margin-top:0.5rem; margin-bottom:0.5rem;' type="button" class="button">Search</button>
+          <button onclick='javascript:get_search_result()' style='float:right; margin-top:0.5rem; margin-bottom:0.5rem;' type="button">Search</button>
         </div>
       </div>
       <div class="row">
         <div class="column">
-          *Select Search Criteria
+            <h3 style='margin:0;'>*Select Search Criteria</h3>
         </div>
       </div>
       <div id = 'items' class="items">
@@ -44,35 +41,13 @@
   </div>
   <div id = 'featured-companies' class="row">
     {% for company in companies %}
+    <div id='featured_{{loop.index0}}' style='display:none;' class='row'>
       {% include 'small_company_box.html' %}
+    </div>
     {% endfor %}
   </div>
   <div id='loader' style='display:none;' class="loader"></div>
   <div id='search-result'>
   </div>
-<script type="text/javascript">
-  var types, search_criteria, current_type, items, selected_items, selected_item_list
-  init_search_box();
-  var featured_title = document.getElementById('featured-title');
-  var featured = document.getElementById('featured-companies');
-  var clear_search_criteria = function() {
-    sessionStorage.clear();
-    items.innerHTML = '';
-    selected_items.innerHTML = ''
-    document.getElementById('chosen-title').style.opacity= 0;
-    init_search_box();
-  }
-  var get_search_result = function(){
-    get_search_result_base(function() {
-      featured_title.remove();
-      featured.remove();
-    });
-  }
-  if (typeof(search_criteria)!='undefined' & search_criteria.value != ''){
-    get_search_result();
-  } else {
-    add_cont_reading_btn();
-  };
-</script>
-
+  <script src="{{ url_for('static', filename='js/search.min.js') }}"></script>
 {% endblock %}

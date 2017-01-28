@@ -27,7 +27,7 @@ class TempCode(ndb.Model):
 
     @classmethod
     def load_code(self, code):
-        query = self.gql("WHERE code = '%s'"%code)
+        query = self.gql("WHERE code = '%s'"%str(code))
         return query.get()
 
 class Company(ndb.Model):
@@ -90,7 +90,7 @@ class Review(ndb.Model):
     rating = ndb.IntegerProperty(required=True, indexed=True)
     title = ndb.StringProperty(required=True, indexed=True)
     content = ndb.TextProperty(required=True, indexed=False)
-    approved = ndb.BooleanProperty(default=False, indexed=True)
+    approved = ndb.BooleanProperty(indexed=True)
     user = ndb.KeyProperty(User, indexed=True)
     company = ndb.KeyProperty(Company, indexed=True)
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=True)

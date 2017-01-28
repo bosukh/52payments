@@ -1,15 +1,3 @@
-var mode; //deploy
-if (location.hostname == 'localhost'){
-  mode = 'local';
-} else{
-  mode = 'deploy';
-};
-if (mode == 'deploy'){
-  if (location.protocol != 'https:'){
-   location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
-  };
-};
-
 var text_re = /^[a-zA-Z']+$/;
 var email_re = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 var phone_re = /^[0-9]+$/;
@@ -17,42 +5,52 @@ var password_re = /[a-zA-Z0-9!@#\$%\^&\*]{8,}$/
 var field_ids = [];
 var p_tags;
 var p_tags_trimmed_parts = {};
+var auth2;
 
 var alert_login_required = function(){
   alert('You need to log-in.')
 }
-var round = function(value, decimals) {
+function signOut() {
+  auth2 = gapi.auth2.getAuthInstance();
+  auth2.signOut().then(function () {
+    console.log('User signed out.');
+  });
+}
+
+function onSignIn(googleUser) {
+  var id_token = googleUser.getAuthResponse().id_token;
+  signOut();
+  document.getElementById('id_token').value = id_token;
+  document.getElementById('google-login-form').submit();
+}
+function round(value, decimals) {
   return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
-var pop = function(list_, item){
+function pop(list_, item){
   var index = list_.indexOf(item);
   list_.splice(index, 1);
 }
-
-var hide_warnings = function(field_ids){
+function hide_warnings(field_ids){
   for (var i = 0; i < field_ids.length; i++){
     document.getElementById('warning_'+field_ids[i]).style.display = 'none';
   };
 };
-
-var enable_btn = function(dom_id){
+function enable_btn(dom_id){
   var elem = document.getElementById(dom_id);
   elem.disabled = false;
   elem.style.opacity = 1;
 };
-var disable_btn = function(dom_id){
+function disable_btn(dom_id){
   var elem = document.getElementById(dom_id);
   elem.disabled = true;
   elem.style.opacity = 0.5;
 };
-
-var add_validator = function(dom_id, re_name){
+function add_validator(dom_id, re_name){
   var elem = document.getElementById(dom_id);
-  var function_call = 'func(this,' + re_name + ')'
+  var function_call = 'check_input(this,' + re_name + ')'
   elem.setAttribute('oninput', function_call);
 };
-
-var check_all_field = function(field_ids, warnings = false){
+function check_all_field(field_ids, warnings = false){
   var bad = 0;
   for (var i = 0; i < field_ids.length; i++){
     if (warnings){
@@ -68,7 +66,7 @@ var check_all_field = function(field_ids, warnings = false){
   return bad == 1
 };
 
-var all_required_field_warning = function(bad){
+function all_required_field_warning(bad){
   if (bad){
     if (typeof(all_warning_id) != "undefined"){
       document.getElementById(all_warning_id).style.display = 'block';
@@ -85,16 +83,14 @@ var all_required_field_warning = function(bad){
     }
   };
 };
-
-var toggle_warning = function(bool_, message){
+function toggle_warning(bool_, message){
   if (bool_){
     message.style.display = 'none';
   } else {
     message.style.display = 'block';
   };
 };
-
-var func = function(elem, re) {
+function check_input(elem, re) {
   var input = elem.value;
   var message = document.getElementById("warning_"+elem.id);
   toggle_warning(input.match(re), message);
@@ -102,16 +98,14 @@ var func = function(elem, re) {
   all_required_field_warning(all_warning);
 };
 
-
-var create_xhr = function(method, url, func){
+function create_xhr(method, url, func){
   var xhr = new XMLHttpRequest();
   xhr.open(method, url);
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   xhr.onload = func;
   return xhr
 }
-
-var cont_reading = function(a_tag, index){
+function cont_reading(a_tag, index){
   a_tag.remove();
   var temp = p_tags[index].innerHTML;
   p_tags[index].innerHTML =  temp + p_tags_trimmed_parts[index];
@@ -119,7 +113,7 @@ var cont_reading = function(a_tag, index){
     adjust_height();
   };
 };
-var add_cont_reading_btn = function(){
+function add_cont_reading_btn(){
   p_tags = document.querySelectorAll("[class^='trim']");
   p_tags_trimmed_parts = {};
   for (var i = 0; i < p_tags.length; i++){
@@ -150,4 +144,32 @@ var add_cont_reading_btn = function(){
       p_tags[i].appendChild(cont_reading_btn);
     }
   }
+}
+function hide_all(reviews){
+  for (var i = 0; i < reviews.length; i++){
+    reviews[i].style.display = 'none';
+  };
+}
+function create_page_moves(page, reviews){
+  next_page = page+1;
+  prev_page = page-1;
+  var next = document.getElementById('next');
+  next.setAttribute('href', 'javascript:display_current_page(next_page, reviews)');
+  next.style.display = 'none';
+  var prev = document.getElementById('prev');
+  prev.setAttribute('href', 'javascript:display_current_page(prev_page, reviews)');
+  prev.style.display = 'none';
+  if (page != 0){
+    prev.style.display = 'inline-block';
+  }
+  if (reviews.length/3 > page+1){
+    next.style.display = 'inline-block';
+  }
+}
+function display_current_page(page, reviews){
+  hide_all(reviews);
+  for (var i = page*3; i < (page+1)*3 && i < reviews.length; i++){
+    reviews[i].style.display = 'block';
+  }
+  create_page_moves(page, reviews);
 }
