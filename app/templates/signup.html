@@ -62,7 +62,7 @@
     {% endif %}
   {% endfor %}
 </form>
-
+{{ minified.include_js('base.js') | safe}}
 <script type="text/javascript">
   var field_ids = ['first_name', 'last_name', 'email', 'password', 'password_2'];
   var button_id = 'signup-button';

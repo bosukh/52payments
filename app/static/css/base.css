@@ -45,9 +45,6 @@ button {
     padding: 0 0.7rem 0rem 0.7rem;
   }
 }
-/*
-FROM: https://css-tricks.com/star-ratings/
-*/
 @media (min-width: 30rem) {
   .column.left-col {
     flex: 0 0 33%;
@@ -59,11 +56,6 @@ FROM: https://css-tricks.com/star-ratings/
     padding-left:1rem;
   }
 }
-
-.cont_reading_btn {
-  cursor:pointer;
-}
-/*Logos*/
 .side-logo {
   width: 35rem;
   height: 7.5rem;
@@ -72,6 +64,7 @@ FROM: https://css-tricks.com/star-ratings/
   width:5rem;
   height:5rem;
 }
+/*Logos*/
 @media (min-width: 40rem) {
   #nav-side-logo{
     display:inline !important;
@@ -127,6 +120,10 @@ FROM: https://css-tricks.com/star-ratings/
   #featured_2 {
     display:block !important;
   }
+}
+
+.cont_reading_btn {
+  cursor:pointer;
 }
 
 /* Search Box*/
@@ -295,4 +292,3 @@ FROM: https://css-tricks.com/star-ratings/
   position: relative;
   width: 1.1em;
 }
-

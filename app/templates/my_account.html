@@ -100,5 +100,5 @@
     {% endif %}
   {% endfor %}
 </form>
-<script src="{{ url_for('static', filename='js/my_account.min.js') }}"></script>
+{{ minified.include_js('base.js', 'my_account.js') | safe}}
 {% endblock %}

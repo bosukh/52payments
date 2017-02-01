@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
   <h1>52Payments is currently in development. We will launch our website soon.</h1>
   <div class="search-box">
@@ -49,5 +48,6 @@
   <div id='loader' style='display:none;' class="loader"></div>
   <div id='search-result'>
   </div>
-  <script src="{{ url_for('static', filename='js/search.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 {% endblock %}

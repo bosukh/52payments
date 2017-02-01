@@ -10,7 +10,7 @@
       {% for i in range(5-company.rounded_rating)%}
       <span class='rating-star'>☆</span>
       {% endfor %}
-      {{bjs().round(company.avg_rating)}}  ({{company.num_ratings}}) <br>
+      {{company.avg_rating}}  ({{company.num_ratings}}) <br>
       <p class='trim-300'>
         {{company.summary}}
       </p>

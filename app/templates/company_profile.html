@@ -2,7 +2,6 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
-
 <div class="large-company-profile-container">
   <div class="row" style='align-items:flex-end;'>
     <img id="company-profile-logo" class='side-logo' style='align-self:flex-start; padding-right:1rem;' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
@@ -45,7 +44,7 @@
       {% for i in range(5-company.rounded_rating)%}
       <span class='rating-star'>☆</span>
       {% endfor %}
-      {{bjs().round(company.avg_rating)}} ({{company.num_ratings}}) <br>
+      {{company.avg_rating}} ({{company.num_ratings}}) <br>
     </div>
     <div class="company-profile-basic-box">
       {% if company.pricing_range %}
@@ -118,23 +117,5 @@
   </div>
 </div>
 </div>
-<script type="text/javascript">
-  var page = 0;
-  var next_page, prev_page;
-  var reviews = document.getElementsByClassName('review');
-  function on_write_review() {
-    document.getElementById('title').style = 'width:calc(100% - 8px);' ;
-    document.getElementById('content').style = 'width:100%;';
-    var width_ = document.getElementById('write-review-box').offsetWidth;
-    document.getElementById('content').style = 'width: 100%; height:200px;'
-    disable_btn('review-submit-button');
-  }
-  function show_review_box(){
-    document.getElementById('write-review-box').style = 'display:block;';
-    check_all();
-  }
-  display_current_page(page, reviews);
-  add_cont_reading_btn();
-</script>
-
+{{ minified.include_js('base.js', 'company_profile.js') | safe}}
 {% endblock %}

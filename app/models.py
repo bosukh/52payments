@@ -105,3 +105,4 @@ class Review(ndb.Model):
         company.avg_rating = ((company.avg_rating * (company.num_ratings-1)) + rating) / company.num_ratings
         company.rounded_rating = int(round(company.avg_rating))
         company.put()
+        return None

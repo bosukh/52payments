@@ -6,7 +6,7 @@ var featured = document.getElementById('featured-companies');
 function init_search_box() {
   init_vars();
   toggle_clear_all_btn();
-  fill_items(types[current_type], items);
+  fill_items(types[current_type], items,0);
 }
 function init_vars(){
   clear_all_btn = document.getElementById('clear-all');
@@ -59,12 +59,13 @@ function select_items_title(items_title){
   }
   items_title.className = 'items-title selected';
   var current_num = items.childNodes.length;
-  for (var i = 1; i < current_num; i++){
-    items.childNodes[1].remove();
+  for (var i = 0; i < current_num; i++){
+    items.childNodes[0].remove();
   }
-  fill_items(types[current_type], items);
+  fill_items(types[current_type], items, 0);
 }
-function fill_items(list_, items, selected = 0){
+
+function fill_items(list_, items, selected){
   for (var i = 0; i < list_.length; i++){
     var item = document.createElement('button');
     item.className = 'item';
@@ -72,7 +73,7 @@ function fill_items(list_, items, selected = 0){
       item.className = 'item selected-item';
       item.onclick = function(){deselect(this)};
       item.innerHTML = list_[i] + ' x';
-    } else{
+    }else{
       item.setAttribute("id", list_[i]);
       item.onclick = function(){select(this)};
       item.innerHTML = list_[i];
@@ -100,7 +101,7 @@ function deselect(item){
   types[type].push(item_name);
   sessionStorage.setItem(current_type, types[current_type]);
   if (types[current_type].includes(item_name)){
-    fill_items([item_name], items);
+    fill_items([item_name], items,0);
   }
   item.remove();
   if (selected_item_list.length == 0){
@@ -127,7 +128,7 @@ function toggle_clear_all_btn() {
     clear_all_btn.style = 'display:block;'
   }
 }
-function get_search_result_base(func = 0) {
+function get_search_result_base(func) {
   document.getElementById('loader').style = 'display: block;'
   var after_todo = function(){
     if (document.getElementById('search-result')){

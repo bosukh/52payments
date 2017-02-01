@@ -1,9 +1,8 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
-
 {% include 'review.html' %}
-
+<script src="{{ url_for('static', filename='js/base.min.js') }}"></script>
 <script type="text/javascript">
   var currentDOM;
   var objs = document.getElementsByClassName('decision-area');

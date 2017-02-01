@@ -2,7 +2,7 @@ import logging
 from time import sleep
 from uuid import uuid1
 from flask import Flask, make_response, abort, g, jsonify
-from flask import render_template, flash, redirect, session, url_for, request, g
+from flask import flash, redirect, session, url_for, request, g
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
@@ -17,8 +17,18 @@ from app.memcache import mc_getsert
 from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect
 from app.redirect_check import *
 from app.emails import email_templates, send_email
+from app.render import render_template, minify_css, minify_js, minified_files
+from config import basedir
 
+minified = minified_files()
 app.jinja_env.globals['bjs'] = basejs
+app.jinja_env.globals['minified'] = minified
+
+
+@app.route('/temp', methods=['GET'])
+def temp():
+    return minified.include_js('base.js', 'company_profile.js')
+
 
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
@@ -42,9 +52,10 @@ def index():
     form = SearchForm()
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
-
     #companies = Company.query(Company.featured==True).fetch(limit=3)
     companies = Company.query().fetch(limit=3)
+    for company in companies:
+        company.avg_rating = round(company.avg_rating, 1)
     return render_template("index.html", companies = companies, form = form)
 
 @app.route('/my_account', methods=['GET', 'POST'])
@@ -261,6 +272,7 @@ def company(company_profile_name):
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
         reviews = reviews_for_display(reviews)
+        company.avg_rating = round(company.avg_rating, 1)
         return render_template('company_profile.html',
                                 company = company, reviews = reviews, form=form)
     else:
@@ -296,7 +308,7 @@ def admindecision():
     if obj_type == 'review':
         review = key.get()
         if decision == 'true':
-            review.approve()
+            k = review.approve()
             return 'approved'
         else:
             review.key.delete()
@@ -308,6 +320,8 @@ def img(company_profile_name):
     company = company.logo_file
     response = make_response(company)
     response.headers['Content-Type'] = 'image/svg+xml'
+    response.headers['Cache-Control'] ='max-age=5184000'
+    response.headers['ETag'] ='b498b71644eb4f7f862d2cd15f3d99f5'
     return response
 ###################################################
 from random import choice

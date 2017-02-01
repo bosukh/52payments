@@ -5,13 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google-signin-client_id" content="456242400193-rvmtrqiuemt0ma9hfedb89fp6iullu9u.apps.googleusercontent.com">
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/normalize.css/normalize.min.css') }}">
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='bower_components/milligram/dist/milligram-customized.min.css') }}">
-    <link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='css/base.min.css') }}">
+    <script src="{{url_for('static', filename='js/platform.js')}}" async defer></script>
     <title>52 Payments</title>
   </head>
+  {{minified.include_css('normalize.css', 'milligram-customized.css', 'base.css')|safe}}
   <body>
     <div style='border-bottom:0.1rem solid #d6c9ca;'>
       <div class="row" style = 'max-width: 1130px; margin:auto; padding-left:0.5rem; padding-right:0.5rem;'>
@@ -66,4 +63,12 @@
       </div>
     </footer>
   </body>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', 'UA-91332101-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </html>
