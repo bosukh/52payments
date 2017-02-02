@@ -25,9 +25,18 @@ app.jinja_env.globals['bjs'] = basejs
 app.jinja_env.globals['minified'] = minified
 
 
-@app.route('/temp', methods=['GET'])
-def temp():
-    return minified.include_js('base.js', 'company_profile.js')
+@app.route('/about_us', methods=['GET'])
+def about_us():
+    return render_template("about_us.html")
+@app.route('/contact_us', methods=['GET'])
+def contact_us():
+    return render_template("contact_us.html")
+@app.route('/terms', methods=['GET'])
+def terms():
+    return render_template("terms.html")
+@app.route('/privacy_policy', methods=['GET'])
+def privacy_policy():
+    return render_template("privacy_policy.html")
 
 
 def load_company(company_profile_name):
