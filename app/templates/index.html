@@ -48,6 +48,5 @@
   <div id='loader' style='display:none;' class="loader"></div>
   <div id='search-result'>
   </div>
-  <script src="{{ url_for('static', filename='js/base.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+  {{ minified.include_js('base.js', 'search.js') | safe}}
 {% endblock %}

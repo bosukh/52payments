@@ -10,7 +10,6 @@
     var xhr = new XMLHttpRequest();
     var urlsafe = document.getElementById('urlsafe').value;
     var type = document.getElementById('type').value;
-    //xhr.open('POST', 'https://52payments.com/admindecision');
     xhr.open('POST', '/admindecision');
     xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     xhr.onload = function() {
@@ -21,15 +20,11 @@
 
   for (var i = 0; i < objs.length; i++){
     obj = objs[i];
-
     var divElem = document.createElement('div');
-    divElem.setAttribute('class', 'button-wrapper');
-    divElem.style.display = 'inline-block'
+    divElem.setAttribute('class', 'row');
     var approve = document.createElement('button');
     approve.innerHTML = 'Approve';
     approve.setAttribute('type','submit');
-    approve.setAttribute('class', 'button');
-    approve.setAttribute('id', 'search-button');
     approve.addEventListener('click', function(){
       send_decision('true');
       currentDOM = this.parentElement.parentElement.parentElement;
@@ -37,8 +32,6 @@
     var decline = document.createElement('button');
     decline.innerHTML = 'Decline';
     decline.setAttribute('type','submit');
-    decline.setAttribute('class', 'button');
-    decline.setAttribute('id', 'search-button');
     decline.addEventListener('click', function(){
       send_decision('false');
       currentDOM = this.parentElement.parentElement.parentElement;

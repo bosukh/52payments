@@ -36,12 +36,12 @@ function get_criteria_list(){
   if (sessionStorage.getItem('Equipments')){
     var equip_type = sessionStorage.getItem('Equipments').split(',');
   } else {
-    var equip_type = ['Verifone', 'Ingenico', 'Other'];
+    var equip_type = ['Verifone', 'Ingenico', 'Mobile', 'POS','Other'];
   }
   if (sessionStorage.getItem('Pricing Method')){
     var pricing_type = sessionStorage.getItem('Pricing Method').split(',');
   } else {
-    var pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom'];
+    var pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom', 'Other'];
   }
   types = {
     "Business Types" : biz_type,

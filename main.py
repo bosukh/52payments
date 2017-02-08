@@ -24,7 +24,8 @@ minified = minified_files()
 app.jinja_env.globals['bjs'] = basejs
 app.jinja_env.globals['minified'] = minified
 
-
+# Do THIS
+# http://jsfiddle.net/q46Xz/
 @app.route('/about_us', methods=['GET'])
 def about_us():
     return render_template("about_us.html")
@@ -37,7 +38,6 @@ def terms():
 @app.route('/privacy_policy', methods=['GET'])
 def privacy_policy():
     return render_template("privacy_policy.html")
-
 
 def load_company(company_profile_name):
     query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
@@ -65,7 +65,10 @@ def index():
     companies = Company.query().fetch(limit=3)
     for company in companies:
         company.avg_rating = round(company.avg_rating, 1)
-    return render_template("index.html", companies = companies, form = form)
+    return render_template("index.html", companies = companies, form = form,
+                           title='Find the Right Credit Card Processing Services | 52payments',
+                           keywords= 'payments, credit cards, card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
+                           description = 'Search and read about different card processors/payment processing solutions to explore your options in choosing the right card processor (opening merchant account). Start accepting credit cards for your business today.')
 
 @app.route('/my_account', methods=['GET', 'POST'])
 @login_required
@@ -98,7 +101,8 @@ def my_account():
         review['company_name'] = company.title
         review['company_profile_name'] = company.company_profile_name
     return render_template("my_account.html", user= user, reviews=reviews,
-                           verify_email_form = verify_email_form, edit_info_form=edit_info_form)
+                           verify_email_form = verify_email_form, edit_info_form=edit_info_form,
+                           title = 'My Account | 52payments')
 
 @app.route('/verify_email/<code>', methods=['GET'])
 def verify_email(code):
@@ -188,7 +192,9 @@ def login():
             return redirect(redirect_route or url_for('index'))
         else:
             return abort(400)
-    return render_template('login.html', form=form, google_login_form= google_login_form)
+    return render_template('login.html', form=form, google_login_form= google_login_form,
+                           title = 'Login | 52payments')
+
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -229,7 +235,9 @@ def signup():
             return render_template('signup.html', form=form, google_login_form= google_login_form)
         flash('Successfully registered. Please login.')
         return redirect(url_for('login'))
-    return render_template('signup.html', form=form, google_login_form= google_login_form)
+    return render_template('signup.html', form=form, google_login_form= google_login_form,
+                           title = 'Signup | 52payments')
+
 
 @app.route('/register_company/<code>', methods=['GET', 'POST'])
 def register_company(code):
@@ -283,7 +291,10 @@ def company(company_profile_name):
         reviews = reviews_for_display(reviews)
         company.avg_rating = round(company.avg_rating, 1)
         return render_template('company_profile.html',
-                                company = company, reviews = reviews, form=form)
+                                company = company, reviews = reviews, form=form,
+                                title = '%s page | 52payments'%company.title,
+                                keywords = "%s, %s, payments, merchant account, card processor, payment processing solutions."%(company.title, company.website),
+                                description = 'Find out about %s, card processor that offers payment processing solutions. '%company.title+company.summary)
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
@@ -360,8 +371,8 @@ def add_tests():
                 '''
     biz_type = ['Retail', 'Restaurant', 'E-Commerce', 'Healthcare/Medical', 'Mobile', 'Professional/Personal Services', 'Non-Profit', 'High-Risk', 'High-Volume', 'Other']
     srv_type = ['Marketing', 'Analytics', 'Recurling Bill', 'Chargeback', 'Security', 'Other']
-    equip_type = ['Verifone', 'Ingenico', 'Other']
-    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom']
+    equip_type = ['Verifone', 'Ingenico', 'Mobile','POS', 'Other']
+    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom', 'Other']
     form = TestForm()
     if form.validate_on_submit():
         company_form = form.data

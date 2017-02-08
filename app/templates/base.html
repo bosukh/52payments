@@ -6,7 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google-signin-client_id" content="456242400193-rvmtrqiuemt0ma9hfedb89fp6iullu9u.apps.googleusercontent.com">
     <script src="{{url_for('static', filename='js/platform.js')}}" async defer></script>
-    <title>52 Payments</title>
+    {% if title %}
+      <title>{{title}}</title>
+    {% else %}
+      <title>52 Payments</title>
+    {% endif %}
+    {% if description %}
+      <meta name="description" content="{{description}}">
+    {% endif %}
+    {% if keywords %}
+      <meta name="keywords" content="{{keywords}}">
+    {% endif %}
   </head>
   {{minified.include_css('normalize.css', 'milligram-customized.css', 'base.css')|safe}}
   <body>

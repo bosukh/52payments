@@ -99,12 +99,14 @@ class CompanyForm(Form):
                 ('Other', 'Other')]
     equip_type = [('Verifone','Verifone'),
                   ('Ingenico', 'Ingenico'),
+                  ('Mobile', 'Mobile'),
+                  ('POS', 'POS'),
                   ('Other', 'Other')]
     pricing_type = [('Tiered', 'Tiered'),
                     ('Interchange Plus', 'Interchange Plus'),
                     ('Flat', 'Flat'),
-                    ('Custom', 'Custom')
-                    ]
+                    ('Custom', 'Custom'),
+                    ('Other', 'Other')]
     title = TextField('Title', validators = [DataRequired()])
     company_profile_name = TextField('Url End Point', validators = [DataRequired()])
     website = TextField('Website', validators = [DataRequired()])
