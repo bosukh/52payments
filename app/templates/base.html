@@ -18,7 +18,13 @@
       <meta name="keywords" content="{{keywords}}">
     {% endif %}
   </head>
-  {{minified.include_css('normalize.css', 'milligram-customized.css', 'base.css')|safe}}
+  {% if MODE == 'deploy' %}
+    {{minified.include_css('normalize.css', 'milligram-customized.css', 'base.css')|safe}}
+  {% else %}
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/normalize.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/milligram-customized.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/base.css')}}">
+  {% endif %}
   <body>
     <div style='border-bottom:0.1rem solid #d6c9ca;'>
       <div class="row" style = 'max-width: 1130px; margin:auto; padding-left:0.5rem; padding-right:0.5rem;'>

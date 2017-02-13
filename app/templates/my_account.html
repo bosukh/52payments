@@ -100,5 +100,10 @@
     {% endif %}
   {% endfor %}
 </form>
-{{ minified.include_js('base.js', 'my_account.js') | safe}}
+{% if MODE == 'deploy' %}
+  {{ minified.include_js('base.js', 'my_account.js') | safe}}
+{% else %}
+  <script src="{{url_for('static', filename='js/base.js')}}"></script>
+  <script src="{{url_for('static', filename='js/my_account.js')}}"></script>
+{% endif %}
 {% endblock %}

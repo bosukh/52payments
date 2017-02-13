@@ -308,3 +308,20 @@ button {
   position: relative;
   width: 1.1em;
 }
+
+.hover_message {
+  display: none;
+  white-space: normal;
+  font-size: 1.2rem;
+  color: #30353a;
+  background: #C8C8C8;
+  opacity: 0.8;
+  margin-left: 28px;
+  padding: 10px;
+  position: absolute;
+  word-wrap: break-word;
+  width: 30rem;
+  height: auto;
+  z-index: 1000;
+  text-transform:none;
+}

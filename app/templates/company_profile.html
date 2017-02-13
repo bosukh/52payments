@@ -117,5 +117,10 @@
   </div>
 </div>
 </div>
-{{ minified.include_js('base.js', 'company_profile.js') | safe}}
+{% if MODE == 'deploy' %}
+  {{ minified.include_js('base.js', 'company_profile.js') | safe}}
+{% else %}
+  <script src="{{url_for('static', filename='js/base.js')}}"></script>
+  <script src="{{url_for('static', filename='js/company_profile.js')}}"></script>
+{% endif %}
 {% endblock %}

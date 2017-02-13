@@ -2,7 +2,6 @@ var types, search_criteria, current_type, items;
 var selected_items, selected_item_list, clear_all_btn;
 var featured_title = document.getElementById('featured-title');
 var featured = document.getElementById('featured-companies');
-
 function init_search_box() {
   init_vars();
   toggle_clear_all_btn();
@@ -16,7 +15,7 @@ function init_vars(){
   types = get_criteria_list();
   selected_item_list = get_selected_item_list();
   if (!current_type){
-    current_type = "Pricing Method";
+    current_type = "Pricing_Method";
   };
 }
 function get_criteria_list(){
@@ -24,19 +23,21 @@ function get_criteria_list(){
     var biz_type = sessionStorage.getItem('Business Types').split(',');
   } else {
     var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
-                    'Healthcare/Medical', 'Mobile', 'Professional/Personal Services',
-                    'Non-Profit', 'High-Risk', 'High-Volume', 'Other'];
+                    'Mobile', 'Professional/Personal Services',
+                    'Non-Profit', 'High-Risk',  'Other'];
   }
   if (sessionStorage.getItem('Complimentary Services')){
     var srv_type = sessionStorage.getItem('Complimentary Services').split(',');
   } else {
-    var srv_type = ['Marketing', 'Analytics', 'Recurling Bill',
-                    'Chargeback', 'Security', 'Other'];
+    var srv_type = ['Marketing', 'Analytics/Reporting', 'Recurring Bill',
+                    'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
+                    'Loyalty Program', 'Gift Cards', 'Other'];
   }
-  if (sessionStorage.getItem('Equipments')){
-    var equip_type = sessionStorage.getItem('Equipments').split(',');
+  if (sessionStorage.getItem('Terminals')){
+    var equip_type = sessionStorage.getItem('Terminals').split(',');
   } else {
-    var equip_type = ['Verifone', 'Ingenico', 'Mobile', 'POS','Other'];
+    var equip_type = ['Terminal', 'Wireless Terminal', 'Mobile', 'POS', 'Tablet',
+                      'Tablet POS', 'Virtual Terminal','Other'];
   }
   if (sessionStorage.getItem('Pricing Method')){
     var pricing_type = sessionStorage.getItem('Pricing Method').split(',');
@@ -44,15 +45,15 @@ function get_criteria_list(){
     var pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom', 'Other'];
   }
   types = {
-    "Business Types" : biz_type,
-    "Complimentary Services" : srv_type,
-    "Equipments" : equip_type,
-    "Pricing Method" : pricing_type
+    "Business_Type" : biz_type,
+    "Complimentary_Service" : srv_type,
+    "Terminal" : equip_type,
+    "Pricing_Method" : pricing_type
   };
   return types;
 }
 function select_items_title(items_title){
-  current_type = items_title.innerHTML;
+  current_type = items_title.id;
   var items_titles = document.getElementsByClassName('items-title');
   for (var i = 0; i < items_titles.length; i++){
     items_titles[i].className = 'items-title';
@@ -70,30 +71,31 @@ function fill_items(list_, items, selected){
     var item = document.createElement('button');
     item.className = 'item';
     if (selected){
+      item.setAttribute("id", list_[i]);
       item.className = 'item selected-item';
       item.onclick = function(){deselect(this)};
-      item.innerHTML = list_[i] + ' x';
+      item.innerHTML =list_[i] + ' x';
     }else{
       item.setAttribute("id", list_[i]);
       item.onclick = function(){select(this)};
-      item.innerHTML = list_[i];
+      item.innerHTML = sticky_note(list_[i]);
     }
     items.appendChild(item);
   }
 }
 function select(item){
-  pop(types[current_type], item.innerHTML);
+  pop(types[current_type], item.id);
   sessionStorage.setItem(current_type, types[current_type]);
-  selected_item_list.push(current_type + ': '+ item.innerHTML);
+  selected_item_list.push(current_type + ': '+ item.id);
   sessionStorage.setItem('selected_item_list', selected_item_list);
-  fill_items([current_type + ': '+ item.innerHTML], selected_items, 1);
+  fill_items([current_type + ': '+item.id], selected_items, 1);
   item.remove();
   document.getElementById('chosen-title').style.opacity= 1;
   search_criteria.value = selected_item_list.join(',');
   toggle_clear_all_btn();
 }
 function deselect(item){
-  var selected_item_name = item.innerHTML.trim();
+  var selected_item_name = item.id.trim();
   var type = selected_item_name.split(': ')[0];
   var item_name = selected_item_name.split(': ')[1].split(' x')[0];
   pop(selected_item_list, selected_item_name);
@@ -110,6 +112,7 @@ function deselect(item){
   search_criteria.value = selected_item_list.join(',');
   toggle_clear_all_btn();
 }
+
 function get_selected_item_list(){
   if (sessionStorage.getItem('selected_item_list')){
     selected_item_list = sessionStorage.getItem('selected_item_list').split(',');

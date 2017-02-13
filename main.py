@@ -18,12 +18,15 @@ from app.login_manager import validate_user, load_user, google_oauth, login_user
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 from app.render import render_template, minify_css, minify_js, minified_files
-from config import basedir
+from app.glossary import add_sticky_note, glossary
+from config import basedir, MODE
 
 minified = minified_files()
 app.jinja_env.globals['bjs'] = basejs
 app.jinja_env.globals['minified'] = minified
-
+app.jinja_env.globals['MODE'] = MODE
+app.jinja_env.globals['sticky_note'] = add_sticky_note
+app.jinja_env.globals['glossary'] = glossary
 # Do THIS
 # http://jsfiddle.net/q46Xz/
 @app.route('/about_us', methods=['GET'])

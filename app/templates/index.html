@@ -5,10 +5,18 @@
     <div class="search-row">
       <div id='search-nav' class="search-nav row">
         <div class="column">
-          <button class= 'items-title selected' type="button" onclick="javascript:select_items_title(this)">Pricing Method</button>
-          <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Business Types</button>
-          <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Equipments</button>
-          <button class= 'items-title' type="button" onclick="javascript:select_items_title(this)">Complimentary Services</button>
+          <button id='Pricing_Method' class= 'items-title selected couponcode' type="button" onclick="javascript:select_items_title(this)">
+            {{sticky_note('Pricing Method') | safe}}
+          </button>
+          <button id='Business_Type' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
+            {{sticky_note('Business Type') | safe}}
+          </button>
+          <button id='Terminal' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
+            {{sticky_note('Terminal') | safe}}
+          </button>
+          <button id='Complimentary_Service' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
+            {{sticky_note('Complimentary Service') | safe}}
+          </button>
           <button onclick='javascript:get_search_result()' style='float:right; margin-top:0.5rem; margin-bottom:0.5rem;' type="button">Search</button>
         </div>
       </div>
@@ -48,5 +56,13 @@
   <div id='loader' style='display:none;' class="loader"></div>
   <div id='search-result'>
   </div>
-  {{ minified.include_js('base.js', 'search.js') | safe}}
+  <script type="text/javascript">
+    var glossary = {{glossary |safe}};
+  </script>
+  {% if MODE == 'deploy' %}
+    {{ minified.include_js('base.js', 'search.js') | safe}}
+  {% else %}
+    <script src="{{url_for('static', filename='js/base.js')}}"></script>
+    <script src="{{url_for('static', filename='js/search.js')}}"></script>
+  {% endif %}
 {% endblock %}

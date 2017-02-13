@@ -6,7 +6,42 @@ var field_ids = [];
 var p_tags;
 var p_tags_trimmed_parts = {};
 var auth2;
-
+function sticky_note(term){
+  var s_term = term;
+  if (term.endsWith(' x')) {
+    s_term = term.slice(0, term.length -2);
+  }
+  var note = glossary[s_term.toLowerCase()];
+  if (!note){
+    note = glossary[s_term.toLowerCase()+ 's'];
+  }
+  if (!note){
+    return term;
+  } else {
+      return `
+      <span onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">
+        ${term}
+        <p class="hover_message">
+          ${note}
+        </p>
+      </span>
+      `
+    }
+}
+function show_hover_message(current){
+  for (node of current.children){
+    if (node.className == 'hover_message'){
+      node.style='display:block';
+    }
+  }
+}
+function hide_hover_message(current){
+  for (node of current.children){
+    if (node.className == 'hover_message'){
+      node.style='display:none';
+    }
+  }
+}
 var alert_login_required = function(){
   alert('You need to log-in.')
 }

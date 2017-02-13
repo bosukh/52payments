@@ -62,7 +62,11 @@
     {% endif %}
   {% endfor %}
 </form>
-{{ minified.include_js('base.js') | safe}}
+{% if MODE == 'deploy' %}
+  {{ minified.include_js('base.js') | safe}}
+{% else %}
+  <script src="{{url_for('static', filename='js/base.js')}}"></script>
+{% endif %}
 <script type="text/javascript">
   var field_ids = ['first_name', 'last_name', 'email', 'password', 'password_2'];
   var button_id = 'signup-button';
