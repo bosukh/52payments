@@ -1,7 +1,7 @@
 <div class="column" style= 'max-width:35rem; margin:auto; margin-top:0px;'>
   <div class="row">
     <div class="column">
-      <img class='side-logo' style='border-bottom: 1px solid #CAC9C9; padding-bottom:1rem;' src="/img/{{company.company_profile_name}}" alt="{{company.title}}">
+      <img class='side-logo' style='border-bottom: 1px solid #CAC9C9; padding:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="{{company.title}}">
       <h5 style='margin:0;'>{{company.title}}</h5>
       Overall User Rating <br>
       {% for i in range(company.rounded_rating)%}
@@ -11,8 +11,13 @@
       <span class='rating-star'>☆</span>
       {% endfor %}
       {{company.avg_rating}}  ({{company.num_ratings}}) <br>
-      <p class='trim-300'>
-        {{company.summary}}
+      <p style='height:15rem; overflow:hidden;'>
+        {% if company.highlights %}
+          <b>Highlights:</b> <br>
+          {% for pt in company.highlights%}
+            &nbsp;&nbsp;- {{pt | safe}} <br>
+          {% endfor %}
+        {% endif %}
       </p>
     </div>
   </div>

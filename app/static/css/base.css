@@ -2,6 +2,9 @@
 * {
     box-sizing: border-box;
 }
+td, th{
+  font-size:1.3rem;
+}
 hr {
   border-top: 0.1rem solid #CAC9C9;
 }
@@ -42,6 +45,7 @@ h3 {
 button {
   border-color:#8679A9;
   background-color:#8679A9;
+  text-decoration: none !important;
 }
 @media (max-width:50rem){
   button {
@@ -265,6 +269,7 @@ button {
   padding-top: 2rem;
 }
 .company-profile-basic-box{
+  word-wrap: break-word;
   border-top: 0.1rem solid #CAC9C9;
   margin-top: 2rem;
   padding-top: 0.5rem;
@@ -309,13 +314,17 @@ button {
   width: 1.1em;
 }
 
+button > span {
+  text-decoration: none !important;
+}
 .hover_message {
   display: none;
   white-space: normal;
   font-size: 1.2rem;
+  font-weight:bold;
   color: #30353a;
   background: #C8C8C8;
-  opacity: 0.8;
+  opacity: 0.95;
   margin-left: 28px;
   padding: 10px;
   position: absolute;
@@ -324,4 +333,10 @@ button {
   height: auto;
   z-index: 1000;
   text-transform:none;
+}
+
+.pricing-table{
+ -ms-word-break: break-all;
+  word-break: break-word;
+  max-width: 35rem;
 }

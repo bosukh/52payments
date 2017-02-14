@@ -19,7 +19,7 @@ function sticky_note(term){
     return term;
   } else {
       return `
-      <span onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">
+      <span style="text-decoration:underline;" onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">
         ${term}
         <p class="hover_message">
           ${note}
@@ -29,6 +29,7 @@ function sticky_note(term){
     }
 }
 function show_hover_message(current){
+  current.style = 'text-decoration:none;'
   for (node of current.children){
     if (node.className == 'hover_message'){
       node.style='display:block';
@@ -36,6 +37,7 @@ function show_hover_message(current){
   }
 }
 function hide_hover_message(current){
+  current.style = 'text-decoration:underline;'
   for (node of current.children){
     if (node.className == 'hover_message'){
       node.style='display:none';

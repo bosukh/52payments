@@ -4,7 +4,7 @@
 {% block content %}
 <div class="large-company-profile-container">
   <div class="row" style='align-items:flex-end;'>
-    <img id="company-profile-logo" class='side-logo' style='align-self:flex-start; padding-right:1rem;' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo">
+    <img id="company-profile-logo" class='side-logo' style='align-self:flex-start; padding-right:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="company_logo">
     <div class="row" style='flex-direction:row;'>
       <a href="{{company.landing_page}}" target = '_blank'>
         <button class='company-apply-button' style = 'display:flex; margin-left:1rem;' type="button" name="apply-button">Apply</button>
@@ -25,19 +25,20 @@
   <div class="column left-col">
     <div class="company-profile-basic-box">
       {% if company.title %}
-        Name: {{company.title}}<br>
+        <b>Name:</b> {{company.title}}<br>
       {% endif %}
       {% if company.website %}
-        Website: {{company.website}}<br>
+        <b>Website:</b> {{company.website}}<br>
       {% endif %}
       {% if company.phones %}
+        <b>Contact:</b><br>
         {% for phone in company.phones %}
-          {{ phone }} <br>
+          &nbsp;&nbsp;- {{ phone }} <br>
         {% endfor %}
       {% endif %}
     </div>
     <div class="company-profile-basic-box">
-      Overall User Rating: <br>
+      <b>Overall User Rating:</b> <br>
       {% for i in range(company.rounded_rating)%}
       <span class='rating-star'>★</span>
       {% endfor %}
@@ -46,48 +47,44 @@
       {% endfor %}
       {{company.avg_rating}} ({{company.num_ratings}}) <br>
     </div>
-    <div class="company-profile-basic-box">
-      {% if company.pricing_range %}
-        Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
-      {% endif %}
-      {% if company.rate_range and company.per_transaction_range %}
-        Detailed Pricing Range: <br>{{company.rate_range[0]}}% + {{company.per_transaction_range[0]}}$
-                                ~ {{company.rate_range[1]}}% + {{company.per_transaction_range[1]}}$<br>
-      {% endif %}
-    </div>
-
+    {% if company.pricing_table %}
+      <div class='company-profile-basic-box'>
+        <b>Pricing Detail:</b>
+        {{company.pricing_table | safe}}
+      </div>
+    {% endif %}
     {% if company.pricing_method %}
     <div class="company-profile-basic-box">
-      Pricing Method: <br>
+      <b>Pricing Method:</b> <br>
       {% for method in company.pricing_method%}
-      &nbsp;&nbsp;- {{method}} <br>
+      &nbsp;&nbsp;- {{method | safe}} <br>
       {% endfor %}
     </div>
     {% endif %}
 
     {% if company.provided_srvs %}
     <div class="company-profile-basic-box">
-      Provided Services: <br>
+      <b>Provided Services:</b> <br>
       {% for srvs in company.provided_srvs%}
-      &nbsp;&nbsp;- {{srvs}} <br>
+      &nbsp;&nbsp;- {{srvs | safe}} <br>
       {% endfor %}
     </div>
     {% endif %}
 
     {% if company.complementary_srvs %}
     <div class="company-profile-basic-box">
-      Complementary Services: <br>
+      <b>Complementary Services:</b> <br>
       {% for srvs in company.complementary_srvs%}
-      &nbsp;&nbsp;- {{srvs}} <br>
+      &nbsp;&nbsp;- {{srvs | safe}} <br>
       {% endfor %}
     </div>
     {% endif %}
 
     {% if company.equipment %}
     <div class="company-profile-basic-box">
-      Equipment <br>
+      <b>Terminal:</b> <br>
       {% for equip in company.equipment%}
-      &nbsp;&nbsp;- {{equip}} <br>
+      &nbsp;&nbsp;- {{equip | safe}} <br>
       {% endfor %}
     </div>
     {% endif %}
@@ -97,9 +94,21 @@
       {% if company.title %}
         <h4>{{ company.title }}</h4>
       {% endif %}
-      <p class='trim-1000'>
-        {{company.full_description}}
-      </p>
+      {% if company.highlights %}
+        <b>Highlights:</b> <br>
+        {% for pt in company.highlights%}
+          &nbsp;&nbsp;- {{pt | safe}} <br>
+        {% endfor %}
+      {% endif %}
+
+      <div class="company-profile-basic-box">
+      {% if company.full_description %}
+        <b>Description:</b>
+        <p class='trim-1000'>
+          {{company.full_description | safe}}
+        </p>
+      {% endif %}
+      </div>
     </div>
     <div id='review-box' class='company-profile-basic-box'>
       {% if reviews %}

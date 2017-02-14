@@ -33,20 +33,18 @@ class TempCode(ndb.Model):
 class Company(ndb.Model):
     title = ndb.StringProperty(required = True, indexed=True)
     company_profile_name = ndb.StringProperty(required = True, indexed=True)
-    logo_file = ndb.BlobProperty(required = True, indexed=False)
+    logo_file = ndb.BlobProperty(required = False, indexed=False)
     website = ndb.StringProperty(required = True, indexed=False)
     phones = ndb.StringProperty(repeated=True, indexed=False)
     verified = ndb.BooleanProperty(default=False, indexed=True)
-    summary = ndb.TextProperty(required = True, indexed=False)
+    highlights = ndb.StringProperty(repeated=True, indexed=False)
     full_description = ndb.TextProperty(required = True, indexed=False)
+    pricing_table = ndb.TextProperty(required = True, indexed=False)
     year_founded = ndb.IntegerProperty(indexed=False)
     provided_srvs = ndb.StringProperty(repeated=True, indexed=True)
     complementary_srvs = ndb.StringProperty(repeated=True, indexed=True)
     equipment = ndb.StringProperty(repeated=True, indexed=True)
     pricing_method = ndb.StringProperty(repeated=True, indexed=True)
-    pricing_range = ndb.FloatProperty(repeated=True, indexed=True)
-    rate_range = ndb.FloatProperty(repeated=True, indexed=True)
-    per_transaction_range = ndb.FloatProperty(repeated=True, indexed=True)
     num_ratings = ndb.IntegerProperty(default = 0, required=False, indexed=True)
     avg_rating = ndb.FloatProperty(default = 0.0, required=False, indexed=True)
     rounded_rating = ndb.IntegerProperty(default = 0, required=False, indexed=True)
@@ -54,6 +52,10 @@ class Company(ndb.Model):
     featured = ndb.BooleanProperty(default=False, indexed=True)
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=False)
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=False)
+    @classmethod
+    def load_company(self, company_profile_name):
+        query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
+        return query.get()
 
 class User(ndb.Model):
     user_id = ndb.StringProperty(required=True, indexed=True)
@@ -95,6 +97,15 @@ class Review(ndb.Model):
     company = ndb.KeyProperty(Company, indexed=True)
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=True)
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=True)
+
+    @classmethod
+    def reviews_for_display(self, reviews):
+        reviews = [review.to_dict() for review in reviews]
+        for review in reviews:
+            user = review['user'].get()
+            review['user_name'] = user.first_name +" " + user.last_name
+            review['created'] = review['created'].strftime('%b %d, %Y')
+        return reviews
 
     def approve(self):
         self.approved = True

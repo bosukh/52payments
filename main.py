@@ -18,8 +18,9 @@ from app.login_manager import validate_user, load_user, google_oauth, login_user
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 from app.render import render_template, minify_css, minify_js, minified_files
-from app.glossary import add_sticky_note, glossary
-from config import basedir, MODE
+from app.glossary import add_sticky_note, glossary, add_notes
+from app.import_companies import import_companies
+from config import MODE
 
 minified = minified_files()
 app.jinja_env.globals['bjs'] = basejs
@@ -27,8 +28,16 @@ app.jinja_env.globals['minified'] = minified
 app.jinja_env.globals['MODE'] = MODE
 app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
-# Do THIS
-# http://jsfiddle.net/q46Xz/
+
+@app.route('/add_companies', methods=['GET'])
+def add_companies():
+    import_companies()
+    return "Success?"
+
+@app.route('/temp', methods=['GET'])
+def temp():
+    return render_template("temp.html")
+
 @app.route('/about_us', methods=['GET'])
 def about_us():
     return render_template("about_us.html")
@@ -42,21 +51,11 @@ def terms():
 def privacy_policy():
     return render_template("privacy_policy.html")
 
-def load_company(company_profile_name):
-    query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
-    return query.get()
-def reviews_for_display(reviews):
-    reviews = [review.to_dict() for review in reviews]
-    for review in reviews:
-        user = review['user'].get()
-        review['user_name'] = user.first_name +" " + user.last_name
-        review['created'] = review['created'].strftime('%b %d, %Y')
-    return reviews
 
 @app.route('/search_results', methods=['GET'])
 def search_results():
     search_result = search_company(request.args.get('search_criteria'))
-    return render_template("search_results.html", companies=search_result)
+    return render_template("search_results.html", companies=add_notes(search_result))
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -98,7 +97,7 @@ def my_account():
     user = current_user.to_dict()
     user.pop('password')
     reviews = Review.query(Review.user==current_user.key).order(-Review.created).fetch(limit=None)
-    reviews = reviews_for_display(reviews)
+    reviews = Review.reviews_for_display(reviews)
     for review in reviews:
         company = review['company'].get()
         review['company_name'] = company.title
@@ -251,7 +250,7 @@ def register_company(code):
     if form.validate_on_submit():
         company_form = form.data
         company_form['company_profile_name'] = company_form['company_profile_name'].lower()
-        if load_company(company_form['company_profile_name']):
+        if Company.load_company(company_form['company_profile_name']):
             flash('The entered Url End Point is taken.')
             return render_template('register_company.html', form = form)
         company_form['logo_file'] = request.files['logo_file'].read()
@@ -275,7 +274,7 @@ def register_company(code):
 
 @app.route('/company/<company_profile_name>', methods = ['GET', 'POST'])
 def company(company_profile_name):
-    company = load_company(company_profile_name)
+    company = Company.load_company(company_profile_name)
     form = ReviewForm()
     if form.validate_on_submit():
         if not current_user or not current_user.is_authenticated:
@@ -284,20 +283,20 @@ def company(company_profile_name):
             review = form.data
             review['rating'] = int(review['rating'])
             review['user'] = load_user(current_user.user_id).key
-            review['company'] = load_company(company_profile_name).key
+            review['company'] = Company.load_company(company_profile_name).key
             review = Review(**review)
             review.put()
             flash('Your review is submitted. It should be up soon.')
             return redirect(url_for('company', company_profile_name = company_profile_name))
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
-        reviews = reviews_for_display(reviews)
+        reviews = Review.reviews_for_display(reviews)
         company.avg_rating = round(company.avg_rating, 1)
         return render_template('company_profile.html',
-                                company = company, reviews = reviews, form=form,
+                                company = add_notes(company), reviews = reviews, form=form,
                                 title = '%s page | 52payments'%company.title,
                                 keywords = "%s, %s, payments, merchant account, card processor, payment processing solutions."%(company.title, company.website),
-                                description = 'Find out about %s, card processor that offers payment processing solutions. '%company.title+company.summary)
+                                description = 'Find out about %s, card processor that offers payment processing solutions. '%company.title+company.full_description)
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
@@ -339,7 +338,7 @@ def admindecision():
 
 @app.route("/img/<company_profile_name>", methods=['GET'])
 def img(company_profile_name):
-    company = load_company(company_profile_name)
+    company = Company.load_company(company_profile_name)
     company = company.logo_file
     response = make_response(company)
     response.headers['Content-Type'] = 'image/svg+xml'
@@ -372,10 +371,15 @@ def add_tests():
                 software like Aldus PageMaker including versions of
                 Lorem Ipsum.
                 '''
-    biz_type = ['Retail', 'Restaurant', 'E-Commerce', 'Healthcare/Medical', 'Mobile', 'Professional/Personal Services', 'Non-Profit', 'High-Risk', 'High-Volume', 'Other']
-    srv_type = ['Marketing', 'Analytics', 'Recurling Bill', 'Chargeback', 'Security', 'Other']
-    equip_type = ['Verifone', 'Ingenico', 'Mobile','POS', 'Other']
-    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom', 'Other']
+    biz_type = ['Retail', 'Restaurant', 'E-Commerce',
+                'Mobile', 'Professional/Personal Services',
+                'Non-Profit', 'High-Risk']
+    srv_type = ['Analytics/Reporting', 'Recurring Bill',
+                'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
+                'Loyalty Program']
+    equip_type = ['Terminal', 'Wireless Terminal', 'Mobile Terminal', 'POS Solution',
+                   'Virtual/Gateway']
+    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom']
     form = TestForm()
     if form.validate_on_submit():
         company_form = form.data

@@ -24,20 +24,20 @@ function get_criteria_list(){
   } else {
     var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
                     'Mobile', 'Professional/Personal Services',
-                    'Non-Profit', 'High-Risk',  'Other'];
+                    'Non-Profit', 'High-Risk','Enterprise', 'Non-US', 'Other'];
   }
   if (sessionStorage.getItem('Complimentary Services')){
     var srv_type = sessionStorage.getItem('Complimentary Services').split(',');
   } else {
-    var srv_type = ['Marketing', 'Analytics/Reporting', 'Recurring Bill',
+    var srv_type = ['Analytics/Reporting', 'Recurring Bill',
                     'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
-                    'Loyalty Program', 'Gift Cards', 'Other'];
+                    'Loyalty Program', 'Other'];
   }
   if (sessionStorage.getItem('Terminals')){
     var equip_type = sessionStorage.getItem('Terminals').split(',');
   } else {
-    var equip_type = ['Terminal', 'Wireless Terminal', 'Mobile', 'POS', 'Tablet',
-                      'Tablet POS', 'Virtual Terminal','Other'];
+    var equip_type = ['Terminal', 'Wireless Terminal', 'Mobile Terminal', 'POS Solution',
+                       'Virtual/Gateway','Other'];
   }
   if (sessionStorage.getItem('Pricing Method')){
     var pricing_type = sessionStorage.getItem('Pricing Method').split(',');

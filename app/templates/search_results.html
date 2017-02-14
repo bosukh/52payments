@@ -39,13 +39,13 @@
       <h5 id='company-title'>{{ company.title }}</h5>
       {% endif %}
       {% if company.pricing_method %}
-      <b>Pricing Method</b>: {{', '.join(company.pricing_method)}}
-      {% endif %}
+      <b>Pricing Method</b>: {{', '.join(company.pricing_method) | safe}}
       <br>
+      {% endif %}
       {% if company.provided_srvs %}
-      <b>Provided Services</b>: {{', '.join(company.provided_srvs)}}
-      {% endif %}
+      <b>Provided Services</b>: {{', '.join(company.provided_srvs) | safe}}
       <br>
+      {% endif %}
       {% if company.summary %}
       <p class='trim-300'>
         {{company.summary}}

@@ -1,15 +1,15 @@
 
 glossary = {
-'pricing method': '''Pricing method is how each transaction is priced.
+'pricing methods': '''Pricing method is how each transaction is priced.
                     It usually comes with per transaction fee and rate.</br>
                     ex) 1.5% + $0.20''',
-'business type': '''Business Types are the category of business that payment processors
+'business types': '''Business Types are the category of business that payment processors
                     work with. Card associations(Visa, MC, and etc.) define classifies the business by
                     Merchant Classification Codes and impose different requirements and pricing.''',
-'terminal':'''Terminal is the mean to accept the card payments. There's physical stand-alone terminal,
+'terminals':'''Terminal is the mean to accept the card payments. There's physical stand-alone terminal,
                 wireless terminal, mobile terminal(to be used with smartphones), Point-of-Sales(POS) System,
                 virtual terminal/gateway, and etc.''',
-'complimentary service':'''Complimentary Services are services offered in addition to payment processing.
+'complimentary services':'''Complimentary Services are services offered in addition to payment processing.
                             Different payment processors have different unique set of complimentary services.
                             These include reporting/analytics, data security, fraud prevention, chargeback,
                             recuring bill, ach, loyalty program, and etc.''',
@@ -21,6 +21,7 @@ glossary = {
              Stand-alone terminal and Point-of-Sales(POS) System are most popular.
           ''',
 'restaurant': '''Restaurants would usually utilize Point-of-Sales(POS) System and wireless terminal.
+                Restuanrants have speical requirements due to tip-adjustment.
                 ''',
 'e-commerce': '''E-commerce business type includes any business that utilize some kind of web
                 to receive payments in exchange for services and goods. These merchants would usually
@@ -41,6 +42,16 @@ glossary = {
                 If a merchant has history of high chargeback and/or fraud, the merchant
                 might need to consult as a high-risk even if it's not considered to be in high-risk industry.
 ''',
+'enterprise': '''Enterprise business type is for the merchants with large processing volumes who need specialized solutions.''',
+'non-us': '''Non-US refers to the merchants with need for merchant account outside of the United States.
+            While most of the payment processors primarily focus on the United States, some can
+            still help outside of US as well.''',
+'analytics/reporting':'''Some payment processors provide more than just monthly statement.
+                        Analytics/Reporting services can include real-time transaction monitor, transactions by demographic,
+                        card-type, and different filter, and etc.
+                    ''',
+'recurring billing': '''Recurring billing is when a merchant automatically charge the given card/account on recurring bases.
+                    ''',
 'chargeback': '''Chargeback is when banks demand a retailer to make good the loss and focibly return the funds to customers
                  on a fraudulent or disputed transaction. Chargeback solutions helps informing merchants about such events so
                  that the merchants can prepare and win the dispute.
@@ -54,27 +65,49 @@ glossary = {
      Automated Clearing House(ACH) payments is the service the transaction processed by electronic network of financial institutions.
      It's usually cheaper and faster than credit cards and checks.
      ''',
-'digital wallet': '''Digital wallets
-                    '''
-
+'digital wallet': '''Digital wallet refers to an electronic device, mostly smartphones, that links information about user's bank account, and other
+                    card data. It can then be used to make payments. Most prominent digital wallets are Apple Pay, Samsung Pay, and Android Pay.
+                    ''',
+'loyalty program': '''Loyalty program is set of services/promotions provided by business to grow and maintain existing customer base.
+                    Payment processors can help in such efforts by issuing gift-cards, managing rewards, coupons, and etc.''',
+'terminal': ''' Terminal refers to physical stand-alone terminal that is solely dedicated to accepting card payments.
+            ''',
+'wireless terminal': '''Wireless Terminal is similary to traditional terminal, but wireless. It enables the merchant to move around with the terminal.''',
+'mobile terminal': '''Mobile Terminal refers to a small card swiper connected to mobile devices like smartphones.
+                     It allows merchant to be even more mobile than wireless terminal. It usually requires some kine of internet
+                     connection, but some works even if the connection is lost temporarily.''',
+'pos solution': '''Point-of-Sales(POS) solution refers to complete solution that can replace cash register. It would usually come with
+                    retail management software, card swiper, barcode reader, screen or tablet, and others. It can be integrated into other CRM softwares as well.
+                    ''',
+'virtual/gateway':'''Virtual Terminal or Gateway refers the online application which enables merchants to accept card payments by
+                     feeding card information. It does not require physical card to be swiped. Merchants can manually provide card information or
+                     integrate it to their website or any other applications to enable payments.''',
+'tiered':'''Tiered pricing refers to the pricing structure where card transactions are categorized into buckets with different rates.
+            3-tiered pricing is the most common pricing structure. Often, three tiers are called qualified, mid-qualified, and non-qualified, and the rates increases respectively.''',
+'interchange plus':'''Interchange Plus refers to the pricing structure where merchants pays interchange to card associations and another margin to payment processors.
+                     Interchange is the pricing for card transactions imposed by card assocations. Interchange rate varies for each transaction and card.
+                     Therefore, Interchange Plus pricing would look something like "interchange rate + x.xx% + $0.xx".''',
+'flat':'''Flat pricing refers to the pricing structure where fixed rate is charged all the time.''',
+'custom':'''Cutom pricing refers to the pricing structure that can vary by each merchant. This could mean that the pricing is tailored
+            for specific needs or the pricing had to be adjusted due to other circumstances like history of high chargebacks and frauds.'''
 }
-srv_type = ['Marketing', 'Analytics/Reporting', 'Recurring Bill',
-            'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
-            'Loyalty Program', 'Gift Cards', 'Other']
-equip_type = ['Terminal', 'Wireless Terminal', 'Mobile', 'POS', 'Tablet',
-              'Tablet POS', 'Virtual Terminal','Other']
-pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom', 'Other']
 
 def add_sticky_note(term):
     note = glossary.get(term.lower(), '') or glossary.get(term.lower()+'s', '')
     if not note:
-        return term
+        return term.strip()
     else:
-        return '''
-        <span onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">
-          %s
-          <p class="hover_message">
-            %s
-          </p>
-        </span>
-        '''%(term, note)
+        return '<span style="text-decoration:underline;" onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">%s<p class="hover_message">%s</p></span>'%(term.strip(), note)
+
+def add_notes(companies):
+    def mapping(company):
+        company.pricing_method = map(add_sticky_note, company.pricing_method)
+        company.provided_srvs= map(add_sticky_note, company.provided_srvs)
+        company.complementary_srvs = map(add_sticky_note, company.complementary_srvs)
+        company.equipment = map(add_sticky_note, company.equipment)
+        return company
+    if type(companies) != list:
+        return mapping(companies)
+    for company in companies:
+        company = mapping(company)
+    return companies
