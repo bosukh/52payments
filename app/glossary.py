@@ -73,11 +73,11 @@ glossary = {
 'terminal': ''' Terminal refers to physical stand-alone terminal that is solely dedicated to accepting card payments.
             ''',
 'wireless terminal': '''Wireless Terminal is similary to traditional terminal, but wireless. It enables the merchant to move around with the terminal.''',
-'mobile terminal': '''Mobile Terminal refers to a small card swiper connected to mobile devices like smartphones.
+'mobile terminal': '''Mobile Terminal refers to a small card reader connected to mobile devices like smartphones.
                      It allows merchant to be even more mobile than wireless terminal. It usually requires some kine of internet
                      connection, but some works even if the connection is lost temporarily.''',
 'pos solution': '''Point-of-Sales(POS) solution refers to complete solution that can replace cash register. It would usually come with
-                    retail management software, card swiper, barcode reader, screen or tablet, and others. It can be integrated into other CRM softwares as well.
+                    retail management software, card reader, barcode reader, screen or tablet, and others. It can be integrated into other CRM softwares as well.
                     ''',
 'virtual/gateway':'''Virtual Terminal or Gateway refers the online application which enables merchants to accept card payments by
                      feeding card information. It does not require physical card to be swiped. Merchants can manually provide card information or
@@ -87,24 +87,42 @@ glossary = {
 'interchange plus':'''Interchange Plus refers to the pricing structure where merchants pays interchange to card associations and another margin to payment processors.
                      Interchange is the pricing for card transactions imposed by card assocations. Interchange rate varies for each transaction and card.
                      Therefore, Interchange Plus pricing would look something like "interchange rate + x.xx% + $0.xx".''',
-'flat':'''Flat pricing refers to the pricing structure where fixed rate is charged all the time.''',
+'interchange':'''Interchange is the pricing for card transactions imposed by card assocations. Interchange rate varies for each transaction and card.
+                It's strictly forced by card associations in that every payment processor has to pay the same price.
+                It's usually cheaper to swipe(Card-siwped) than to key-in(Card-not-Present).
+                Debit cards are the cheapest, and the perks, rewards, and international cards are the most expensive ones.
+                ''',
 'custom':'''Cutom pricing refers to the pricing structure that can vary by each merchant. This could mean that the pricing is tailored
-            for specific needs or the pricing had to be adjusted due to other circumstances like history of high chargebacks and frauds.'''
+            for specific needs or the pricing had to be adjusted due to other circumstances like history of high chargebacks and frauds.''',
+'card-swiped':'''
+''',
+'card-not-present':'''
+''',
+'pci compliance fee':'''
+''',
+'qualified':'''
+''',
+'mid-qualified':'''
+''',
+'non-qualified':'''
+'''
 }
-
+glossary['ach/echeck'] = glossary.get('ach')
+glossary['gateway'] = glossary.get('virtual/gateway')
 def add_sticky_note(term):
     note = glossary.get(term.lower(), '') or glossary.get(term.lower()+'s', '')
     if not note:
         return term.strip()
     else:
         return '<span style="text-decoration:underline;" onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">%s<p class="hover_message">%s</p></span>'%(term.strip(), note)
-
+from flask import render_template_string
 def add_notes(companies):
     def mapping(company):
         company.pricing_method = map(add_sticky_note, company.pricing_method)
         company.provided_srvs= map(add_sticky_note, company.provided_srvs)
         company.complementary_srvs = map(add_sticky_note, company.complementary_srvs)
         company.equipment = map(add_sticky_note, company.equipment)
+        company.pricing_table = render_template_string(company.pricing_table)
         return company
     if type(companies) != list:
         return mapping(companies)

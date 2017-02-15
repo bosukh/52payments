@@ -64,7 +64,7 @@ def index():
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
     #companies = Company.query(Company.featured==True).fetch(limit=3)
-    companies = Company.query().fetch(limit=3)
+    companies = Company.gql("ORDER BY share DESC LIMIT 3").fetch()
     for company in companies:
         company.avg_rating = round(company.avg_rating, 1)
     return render_template("index.html", companies = companies, form = form,

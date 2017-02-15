@@ -4,6 +4,8 @@
 }
 td, th{
   font-size:1.3rem;
+  font-weight: normal;
+  text-align:center;
 }
 hr {
   border-top: 0.1rem solid #CAC9C9;
@@ -228,12 +230,12 @@ button {
   padding-right: 1.7rem;
 }
 }
+.company-profile-container {
+  border-top: 0.1rem solid #CAC9C9;
+}
 @media (min-width: 30rem) {
   .column.search-result-right-col {
     border-left: 0.1rem solid #CAC9C9;
-  }
-  .company-profile-container {
-    border-top: 0.1rem solid #CAC9C9;
   }
 }
 @media (max-width: 40rem) and (min-width:30rem) {
@@ -339,4 +341,10 @@ button > span {
  -ms-word-break: break-all;
   word-break: break-word;
   max-width: 35rem;
+  margin: 0;
+}
+.footnote{
+  font-size:1.1rem;
+  font-weight: normal;
+  line-height: 0.5rem;
 }

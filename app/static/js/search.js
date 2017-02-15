@@ -29,7 +29,7 @@ function get_criteria_list(){
   if (sessionStorage.getItem('Complimentary Services')){
     var srv_type = sessionStorage.getItem('Complimentary Services').split(',');
   } else {
-    var srv_type = ['Analytics/Reporting', 'Recurring Bill',
+    var srv_type = ['Analytics/Reporting', 'Recurring Billing',
                     'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
                     'Loyalty Program', 'Other'];
   }

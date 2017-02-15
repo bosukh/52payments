@@ -28,7 +28,7 @@ def company_search_query(search_criteria):
             for value in criteria:
                 where_clause.append("%s = '%s'"%(col_name, value))
             #where_clause.append("%s IN (%s)"%(col_name, "'" + "', '".join(criteria) + "'"))
-    gql_query += ' AND '.join(where_clause) + " ORDER BY pricing_range ASC"
+    gql_query += ' AND '.join(where_clause) + " ORDER BY share DESC"
     logging.debug(gql_query)
     res =  Company.gql(gql_query).fetch()
     logging.debug('Query Resulted in %s'%str(len(res)))

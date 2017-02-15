@@ -1,5 +1,6 @@
 import logging
 from flask import render_template as flask_render_template
+from flask import render_template_string
 from htmlmin import minify
 from rcssmin import _make_cssmin
 from rjsmin import _make_jsmin
@@ -7,6 +8,8 @@ from config import basedir
 
 def render_template(*args, **kargs):
     res = flask_render_template(*args, **kargs)
+    logging.debug(res)
+    #res = render_template_string(res)
     return minify(res)
 
 def minify_css(string_obj):

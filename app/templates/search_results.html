@@ -12,7 +12,7 @@
 {% for company in companies %}
 <div style='padding:0px; margin:0px;' class="company-profile-container row">
   <div class="left-col column">
-      <img class='side-logo' src="{{ url_for('img', company_profile_name=company.company_profile_name) }}" alt="company_logo" width="100%">
+      <img class='side-logo' style='padding:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="company_logo" width="100%">
       <br>
       {% if company.pricing_range %}
       Pricing Range: {{company.pricing_range[0]}}% ~ {{company.pricing_range[1]}}%<br>
@@ -50,8 +50,8 @@
       <p class='trim-300'>
         {{company.summary}}
       </p>
+      {% endif %}
     </div>
-    {% endif %}
 </div>
 <br><br>
 {% endfor %}
