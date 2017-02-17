@@ -32,6 +32,7 @@ class TempCode(ndb.Model):
 
 class Company(ndb.Model):
     title = ndb.StringProperty(required = True, indexed=True)
+    updated = ndb.StringProperty(required = True, indexed=True)
     share = ndb.IntegerProperty(indexed=True)
     location = ndb.StringProperty(required = False, indexed=False)
     company_profile_name = ndb.StringProperty(required = True, indexed=True)

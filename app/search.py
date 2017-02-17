@@ -37,7 +37,7 @@ def company_search_query(search_criteria):
 def search_company(search_criteria):
     if not search_criteria:
         logging.debug('Search Returning all comapnies')
-        return mc_getsert('all_verified_companies', Company.gql('').fetch)
+        return mc_getsert('all_verified_companies', Company.gql("ORDER BY share DESC").fetch)
     search_criteria = parse_search_criteria(search_criteria)
     search_result = company_search_query(search_criteria)
     for company in search_result:

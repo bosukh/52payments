@@ -19,6 +19,11 @@
       </a>
       {% endif %}
     </div>
+    {% if company.updated %}
+    <p style='font-size:1.3rem;'>
+      Last Updated: {{company.updated}}
+    </p>
+    {% endif %}
   </div>
   {% include 'write_review.html' %}
   <div class="row">

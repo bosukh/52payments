@@ -18,7 +18,8 @@ from app.login_manager import validate_user, load_user, google_oauth, login_user
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 from app.render import render_template, minify_css, minify_js, minified_files
-from app.glossary import add_sticky_note, glossary, add_notes
+from app.glossary import glossary
+from app.sticky_notes import add_sticky_note, add_notes
 from app.import_companies import import_companies
 from config import MODE
 
@@ -64,10 +65,11 @@ def index():
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
     #companies = Company.query(Company.featured==True).fetch(limit=3)
-    companies = Company.gql("ORDER BY share DESC LIMIT 3").fetch()
+    #companies = Company.gql("ORDER BY share DESC LIMIT 3").fetch()
+    companies = Company.gql("WHERE featured=True ORDER BY share DESC LIMIT 3").fetch()
     for company in companies:
         company.avg_rating = round(company.avg_rating, 1)
-    return render_template("index.html", companies = companies, form = form,
+    return render_template("index.html", companies = add_notes(companies), form = form,
                            title='Find the Right Credit Card Processing Services | 52payments',
                            keywords= 'payments, credit cards, card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
                            description = 'Search and read about different card processors/payment processing solutions to explore your options in choosing the right card processor (opening merchant account). Start accepting credit cards for your business today.')

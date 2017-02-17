@@ -8,7 +8,6 @@ from config import basedir
 
 def render_template(*args, **kargs):
     res = flask_render_template(*args, **kargs)
-    logging.debug(res)
     #res = render_template_string(res)
     return minify(res)
 

@@ -46,11 +46,14 @@
       <b>Provided Services</b>: {{', '.join(company.provided_srvs) | safe}}
       <br>
       {% endif %}
-      {% if company.summary %}
-      <p class='trim-300'>
-        {{company.summary}}
-      </p>
-      {% endif %}
+      <div style='height:15rem; overflow:hidden;'>
+        {% if company.highlights %}
+          <b>Highlights:</b> <br>
+          {% for pt in company.highlights%}
+            &nbsp;&nbsp;- {{pt | safe}} <br>
+          {% endfor %}
+        {% endif %}
+      </div>
     </div>
 </div>
 <br><br>
