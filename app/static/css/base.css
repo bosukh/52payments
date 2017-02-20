@@ -26,6 +26,9 @@ h3 {
 .larger_p {
   font-size: 1.5rem;
 }
+.list_p {
+  font-size:1.4rem;
+}
 @media (min-width: 40rem) {
   .larger_p {
     font-size: 2rem;
@@ -75,7 +78,7 @@ button {
 }
 .side-logo {
   width: 35rem;
-  height: 7.5rem;
+  height: 8.5rem; /*was originally 7.5*/
 }
 .square-logo{
   width:5rem;
@@ -197,7 +200,7 @@ button {
   color:white;
 }
 #chosen-title{
-  margin-top: 15px;
+  margin-top: 1.4rem;
   border-bottom: 0.1rem #92C0C4 solid;
   opacity: 0;
 }
@@ -208,18 +211,14 @@ button {
     border: 8px solid #f3f3f3;
     border-top: 8px solid #424242;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
+    width: 6rem;
+    height: 6rem;
     animation: spin 2s linear infinite;
 }
-
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-
-
-
 /*Search Result*/
 .company-apply-button {
   border-radius: 100px;
@@ -243,7 +242,6 @@ button {
     flex-direction: column !important;
   }
 }
-
 /*Sign-Up and Sing-In*/
 .li_warning {
   color: red;
@@ -319,6 +317,9 @@ button {
 button > span {
   text-decoration: none !important;
 }
+.sticky_note{
+  z-index:9999;
+}
 .hover_message {
   display: none;
   white-space: normal;
@@ -335,6 +336,7 @@ button > span {
   height: auto;
   z-index: 1000;
   text-transform:none;
+  font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
 .pricing-table{
@@ -346,5 +348,5 @@ button > span {
 .footnote{
   font-size:1.1rem;
   font-weight: normal;
-  line-height: 0.5rem;
+  line-height: 1.1rem;
 }

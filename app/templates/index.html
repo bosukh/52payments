@@ -1,21 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>52Payments is currently in development. We will launch our website soon.</h1>
+  <h2 style='text-align:center; text-transform:capitalize; margin:2rem;'>
+    Need to accept credit cards?<br>
+    These card payment processors can help you!<br>
+    <span style='font-weight:bold;'>
+      And we can help you quickly find the right one!
+    </span>
+  </h2>
   <div class="search-box">
     <div class="search-row">
       <div id='search-nav' class="search-nav row">
-        <div class="column">
-          <button id='Pricing_Method' class= 'items-title selected couponcode' type="button" onclick="javascript:select_items_title(this)">
-            {{sticky_note('Pricing Method') | safe}}
+        <div id='item-titles' class="column">
+          <button id='Pricing_Methods' class= 'items-title selected' type="button" onclick="javascript:select_items_title(this)">
+            Pricing Methods
           </button>
-          <button id='Business_Type' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
-            {{sticky_note('Business Type') | safe}}
+          <button id='Business_Types' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
+            Business Types
           </button>
-          <button id='Terminal' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
-            {{sticky_note('Terminal') | safe}}
+          <button id='Terminals' class= 'items-title' type="button"  onclick="javascript:select_items_title(this)">
+            Terminals
           </button>
-          <button id='Complimentary_Service' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
-            {{sticky_note('Complimentary Service') | safe}}
+          <button id='Complementary_Services' class= 'items-title' type="button" onclick="javascript:select_items_title(this)">
+            Complementary Services
           </button>
           <button onclick='javascript:get_search_result()' style='float:right; margin-top:0.5rem; margin-bottom:0.5rem;' type="button">Search</button>
         </div>
@@ -65,4 +71,20 @@
     <script src="{{url_for('static', filename='js/base.js')}}"></script>
     <script src="{{url_for('static', filename='js/search.js')}}"></script>
   {% endif %}
+  <script type="text/javascript">
+    for (title of document.getElementsByClassName('items-title')){
+      title.innerHTML = sticky_note(title.innerHTML);
+      title.onmouseleave=function(){hide_hover_message(this);};
+      title.onmousecenter = function(){show_hover_message(this);};
+      title.onmouseover = function(){show_hover_message(this);};
+      title.onclick = function(){select_items_title(this);hide_hover_message(this);};
+    }
+    init_search_box();
+    if (typeof(model.search_criteria)!='undefined' & model.search_criteria.value != ''){
+      get_search_result();
+    } else {
+      add_cont_reading_btn();
+    }
+  </script>
+
 {% endblock %}

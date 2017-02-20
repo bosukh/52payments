@@ -9,12 +9,12 @@ from bcrypt import bcrypt as bt
 from flask_login import fresh_login_required, LoginManager, login_user, logout_user, current_user, login_required
 
 from app import app, login_manager
-from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm, TestForm
+from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
 from app.models import Company, User, Review, TempCode
 from app.basejs import basejs
 from app.search import search_company
 from app.memcache import mc_getsert
-from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect
+from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect, load_user_by_email
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 from app.render import render_template, minify_css, minify_js, minified_files
@@ -30,14 +30,17 @@ app.jinja_env.globals['MODE'] = MODE
 app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
 
-@app.route('/add_companies', methods=['GET'])
-def add_companies():
-    import_companies()
-    return "Success?"
-
-@app.route('/temp', methods=['GET'])
-def temp():
-    return render_template("temp.html")
+if MODE == 'local':
+    @app.route('/add_companies', methods=['GET'])
+    @login_required # only admin
+    def add_companies():
+        if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+            abort(400)
+            import_companies()
+            return "Success?"
+    @app.route('/temp', methods=['GET'])
+    def temp():
+        return render_template("temp.html")
 
 @app.route('/about_us', methods=['GET'])
 def about_us():
@@ -51,7 +54,6 @@ def terms():
 @app.route('/privacy_policy', methods=['GET'])
 def privacy_policy():
     return render_template("privacy_policy.html")
-
 
 @app.route('/search_results', methods=['GET'])
 def search_results():
@@ -81,6 +83,7 @@ def my_account():
     edit_info_form = EditInfoForm()
     if edit_info_form.validate_on_submit():
         user_info = edit_info_form.data
+        #validate {'email': u'benbosukhong@gmail.com', 'first_name': u'BosukSASDMK', 'company_name': u'sadfasdf', 'last_name': u'Hong', 'phone': u'3128751254'}
         for k, v in user_info.iteritems():
             exec "current_user.%s = '%s'"%(k, str(v))
         current_user.put()
@@ -144,7 +147,7 @@ def forgot_password():
             body = email_templates['forgot_password']['body']%(user.first_name, link)
             send_email(user, subject, body)
             flash('Password re-set link is sent to your email. Please check your email.')
-        return redirect(url_for('index'))
+            return redirect(url_for('index'))
     return render_template('forgot_password.html', form=form)
 
 @app.route('/reset_password/<code>', methods=['GET', 'POST'])
@@ -347,64 +350,3 @@ def img(company_profile_name):
     response.headers['Cache-Control'] ='max-age=5184000'
     response.headers['ETag'] ='b498b71644eb4f7f862d2cd15f3d99f5'
     return response
-###################################################
-from random import choice
-@app.route('/add_tests', methods=['GET', 'POST'])
-@login_required
-def add_tests():
-    if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
-        abort(400)
-    def choose(list_, iter=5):
-        temp = [choice(list_) for _ in range(iter)]
-        temp = set(temp)
-        return list(temp)
-
-    summary = '''
-                Lorem Ipsum is simply dummy text of the printing and
-                typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s,
-                when an unknown printer took a galley of type and
-                scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap
-                into electronic typesetting, remaining essentially
-                unchanged. It was popularised in the 1960s with the
-                release of Letraset sheets containing Lorem Ipsum
-                passages, and more recently with desktop publishing
-                software like Aldus PageMaker including versions of
-                Lorem Ipsum.
-                '''
-    biz_type = ['Retail', 'Restaurant', 'E-Commerce',
-                'Mobile', 'Professional/Personal Services',
-                'Non-Profit', 'High-Risk']
-    srv_type = ['Analytics/Reporting', 'Recurring Bill',
-                'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
-                'Loyalty Program']
-    equip_type = ['Terminal', 'Wireless Terminal', 'Mobile Terminal', 'POS Solution',
-                   'Virtual/Gateway']
-    pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom']
-    form = TestForm()
-    if form.validate_on_submit():
-        company_form = form.data
-        company_form['logo_file'] = request.files['logo_file'].read()
-        company = {}
-        company.update(company_form)
-        for i in range(1, 10):
-            company['title'] = '52PAYMENTS_' + str(i)
-            company['company_profile_name'] = '52payments_' + str(i)
-            company['website'] = 'www.52payments.com'
-            company['landing_page'] = 'http://www.52payments.com'
-            company['phones'] = ['General: 000-0000-0000', 'Customer Service: 000-0000-0000']
-            company['summary'] = summary
-            company['full_description'] = summary*(i%4+1)
-            company['year_founded'] = 2010+i%4
-            company['provided_srvs'] = choose(biz_type)
-            company['complementary_srvs'] = choose(srv_type)
-            company['equipment'] = choose(equip_type)
-            company['pricing_method'] = choose(pricing_type)
-            company['pricing_range'] = [1, 1+i%5]
-            company['rate_range'] = [1, 1+i%5]
-            company['per_transaction_range'] = [0.1, 0.1+(i%5)*0.1]
-            temp =Company(**company)
-            temp.put()
-        return redirect(url_for('index'))
-    return render_template("add_tests.html", form = form)

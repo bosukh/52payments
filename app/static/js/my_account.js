@@ -1,5 +1,7 @@
-var field_ids = ['first_name', 'last_name', 'email', 'phone'];
-hide_warnings(field_ids);
+var field_ids = ['first_name', 'last_name', 'email'];
+var non_required_field_ids = ['first_name', 'last_name', 'email', 'phone'];
+var button_id = 'save-button';
+hide_warnings(non_required_field_ids);
 var account = {
   hide_fields:function(){
     for (var k in account.input_fields){
@@ -53,6 +55,7 @@ var account = {
     account.edit_btn.style.display = '';
     account.save_btn.style.display = 'none';
     account.cancel_btn.style.display = 'none';
+    hide_warnings(non_required_field_ids);
     for (k in account.infos){
       if (account.infos.hasOwnProperty(k)){
         if (!account.infos[k]){
@@ -64,6 +67,9 @@ var account = {
     }
   },
   save_edit:function(){
+    if (document.getElementById('save-button').disabled){
+      return;
+    }
     account.email_verify.style.display = '';
     account.edit_btn.style.display = '';
     account.save_btn.style.display = 'none';

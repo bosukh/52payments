@@ -37,9 +37,11 @@
       {% endif %}
       {% if company.phones %}
         <b>Contact:</b><br>
-        {% for phone in company.phones %}
+        <div class="list_p">
+          {% for phone in company.phones %}
           &nbsp;&nbsp;- {{ phone }} <br>
-        {% endfor %}
+          {% endfor %}
+        </div>
       {% endif %}
     </div>
     <div class="company-profile-basic-box">
@@ -52,45 +54,55 @@
       {% endfor %}
       {{company.avg_rating}} ({{company.num_ratings}}) <br>
     </div>
-    {% if company.pricing_table %}
-      <div class='company-profile-basic-box'>
-        <b>Pricing Detail:</b>
-        {{company.pricing_table | safe}}
-      </div>
-    {% endif %}
     {% if company.pricing_method %}
     <div class="company-profile-basic-box">
       <b>Pricing Method:</b> <br>
-      {% for method in company.pricing_method%}
-      &nbsp;&nbsp;- {{method | safe}} <br>
-      {% endfor %}
+      <div class='list_p'>
+        {% for method in company.pricing_method%}
+        &nbsp;&nbsp;- {{method | safe}} <br>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
-
+    {% if company.pricing_table %}
+      <div class='company-profile-basic-box'>
+        <b>Pricing Detail:</b>
+        <div class='footnote'>
+          DISCLAIMER: This pricing detail section includes only the most common and prominent fees. Due to the complicated nature of payment processing, there might be other fees. Depending on the situation, the listed fees are not guaranteed.
+        </div>
+        {{company.pricing_table | safe}}
+      </div>
+    {% endif %}
     {% if company.provided_srvs %}
     <div class="company-profile-basic-box">
       <b>Provided Services:</b> <br>
-      {% for srvs in company.provided_srvs%}
-      &nbsp;&nbsp;- {{srvs | safe}} <br>
-      {% endfor %}
+      <div class="list_p">
+        {% for srvs in company.provided_srvs%}
+        &nbsp;&nbsp;- {{srvs | safe}} <br>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 
     {% if company.complementary_srvs %}
     <div class="company-profile-basic-box">
       <b>Complementary Services:</b> <br>
-      {% for srvs in company.complementary_srvs%}
-      &nbsp;&nbsp;- {{srvs | safe}} <br>
-      {% endfor %}
+      <div class="list_p">
+        {% for srvs in company.complementary_srvs%}
+        &nbsp;&nbsp;- {{srvs | safe}} <br>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
 
     {% if company.equipment %}
     <div class="company-profile-basic-box">
       <b>Terminal:</b> <br>
-      {% for equip in company.equipment%}
-      &nbsp;&nbsp;- {{equip | safe}} <br>
-      {% endfor %}
+      <div class="list_p">
+        {% for equip in company.equipment%}
+        &nbsp;&nbsp;- {{equip | safe}} <br>
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
   </div>
@@ -132,9 +144,12 @@
 </div>
 </div>
 {% if MODE == 'deploy' %}
-  {{ minified.include_js('base.js', 'company_profile.js') | safe}}
+  {{ minified.include_js('base.js', 'form_validation.js', 'reviews.js', 'company_profile.js') | safe}}
 {% else %}
   <script src="{{url_for('static', filename='js/base.js')}}"></script>
+  <script src="{{url_for('static', filename='js/form_validation.js')}}"></script>
+  <script src="{{url_for('static', filename='js/reviews.js')}}"></script>
   <script src="{{url_for('static', filename='js/company_profile.js')}}"></script>
 {% endif %}
+
 {% endblock %}

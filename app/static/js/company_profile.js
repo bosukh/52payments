@@ -2,15 +2,13 @@ var input_list = ['rating', 'title', 'content'];
 var rating_input = document.getElementById('rating');
 var rating_text = document.getElementById('rating_text');
 var ratings = []
-var page = 0;
-var next_page, prev_page;
-var reviews = document.getElementsByClassName('review');
 
+// require form_validation
 function close_write_review(){
   document.getElementById('write-review-box').style = 'display: none;'
 }
 function check_all(){
-  var bad = check_all_field(input_list);
+  var bad = check_all_field(input_list, false);
   if (!bad){
     enable_btn('review-submit-button');
   } else {
@@ -28,7 +26,6 @@ function show_review_box(){
   document.getElementById('write-review-box').style = 'display:block;';
   check_all();
 }
-
 
 document.getElementById('title').setAttribute('maxlength', '120')
 document.getElementById('content').setAttribute('maxlength', '5000')
@@ -58,5 +55,6 @@ for (var i = 0; i < ratings.length; i++){
       };
   })(rating, i));
 }
+
 display_current_page(page, reviews);
 add_cont_reading_btn();

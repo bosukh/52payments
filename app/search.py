@@ -16,10 +16,10 @@ def parse_search_criteria(search_criteria):
     return temp
 
 def company_search_query(search_criteria):
-    types = [('Business_Type', 'provided_srvs'),
-             ('Complimentary_Service', 'complementary_srvs'),
-             ('Terminal', 'equipment'),
-             ('Pricing_Method', 'pricing_method')]
+    types = [('Business_Types', 'provided_srvs'),
+             ('Complementary_Services', 'complementary_srvs'),
+             ('Terminals', 'equipment'),
+             ('Pricing_Methods', 'pricing_method')]
     gql_query = "WHERE "
     where_clause = []
     for col, col_name in types:

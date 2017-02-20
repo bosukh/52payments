@@ -8,7 +8,7 @@ def add_sticky_note(term):
     if not note:
         return term.strip()
     else:
-        return Markup('<span style="text-decoration:underline;" onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">%s<p class="hover_message">%s</p></span>'%(term.strip(), note))
+        return Markup('<span class="sticky_note" style="text-decoration:underline;" onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">%s<p class="hover_message">%s</p></span>'%(term.strip(), note))
 
 def add_notes(companies):
     def mapping(company):
@@ -18,7 +18,7 @@ def add_notes(companies):
         company.equipment = map(add_sticky_note, company.equipment)
         company.pricing_table = render_template_string(company.pricing_table)
         company.highlights = map(render_template_string, company.highlights)
-        #company.full_description = render_template_string(company.full_description)
+        company.full_description = company.full_description.replace('\n', '<br>')
         return company
     if type(companies) != list:
         return mapping(companies)

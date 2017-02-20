@@ -54,10 +54,10 @@ class SignUpForm(Form):
     password_2 = PasswordField('Re-type Password', validators = [DataRequired(), Length(8, 30), EqualTo('password', message='Passwords have to match')])
 
 class EditInfoForm(Form):
-    first_name = TextField('First Name', validators = [Regexp(regex='^\w+$')])
-    last_name = TextField('Last Name', validators = [Regexp(regex='^\w+$')])
-    email = TextField('Email', validators = [Length(1, 64), Email()])
-    phone = TextField('Phone')
+    first_name = TextField('First Name', validators = [Regexp(regex='^\w+$'), DataRequired()])
+    last_name = TextField('Last Name', validators = [Regexp(regex='^\w+$'), DataRequired()])
+    email = TextField('Email', validators = [Length(1, 64), Email(), DataRequired()])
+    phone = TextField('Phone', validators = [Length(10,11)])
     company_name = TextField('Company Name')
 
 class ChangePasswordForm(Form):
@@ -76,9 +76,6 @@ class SearchForm(Form):
 
 class VerifyEmailForm(Form):
     verify_email = HiddenField('verify_email', validators = [DataRequired()])
-
-class TestForm(Form):
-    logo_file = FileField('Logo File (.svg)')
 
 class CompanyForm(Form):
     biz_type = [('Retail','Retail'),

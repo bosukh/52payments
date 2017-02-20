@@ -106,7 +106,7 @@ class Review(ndb.Model):
         reviews = [review.to_dict() for review in reviews]
         for review in reviews:
             user = review['user'].get()
-            review['user_name'] = user.first_name +" " + user.last_name
+            review['user_name'] = user.first_name +" " + user.last_name[0].upper() + '.'
             review['created'] = review['created'].strftime('%b %d, %Y')
         return reviews
 

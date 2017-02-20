@@ -7,10 +7,10 @@
     <h4>My Info</h4>
     <hr>
     <ul id="warnings">
-      <li class = 'li_warning' id='warning_first_name'>- First name can only include letters and '</li>
-      <li class = 'li_warning' id='warning_last_name'>- Last name can only include letters and '</li>
-      <li class = 'li_warning' id='warning_email'>- Email can only include letters, numbers, _, @, and dot.</li>
-      <li class = 'li_warning' id='warning_phone'>- Phone can only include numbers.</li>
+      <li class = 'li_warning' id='warning_first_name'>- First name can only include letters and '.(Required)</li>
+      <li class = 'li_warning' id='warning_last_name'>- Last name can only include letters and '.(Required)</li>
+      <li class = 'li_warning' id='warning_email'>- Email can only include letters, numbers, _, @, and dot.(Required)</li>
+      <li class = 'li_warning' id='warning_phone'>- Phone can only include numbers and should be 10 digits.</li>
     </ul>
     <form id='edit_info_form' method="post">
         {{ edit_info_form.hidden_tag() }}
@@ -101,9 +101,11 @@
   {% endfor %}
 </form>
 {% if MODE == 'deploy' %}
-  {{ minified.include_js('base.js', 'my_account.js') | safe}}
+  {{ minified.include_js('base.js', 'form_validation.js', 'reviews.js', 'my_account.js') | safe}}
 {% else %}
   <script src="{{url_for('static', filename='js/base.js')}}"></script>
+  <script src="{{url_for('static', filename='js/form_validation.js')}}"></script>
+  <script src="{{url_for('static', filename='js/reviews.js')}}"></script>
   <script src="{{url_for('static', filename='js/my_account.js')}}"></script>
 {% endif %}
 {% endblock %}
