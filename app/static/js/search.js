@@ -183,9 +183,9 @@ function get_search_result_base(func) {
     document.getElementById('loader').style = 'display: none;'
     add_cont_reading_btn();
   };
-  var url = '/search_results?' + 'search_criteria='+encodeURIComponent(model.search_criteria.value)
-  var xhr = create_xhr('GET', url, after_todo);
-  xhr.send();
+  var url = '/search_results'
+  var xhr = create_xhr('POST', url, after_todo);
+  xhr.send('search_criteria='+model.search_criteria.value);
   if (func) {
     func();
   }

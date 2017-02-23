@@ -38,18 +38,22 @@ if MODE == 'local':
     def add_companies():
         if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
             abort(400)
-            import_companies()
-            return "Success?"
+        import_companies()
+        return "Success?"
     @app.route('/temp', methods=['GET'])
     def temp():
         return render_template("temp.html")
+
+@app.errorhandler(404)
+def page_not_found(e):
+    flash("Requested page(%s) does not exist. Redirected to main page. Thanks."%request.url)
+    return redirect(url_for('index'))
 
 @app.before_request
 def redirect_www():
     #http://stackoverflow.com/questions/9766134/how-do-i-redirect-to-the-www-version-of-my-flask-site-on-heroku
     """Redirect www requests to non-www"""
     urlparts = urlparse(request.url)
-    logging.debug(urlparts)
     if urlparts.netloc == 'wwww.52payments.com':
         urlparts_list = list(urlparts)
         urlparts_list[1] = '52payments.com'
@@ -74,9 +78,9 @@ def terms():
 def privacy_policy():
     return render_template("privacy_policy.html")
 
-@app.route('/search_results', methods=['GET'])
+@app.route('/search_results', methods=['POST'])
 def search_results():
-    search_result = search_company(request.args.get('search_criteria'))
+    search_result = search_company(request.form['search_criteria'])
     return render_template("search_results.html", companies=add_notes(search_result))
 
 @app.route('/', methods=['GET', 'POST'])
@@ -91,9 +95,9 @@ def index():
     for company in companies:
         company.avg_rating = round(company.avg_rating, 1)
     return render_template("index.html", companies = add_notes(companies), form = form,
-                           title='Search and Compare Credit Card Processing Services',
+                           title='Search and Compare Card Payment Processors',
                            keywords= 'payments, credit cards, card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
-                           description = 'Search and read about different card processors/payment processing solutions to explore your options in choosing the right card processor (opening merchant account). Start accepting credit cards for your business today.')
+                           description = 'Search and compare card payment processors to effectively explore your options in choosing the right card payment processor. Start accepting cards for your business today.')
 
 @app.route('/my_account', methods=['GET', 'POST'])
 @login_required
@@ -318,9 +322,9 @@ def company(company_profile_name):
         company.avg_rating = round(company.avg_rating, 1)
         return render_template('company_profile.html',
                                 company = add_notes(company), reviews = reviews, form=form,
-                                title = '%s Review'%company.title,
-                                keywords = "%s, %s, payments, merchant account, card processor, payment processing solutions."%(company.title, company.website),
-                                description = company.full_description.replace('<br>','\n'))
+                                title = '%s Review'%company.title.strip(),
+                                keywords = "%s, search and compare payment processors, merchant account, card processor, payment processor"%company.title,
+                                description = company.meta_description.strip())
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
