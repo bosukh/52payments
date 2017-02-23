@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-  <h2 style='text-align:center; text-transform:capitalize; margin:2rem;'>
+  <h1 style='text-align:center; text-transform:capitalize; margin:2rem;'>
     Need to accept credit cards?<br>
-    These cards payment processors can help you!<br>
+    These card payment processors can help you!<br>
     <span style='font-weight:bold;'>
       And we can help you quickly find the right one!
     </span>
-  </h2>
+  </h1>
   <div class="search-box">
     <div class="search-row">
       <div id='search-nav' class="search-nav row">
@@ -50,7 +50,7 @@
     </div>
   </div>
   <div id = 'featured-title' class="basic-title">
-    <h4>Featured Processors</h4>
+    <h2>Featured Processors</h2>
   </div>
   <div id = 'featured-companies' class="row">
     {% for company in companies %}
