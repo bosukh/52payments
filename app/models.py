@@ -42,6 +42,7 @@ class Company(ndb.Model):
     verified = ndb.BooleanProperty(default=False, indexed=True)
     highlights = ndb.StringProperty(repeated=True, indexed=False)
     full_description = ndb.TextProperty(required = True, indexed=False)
+    meta_description = ndb.TextProperty(required = True, indexed=False)
     pricing_table = ndb.TextProperty(required = True, indexed=False)
     year_founded = ndb.IntegerProperty(indexed=False)
     provided_srvs = ndb.StringProperty(repeated=True, indexed=True)
