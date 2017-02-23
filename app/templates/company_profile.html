@@ -4,7 +4,9 @@
 {% block content %}
 <div class="large-company-profile-container">
   <div class="row" style='align-items:flex-end;'>
-    <img id="company-profile-logo" class='side-logo' style='align-self:flex-start; padding-right:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="company_logo">
+    <a href="{{company.landing_page}}" target='_blank'>
+      <img id="company-profile-logo" class='side-logo' style='align-self:flex-start; padding-right:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}"  alt="{{company.title}}">
+    </a>
     <div class="row" style='flex-direction:row;'>
       <a href="{{company.landing_page}}" target = '_blank'>
         <button class='company-apply-button' style = 'display:flex; margin-left:1rem;' type="button" name="apply-button">Apply</button>
@@ -67,10 +69,10 @@
     {% if company.pricing_table %}
       <div class='company-profile-basic-box'>
         <b>Pricing Detail:</b>
+        {{company.pricing_table | safe}}
         <div class='footnote'>
           DISCLAIMER: This pricing detail section includes only the most common and prominent fees. Due to the complicated nature of payment processing, there might be other fees. Depending on the situation, the listed fees are not guaranteed.
         </div>
-        {{company.pricing_table | safe}}
       </div>
     {% endif %}
     {% if company.provided_srvs %}
@@ -121,8 +123,10 @@
       <div class="company-profile-basic-box">
       {% if company.full_description %}
         <b>Description:</b>
-        <p class='trim-1500'>
+        <p class='trim-2000'>
           {{company.full_description | safe}}
+          <br>
+          Find out more about <a href="{{company.landing_page}}" target = '_blank'>{{company.title}}</a>.
         </p>
       {% endif %}
       </div>

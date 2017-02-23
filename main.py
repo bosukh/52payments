@@ -22,6 +22,8 @@ from app.glossary import glossary
 from app.sticky_notes import add_sticky_note, add_notes
 from app.import_companies import import_companies
 from config import MODE
+from urlparse import urlparse, urlunparse
+
 
 minified = minified_files()
 app.jinja_env.globals['bjs'] = basejs
@@ -41,6 +43,23 @@ if MODE == 'local':
     @app.route('/temp', methods=['GET'])
     def temp():
         return render_template("temp.html")
+
+@app.before_request
+def redirect_www():
+    #http://stackoverflow.com/questions/9766134/how-do-i-redirect-to-the-www-version-of-my-flask-site-on-heroku
+    """Redirect www requests to non-www"""
+    urlparts = urlparse(request.url)
+    logging.debug(urlparts)
+    if urlparts.netloc == 'wwww.52payments.com':
+        urlparts_list = list(urlparts)
+        urlparts_list[1] = '52payments.com'
+        logging.debug(urlunparse(urlparts_list))
+        return redirect(urlunparse(urlparts_list), code=301)
+    if urlparts.netloc == 'www.localhost:8080':
+        urlparts_list = list(urlparts)
+        urlparts_list[1] = 'localhost:8080'
+        logging.debug(urlunparse(urlparts_list))
+        return redirect(urlunparse(urlparts_list), code=301)
 
 @app.route('/about_us', methods=['GET'])
 def about_us():
@@ -72,7 +91,7 @@ def index():
     for company in companies:
         company.avg_rating = round(company.avg_rating, 1)
     return render_template("index.html", companies = add_notes(companies), form = form,
-                           title='Find the Right Credit Card Processing Services | 52payments',
+                           title='Search and Compare Credit Card Processing Services',
                            keywords= 'payments, credit cards, card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
                            description = 'Search and read about different card processors/payment processing solutions to explore your options in choosing the right card processor (opening merchant account). Start accepting credit cards for your business today.')
 
@@ -109,7 +128,7 @@ def my_account():
         review['company_profile_name'] = company.company_profile_name
     return render_template("my_account.html", user= user, reviews=reviews,
                            verify_email_form = verify_email_form, edit_info_form=edit_info_form,
-                           title = 'My Account | 52payments')
+                           title = 'My Account')
 
 @app.route('/verify_email/<code>', methods=['GET'])
 def verify_email(code):
@@ -200,7 +219,7 @@ def login():
         else:
             return abort(400)
     return render_template('login.html', form=form, google_login_form= google_login_form,
-                           title = 'Login | 52payments')
+                           title = 'Login')
 
 
 @app.route('/logout', methods=['GET'])
@@ -243,7 +262,7 @@ def signup():
         flash('Successfully registered. Please login.')
         return redirect(url_for('login'))
     return render_template('signup.html', form=form, google_login_form= google_login_form,
-                           title = 'Signup | 52payments')
+                           title = 'Signup')
 
 
 @app.route('/register_company/<code>', methods=['GET', 'POST'])
@@ -299,9 +318,9 @@ def company(company_profile_name):
         company.avg_rating = round(company.avg_rating, 1)
         return render_template('company_profile.html',
                                 company = add_notes(company), reviews = reviews, form=form,
-                                title = '%s page | 52payments'%company.title,
+                                title = '%s Review'%company.title,
                                 keywords = "%s, %s, payments, merchant account, card processor, payment processing solutions."%(company.title, company.website),
-                                description = 'Find out about %s, card processor that offers payment processing solutions. '%company.title+company.full_description)
+                                description = company.full_description.replace('<br>','\n'))
     else:
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
@@ -340,13 +359,3 @@ def admindecision():
         else:
             review.key.delete()
             return 'declined'
-
-@app.route("/img/<company_profile_name>", methods=['GET'])
-def img(company_profile_name):
-    company = Company.load_company(company_profile_name)
-    company = company.logo_file
-    response = make_response(company)
-    response.headers['Content-Type'] = 'image/svg+xml'
-    response.headers['Cache-Control'] ='max-age=5184000'
-    response.headers['ETag'] ='b498b71644eb4f7f862d2cd15f3d99f5'
-    return response
