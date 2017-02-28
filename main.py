@@ -54,7 +54,12 @@ def redirect_www():
     #http://stackoverflow.com/questions/9766134/how-do-i-redirect-to-the-www-version-of-my-flask-site-on-heroku
     """Redirect www requests to non-www"""
     urlparts = urlparse(request.url)
-    if urlparts.netloc == 'wwww.52payments.com':
+    if urlparts.netloc == 'www.52payments.com':
+        urlparts_list = list(urlparts)
+        urlparts_list[1] = '52payments.com'
+        logging.debug(urlunparse(urlparts_list))
+        return redirect(urlunparse(urlparts_list), code=301)
+    if urlparts.netloc.find('appspot')> 0:
         urlparts_list = list(urlparts)
         urlparts_list[1] = '52payments.com'
         logging.debug(urlunparse(urlparts_list))
@@ -64,6 +69,10 @@ def redirect_www():
         urlparts_list[1] = 'localhost:8080'
         logging.debug(urlunparse(urlparts_list))
         return redirect(urlunparse(urlparts_list), code=301)
+
+@app.route('/sitemap', methods=['GET'])
+def sitemap():
+    return render_template("sitemap.xml")
 
 @app.route('/about_us', methods=['GET'])
 def about_us():
@@ -95,9 +104,9 @@ def index():
     for company in companies:
         company.avg_rating = round(company.avg_rating, 1)
     return render_template("index.html", companies = add_notes(companies), form = form,
-                           title='Search and Compare Card Payment Processors',
-                           keywords= 'payments, credit cards, card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
-                           description = 'Search and compare card payment processors to effectively explore your options in choosing the right card payment processor. Start accepting cards for your business today.')
+                           title='Search and Compare Card Payment Processors | 52Payments',
+                           keywords= 'card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
+                           description = 'Explore the options in accepting card payments for your business.  Come find the most cost-effective card payment processors with our reviews.')
 
 @app.route('/my_account', methods=['GET', 'POST'])
 @login_required

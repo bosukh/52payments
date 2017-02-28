@@ -1,7 +1,9 @@
 <div class="column" style= 'max-width:35rem; margin:auto; margin-top:0px; margin-left:1rem;'>
   <div class="row">
     <div class="column">
-      <img class='side-logo' style='border-bottom: 1px solid #CAC9C9; padding:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="{{company.title}}">
+      <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}" target='_self'>
+        <img class='side-logo' style='border-bottom: 1px solid #CAC9C9; padding:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="{{company.title}}">
+      </a>
       <h2 style='margin:0;'>{{company.title}}</h2>
       Overall User Rating <br>
       {% for i in range(company.rounded_rating)%}

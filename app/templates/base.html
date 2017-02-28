@@ -9,6 +9,8 @@
     <meta name="msvalidate.01" content="6CF48792BCD1A53BBA0288442E97879A">
     <link rel="alternate" href="https://www.52payments.com" hreflang="en-us">
     <link rel="alternate" href="https://52payments.com" hreflang="en-us">
+    <link rel="alternate" href="http://www.52payments.com" hreflang="en-us">
+    <link rel="alternate" href="http://52payments.com" hreflang="en-us">
     <script src="{{url_for('static', filename='js/platform.js')}}" async defer></script>
     {% if title %}
       <title>{{title}}</title>
@@ -21,14 +23,14 @@
     {% if keywords %}
       <meta name="keywords" content="{{keywords}}">
     {% endif %}
+    {% if MODE == 'deploy' %}
+      {{minified.include_css('normalize.css', 'milligram-customized.css', 'base.css')|safe}}
+    {% else %}
+      <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/normalize.css')}}">
+      <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/milligram-customized.css')}}">
+      <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/base.css')}}">
+    {% endif %}
   </head>
-  {% if MODE == 'deploy' %}
-    {{minified.include_css('normalize.css', 'milligram-customized.css', 'base.css')|safe}}
-  {% else %}
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/normalize.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/milligram-customized.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/base.css')}}">
-  {% endif %}
   <body>
     <div style='border-bottom:0.1rem solid #d6c9ca;'>
       <div class="row" style = 'max-width: 1130px; margin:auto; padding-left:0.5rem; padding-right:0.5rem;'>

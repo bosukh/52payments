@@ -119,18 +119,23 @@
           &nbsp;&nbsp;- {{pt | safe}} <br>
         {% endfor %}
       {% endif %}
+      {% if company.promotion%}
+        <div class="company-profile-basic-box">
+          <b>Promotional Material:</b> <br>
+          {{company.promotion | safe}}
+        </div>
+      {% endif %}
 
-      <div class="company-profile-basic-box">
       {% if company.full_description %}
+      <div class="company-profile-basic-box">
         <b>Description:</b>
         <p class='trim-2000'>
           {{company.full_description | safe}}
-          <br>
+          <br><br>
           Find out more about <a href="{{company.landing_page}}" target = '_blank'>{{company.title}}</a>.
         </p>
-      {% endif %}
       </div>
-    </div>
+      {% endif %}
     <div id='review-box' class='company-profile-basic-box'>
       {% if reviews %}
         {% include 'review.html' %}

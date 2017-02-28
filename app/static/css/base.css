@@ -77,7 +77,7 @@ button {
   }
 }
 .side-logo {
-  width: 35rem;
+  width: 45rem;/*was originally 35*/
   height: 8.5rem; /*was originally 7.5*/
 }
 .square-logo{
@@ -349,4 +349,11 @@ button > span {
   font-size:1.1rem;
   font-weight: normal;
   line-height: 1.1rem;
+}
+
+.search_result_logo {
+  padding:1rem;
+  padding-left:2rem;
+  padding-right:2rem;
+  height:10rem;
 }
