@@ -59,11 +59,7 @@
     {% endif %}
   {% endfor %}
 </form>
-{% if MODE == 'deploy' %}
-  {{ minified.include_js('form_validation.js') | safe}}
-{% else %}
-  <script src="{{url_for('static', filename='js/form_validation.js')}}"></script>
-{% endif %}
+{{ minified.include_js('form_validation.js') | safe}}
 <script type="text/javascript">
   var field_ids = ['email', 'password'];
   var button_id = 'login-button';

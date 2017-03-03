@@ -2,7 +2,9 @@ import logging
 from time import sleep
 from uuid import uuid1
 from flask import Flask, make_response, abort, g, jsonify
-from flask import flash, redirect, session, url_for, request, g
+from flask import render_template as flask_render_template
+from flask import flash, redirect, session, url_for, request
+from rjscssmin_plugin import minified_files, html_minify
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
 from bcrypt import bcrypt as bt
@@ -17,18 +19,19 @@ from app.memcache import mc_getsert
 from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect, load_user_by_email
 from app.redirect_check import *
 from app.emails import email_templates, send_email
-from app.render import render_template, minify_css, minify_js, minified_files
 from app.glossary import glossary
 from app.sticky_notes import add_sticky_note, add_notes
 from app.import_companies import import_companies
 from config import MODE
 from urlparse import urlparse, urlunparse
 
+def render_template(*args, **kwargs):
+    res = flask_render_template(*args, **kwargs)
+    return html_minify(res)
 
-minified = minified_files()
+minified = minified_files(static_path='static' ,local_path = 'app/static', mode=MODE)
 app.jinja_env.globals['bjs'] = basejs
 app.jinja_env.globals['minified'] = minified
-app.jinja_env.globals['MODE'] = MODE
 app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
 
@@ -106,7 +109,7 @@ def index():
     return render_template("index.html", companies = add_notes(companies), form = form,
                            title='Search and Compare Card Payment Processors | 52Payments',
                            keywords= 'card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
-                           description = 'Explore the options in accepting card payments for your business.  Come find the most cost-effective card payment processors with our reviews.')
+                           description = 'Explore the options in accepting card payments for your business. Come find the most cost-effective card payment processors with our reviews.')
 
 @app.route('/my_account', methods=['GET', 'POST'])
 @login_required

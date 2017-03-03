@@ -50,30 +50,30 @@ def validate_user(form):
             return None, 'The given password is not correct'
     return user, error
 
-def google_oauth(**kargs):
+def google_oauth(**kwargs):
     #https://developers.google.com/identity/sign-in/web/backend-auth
     from oauth2client import client, crypt
     try:
-        idinfo = client.verify_id_token(kargs['id_token'], WEB_CLIENT_ID)
+        idinfo = client.verify_id_token(kwargs['id_token'], WEB_CLIENT_ID)
         if idinfo['aud'] not in [WEB_CLIENT_ID]:
             raise crypt.AppIdentityError("Unrecognized client.")
         if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
             raise crypt.AppIdentityError("Wrong issuer.")
     except crypt.AppIdentityError:
         return None, "Invalid Login Credentials"
-    kargs['user_id'], kargs['email'] = idinfo['sub'], idinfo['email']
-    kargs['first_name'], kargs['last_name'] = idinfo['given_name'], idinfo['family_name']
-    user = load_user(kargs['user_id'])
+    kwargs['user_id'], kwargs['email'] = idinfo['sub'], idinfo['email']
+    kwargs['first_name'], kwargs['last_name'] = idinfo['given_name'], idinfo['family_name']
+    user = load_user(kwargs['user_id'])
     error = None
-    if user and (kargs['request_type'].lower() != 'login'):
+    if user and (kwargs['request_type'].lower() != 'login'):
         error = 'Your email is already registered.'
-    elif user and (kargs['request_type'].lower() == 'login'):
+    elif user and (kwargs['request_type'].lower() == 'login'):
         user.authenticated = True
-    elif not user and (kargs['request_type'].lower() != 'login'):
-        user = User(user_id = kargs['user_id'],
+    elif not user and (kwargs['request_type'].lower() != 'login'):
+        user = User(user_id = kwargs['user_id'],
                     email = idinfo['email'],
-                    first_name = kargs['first_name'] or idinfo['given_name'],
-                    last_name = kargs['last_name'] or idinfo['family_name'],
+                    first_name = kwargs['first_name'] or idinfo['given_name'],
+                    last_name = kwargs['last_name'] or idinfo['family_name'],
                     email_verified=True)
         user.put()
     else:

@@ -66,8 +66,6 @@ function toggle_warning(bool_, message){
 }
 function check_input(elem, re) {
   var input = elem.value;
-  console.log(input)
-  console.log(!input)
   var message = document.getElementById("warning_"+elem.id);
   if (!input){
     toggle_warning(false, message);

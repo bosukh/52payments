@@ -65,12 +65,7 @@
   <script type="text/javascript">
     var glossary = {{glossary |safe}};
   </script>
-  {% if MODE == 'deploy' %}
-    {{ minified.include_js('base.js', 'search.js') | safe}}
-  {% else %}
-    <script src="{{url_for('static', filename='js/base.js')}}"></script>
-    <script src="{{url_for('static', filename='js/search.js')}}"></script>
-  {% endif %}
+  {{ minified.include_js('base.js', 'search.js') | safe}}
   <script type="text/javascript">
     for (title of document.getElementsByClassName('items-title')){
       title.innerHTML = sticky_note(title.innerHTML);
