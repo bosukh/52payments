@@ -57,19 +57,13 @@ def redirect_www():
     #http://stackoverflow.com/questions/9766134/how-do-i-redirect-to-the-www-version-of-my-flask-site-on-heroku
     """Redirect www requests to non-www"""
     urlparts = urlparse(request.url)
-    if urlparts.netloc == 'www.52payments.com':
-        urlparts_list = list(urlparts)
-        urlparts_list[1] = '52payments.com'
+    urlparts_list = list(urlparts)
+    if urlparts.netloc in {'www.52payments.com', 'www.localhost:8080'}:
+        urlparts_list[1] = urlparts.netloc[:4]
         logging.debug(urlunparse(urlparts_list))
         return redirect(urlunparse(urlparts_list), code=301)
     if urlparts.netloc.find('appspot')> 0:
-        urlparts_list = list(urlparts)
         urlparts_list[1] = '52payments.com'
-        logging.debug(urlunparse(urlparts_list))
-        return redirect(urlunparse(urlparts_list), code=301)
-    if urlparts.netloc == 'www.localhost:8080':
-        urlparts_list = list(urlparts)
-        urlparts_list[1] = 'localhost:8080'
         logging.debug(urlunparse(urlparts_list))
         return redirect(urlunparse(urlparts_list), code=301)
 
