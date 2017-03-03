@@ -1,4 +1,3 @@
-import logging
 from jinja2 import Markup
 from flask import render_template_string
 from .glossary import glossary
@@ -19,6 +18,7 @@ def add_notes(companies):
         company.pricing_table = render_template_string(company.pricing_table)
         company.highlights = map(render_template_string, company.highlights)
         company.full_description = company.full_description.replace('\n', '<br>')
+        company.avg_rating = round(company.avg_rating, 1)
         return company
     if type(companies) != list:
         return mapping(companies)

@@ -1,5 +1,7 @@
 from google.appengine.ext import ndb
 from datetime import datetime
+from functools import wraps
+from .sticky_notes import add_notes
 
 class TempCode(ndb.Model):
     code = ndb.StringProperty(required=True, indexed=True)
@@ -42,8 +44,8 @@ class Company(ndb.Model):
     verified = ndb.BooleanProperty(default=False, indexed=True)
     highlights = ndb.StringProperty(repeated=True, indexed=False)
     full_description = ndb.TextProperty(required = True, indexed=False)
-    promotion = ndb.TextProperty(required = False, indexed=False)
-    meta_description = ndb.TextProperty(required = True, indexed=False)
+    promotion = ndb.StringProperty(required = False, indexed=False)
+    meta_description = ndb.StringProperty(required = True, indexed=False)
     pricing_table = ndb.TextProperty(required = True, indexed=False)
     year_founded = ndb.IntegerProperty(indexed=False)
     provided_srvs = ndb.StringProperty(repeated=True, indexed=True)
@@ -57,10 +59,18 @@ class Company(ndb.Model):
     featured = ndb.BooleanProperty(default=False, indexed=True)
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=False)
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=False)
+
     @classmethod
     def load_company(self, company_profile_name):
         query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
         return query.get()
+
+    @classmethod
+    def make_query(self, query):
+        @wraps(self.gql(query).fetch)
+        def decorated_function():
+           return add_notes(self.gql(query).fetch())
+        return decorated_function
 
 class User(ndb.Model):
     user_id = ndb.StringProperty(required=True, indexed=True)

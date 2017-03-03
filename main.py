@@ -30,7 +30,6 @@ def render_template(*args, **kwargs):
     return html_minify(res)
 
 minified = minified_files(static_path='static' ,local_path = 'app/static', mode=MODE)
-app.jinja_env.globals['bjs'] = basejs
 app.jinja_env.globals['minified'] = minified
 app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
@@ -58,13 +57,12 @@ def redirect_www():
     """Redirect www requests to non-www"""
     urlparts = urlparse(request.url)
     urlparts_list = list(urlparts)
+    logging.debug(request.url)
     if urlparts.netloc in {'www.52payments.com', 'www.localhost:8080'}:
-        urlparts_list[1] = urlparts.netloc[:4]
-        logging.debug(urlunparse(urlparts_list))
+        urlparts_list[1] = urlparts.netloc[4:]
         return redirect(urlunparse(urlparts_list), code=301)
     if urlparts.netloc.find('appspot')> 0:
         urlparts_list[1] = '52payments.com'
-        logging.debug(urlunparse(urlparts_list))
         return redirect(urlunparse(urlparts_list), code=301)
 
 @app.route('/sitemap', methods=['GET'])
@@ -95,12 +93,9 @@ def index():
     form = SearchForm()
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
-    #companies = Company.query(Company.featured==True).fetch(limit=3)
-    #companies = Company.gql("ORDER BY share DESC LIMIT 3").fetch()
-    companies = Company.gql("WHERE featured=True ORDER BY share DESC LIMIT 3").fetch()
-    for company in companies:
-        company.avg_rating = round(company.avg_rating, 1)
-    return render_template("index.html", companies = add_notes(companies), form = form,
+    query = Company.make_query("WHERE featured=True ORDER BY share DESC LIMIT 3")
+    companies =  mc_getsert('featured_companies', query)
+    return render_template("index.html", companies = companies, form = form,
                            title='Search and Compare Card Payment Processors | 52Payments',
                            keywords= 'card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
                            description = 'Explore the options in accepting card payments for your business. Come find the most cost-effective card payment processors with our reviews.')
