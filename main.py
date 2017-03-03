@@ -1,9 +1,9 @@
+from config import MODE
+
 import logging
-from time import sleep
-from uuid import uuid1
-from flask import Flask, make_response, abort, g, jsonify
+from urlparse import urlparse, urlunparse
+from flask import Flask, make_response, abort, g, jsonify, flash, redirect, session, url_for, request
 from flask import render_template as flask_render_template
-from flask import flash, redirect, session, url_for, request
 from rjscssmin_plugin import minified_files, html_minify
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
@@ -22,8 +22,6 @@ from app.emails import email_templates, send_email
 from app.glossary import glossary
 from app.sticky_notes import add_sticky_note, add_notes
 from app.import_companies import import_companies
-from config import MODE
-from urlparse import urlparse, urlunparse
 
 def render_template(*args, **kwargs):
     res = flask_render_template(*args, **kwargs)
@@ -93,8 +91,7 @@ def index():
     form = SearchForm()
     if form.validate_on_submit():
         return redirect(url_for('search_results'))
-    query = Company.make_query("WHERE featured=True ORDER BY share DESC LIMIT 3")
-    companies =  mc_getsert('featured_companies', query)
+    companies =  mc_getsert('featured_companies', Company.make_query("WHERE featured=True ORDER BY share DESC LIMIT 3"))
     return render_template("index.html", companies = companies, form = form,
                            title='Search and Compare Card Payment Processors | 52Payments',
                            keywords= 'card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
@@ -107,16 +104,16 @@ def my_account():
     edit_info_form = EditInfoForm()
     if edit_info_form.validate_on_submit():
         user_info = edit_info_form.data
-        #validate {'email': u'benbosukhong@gmail.com', 'first_name': u'BosukSASDMK', 'company_name': u'sadfasdf', 'last_name': u'Hong', 'phone': u'3128751254'}
+        if current_user.email.lower().strip() != user_info['email'].lower().strip():
+            current_user.email_verified = False
         for k, v in user_info.iteritems():
             exec "current_user.%s = '%s'"%(k, str(v))
         current_user.put()
+        return redirect(url_for('my_account'))
     if verify_email_form.validate_on_submit():
         if verify_email_form.data['verify_email'] != current_user.email:
             abort(400)
-        code = uuid1().get_hex()
-        temp_code = TempCode(code=code, value=current_user.user_id)
-        temp_code.put()
+        code = TempCode.gen_code()
         link = 'https://52payments.com/verify_email/%s'%str(code)
         subject = email_templates['verify_email']['subject']
         body = email_templates['verify_email']['body']%(current_user.first_name, link)
@@ -163,9 +160,7 @@ def forgot_password():
     if form.validate_on_submit():
         user = check_user()
         if user:
-            code = uuid1().get_hex()
-            temp_code = TempCode(code=code, value=user.user_id)
-            temp_code.put()
+            code = TempCode.gen_code()
             link = 'https://52payments.com/reset_password/%s'%code
             subject = email_templates['forgot_password']['subject']
             body = email_templates['forgot_password']['body']%(user.first_name, link)
@@ -296,7 +291,6 @@ def register_company(code):
         company.put()
         temp_code = TempCode.load_code(code)
         temp_code.key.delete()
-        sleep(1)
         flash('Info Submitted')
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
     return render_template('register_company.html', form = form)

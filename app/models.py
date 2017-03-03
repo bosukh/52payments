@@ -1,12 +1,22 @@
 from google.appengine.ext import ndb
 from datetime import datetime
 from functools import wraps
+from flask_login import current_user
+from uuid import uuid1
+import logging
 from .sticky_notes import add_notes
 
 class TempCode(ndb.Model):
     code = ndb.StringProperty(required=True, indexed=True)
     value = ndb.StringProperty(required=True, indexed=False)
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=False)
+
+    @classmethod
+    def gen_code(self):
+        code = uuid1().get_hex()
+        temp_code = TempCode(code=code, value=current_user.user_id)
+        temp_code.put()
+        return code
 
     @classmethod
     def verify_code(self, code, time = 0, delete=True):
@@ -67,6 +77,9 @@ class Company(ndb.Model):
 
     @classmethod
     def make_query(self, query):
+        '''
+        returns a function.
+        '''
         @wraps(self.gql(query).fetch)
         def decorated_function():
            return add_notes(self.gql(query).fetch())
