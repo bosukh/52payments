@@ -129,7 +129,7 @@
       {% if company.full_description %}
       <div class="company-profile-basic-box">
         <b>Description:</b>
-        <p class='trim-2000'>
+        <p>
           {{company.full_description | safe}}
           <br><br>
           Find out more about <a href="{{company.landing_page}}" target = '_blank'>{{company.title}}</a>.

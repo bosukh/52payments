@@ -78,7 +78,7 @@ button {
 }
 .side-logo {
   width: 45rem;/*was originally 35*/
-  height: 8.5rem; /*was originally 7.5*/
+   /*height: 8.5rem; was originally 7.5*/
 }
 .square-logo{
   width:5rem;

@@ -3,6 +3,7 @@ import logging
 from flask_login import login_user, current_user
 from flask import redirect, url_for, flash
 from bcrypt import bcrypt as bt
+from oauth2client import client, crypt
 
 from . import login_manager
 from . import WEB_CLIENT_ID
@@ -33,7 +34,6 @@ def login_user_with_redirect(user, form, referrer):
 
 def validate_user(form):
     error = None
-    logging.debug(11111111111111111)
     if not form.data.get('email') or not form.data.get('password'):
         return None, 'You must enter both email and password'
     user = load_user(form.data['email'])
@@ -50,32 +50,38 @@ def validate_user(form):
             return None, 'The given password is not correct'
     return user, error
 
-def google_oauth(**kwargs):
-    #https://developers.google.com/identity/sign-in/web/backend-auth
-    from oauth2client import client, crypt
-    try:
-        idinfo = client.verify_id_token(kwargs['id_token'], WEB_CLIENT_ID)
-        if idinfo['aud'] not in [WEB_CLIENT_ID]:
-            raise crypt.AppIdentityError("Unrecognized client.")
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise crypt.AppIdentityError("Wrong issuer.")
-    except crypt.AppIdentityError:
-        return None, "Invalid Login Credentials"
-    kwargs['user_id'], kwargs['email'] = idinfo['sub'], idinfo['email']
-    kwargs['first_name'], kwargs['last_name'] = idinfo['given_name'], idinfo['family_name']
-    user = load_user(kwargs['user_id'])
-    error = None
-    if user and (kwargs['request_type'].lower() != 'login'):
-        error = 'Your email is already registered.'
-    elif user and (kwargs['request_type'].lower() == 'login'):
-        user.authenticated = True
-    elif not user and (kwargs['request_type'].lower() != 'login'):
-        user = User(user_id = kwargs['user_id'],
-                    email = idinfo['email'],
-                    first_name = kwargs['first_name'] or idinfo['given_name'],
-                    last_name = kwargs['last_name'] or idinfo['family_name'],
-                    email_verified=True)
-        user.put()
-    else:
-        error = 'Your email is not registered.'
-    return user, error
+
+class google_oauth:
+    def __init__(self, id_token):
+        #https://developers.google.com/identity/sign-in/web/backend-auth
+        self.id_token = id_token
+        self.idinfo = {}
+        try:
+            self.idinfo = client.verify_id_token(id_token, WEB_CLIENT_ID)
+            if self.idinfo['aud'] not in [WEB_CLIENT_ID] or self.idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                self.idinfo = {}
+        except crypt.AppIdentityError:
+            pass
+        self.user_id = self.idinfo.get('sub')
+        self.user = load_user(self.user_id or '_')
+        self.error = ''
+
+    def login(self):
+        if self.user:
+            self.user.authenticated = True
+            return self.user
+        self.error = 'Your email is not registered.'
+        return None
+
+    def signup(self):
+        if self.user:
+            self.error = 'Your email is already registered.'
+            return None
+        else:
+            user = User(user_id = self.idinfo['sub'],
+                        email = self.idinfo['email'],
+                        first_name = self.idinfo['given_name'],
+                        last_name = self.idinfo['family_name'],
+                        email_verified=True)
+            user.put()
+            return user

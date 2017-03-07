@@ -72,8 +72,8 @@ class Company(ndb.Model):
 
     @classmethod
     def load_company(self, company_profile_name):
-        query = Company.gql("WHERE company_profile_name = '%s'"%str(company_profile_name))
-        return query.get()
+        return self.make_query("WHERE company_profile_name = '%s'"%str(company_profile_name))()[0]
+
 
     @classmethod
     def make_query(self, query):
@@ -125,6 +125,7 @@ class Review(ndb.Model):
     company = ndb.KeyProperty(Company, indexed=True)
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=True)
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=True)
+
 
     @classmethod
     def reviews_for_display(self, reviews):

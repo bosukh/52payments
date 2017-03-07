@@ -36,10 +36,10 @@ if MODE == 'local':
     @app.route('/add_companies', methods=['GET'])
     @login_required # only admin
     def add_companies():
-        if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+        if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
             abort(400)
         import_companies()
-        return "Success?"
+        return "####"
     @app.route('/temp', methods=['GET'])
     def temp():
         return render_template("temp.html")
@@ -66,7 +66,6 @@ def redirect_www():
 @app.route('/sitemap', methods=['GET'])
 def sitemap():
     return render_template("sitemap.xml")
-
 @app.route('/about_us', methods=['GET'])
 def about_us():
     return render_template("about_us.html")
@@ -130,7 +129,7 @@ def my_account():
         review['company_profile_name'] = company.company_profile_name
     return render_template("my_account.html", user= user, reviews=reviews,
                            verify_email_form = verify_email_form, edit_info_form=edit_info_form,
-                           title = 'My Account')
+                           title = 'My Account | 52payments')
 
 @app.route('/verify_email/<code>', methods=['GET'])
 def verify_email(code):
@@ -193,12 +192,12 @@ def login():
     if request.referrer and request.referrer.find('login')==-1:
         session['initial_referrer'] = request.referrer
     form = LoginForm()
-    google_login_form =GoogleLoginForm()
+    google_login_form = GoogleLoginForm()
     if form.validate_on_submit():
         user, error = validate_user(form)
         if error:
             flash(error)
-            return render_template('login.html', form=form, google_login_form= google_login_form)
+            return render_template('login.html', form = form, google_login_form = google_login_form)
         else:
             current_user, redirect_route = login_user_with_redirect(user, form, session.get('initial_referrer'))
             if current_user:
@@ -206,12 +205,10 @@ def login():
             else:
                 return abort(400)
     if google_login_form.validate_on_submit():
-        args = {}
-        args['id_token'] = google_login_form.data['id_token']
-        args['request_type'] = 'login'
-        user, error = google_oauth(**args)
-        if error:
-            flash(error)
+        gg = google_oauth(google_login_form.data['id_token'])
+        user = gg.login()
+        if not user or gg.error:
+            flash(gg.error or "Please try again")
             return render_template('login.html', form=form, google_login_form= google_login_form)
         current_user, redirect_route = login_user_with_redirect(user, google_login_form, session.get('initial_referrer'))
         if current_user:
@@ -252,15 +249,14 @@ def signup():
         flash('Successfully registered. Please login.')
         return redirect(url_for('login'))
     if google_login_form.validate_on_submit():
-        args = {}
-        args['id_token'] = google_login_form.data['id_token']
-        args['request_type'] = 'signup'
-        user, error = google_oauth(**args)
-        if error:
-            flash(error)
+        gg = google_oauth(google_login_form.data['id_token'])
+        user = gg.signup()
+        if not user or gg.error:
+            flash(gg.error or "Please try again")
             return render_template('signup.html', form=form, google_login_form= google_login_form)
-        flash('Successfully registered. Please login.')
-        return redirect(url_for('login'))
+        flash('Successfully registered. Thank you')
+        login_user(user)
+        return redirect(url_for('index'))
     return render_template('signup.html', form=form, google_login_form= google_login_form,
                            title = 'Signup')
 
@@ -314,7 +310,6 @@ def company(company_profile_name):
     if company:
         reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
         reviews = Review.reviews_for_display(reviews)
-        company.avg_rating = round(company.avg_rating, 1)
         return render_template('company_profile.html',
                                 company = add_notes(company), reviews = reviews, form=form,
                                 title = '%s Review'%company.title.strip(),
@@ -327,7 +322,7 @@ def company(company_profile_name):
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin
 def admin():
-    if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+    if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
         abort(400)
     reviews = Review.query().filter(Review.approved ==None).order(-Review.created).fetch(limit=None)
     dict_reviews = []
@@ -344,7 +339,7 @@ def admin():
 @app.route('/admindecision', methods=['POST'])
 @login_required # only admin
 def admindecision():
-    if current_user.email != 'benbosukhong@gmail.com' or not current_user.email_verified:
+    if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
         abort(400)
     urlsafe = request.form['urlsafe']
     key = ndb.Key(urlsafe = urlsafe)

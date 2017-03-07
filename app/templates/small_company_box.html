@@ -2,7 +2,7 @@
   <div class="row">
     <div class="column">
       <a href="{{url_for('company', company_profile_name = company.company_profile_name)}}" target='_self'>
-        <img class='side-logo' style='border-bottom: 1px solid #CAC9C9; padding:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="{{company.title}}">
+        <img class='side-logo' style='height:8rem; border-bottom: 1px solid #CAC9C9; padding:1rem;' src="{{ url_for('static', filename='img/'+company.company_profile_name + '.png') }}" alt="{{company.title}}">
       </a>
       <h2 style='margin:0;'>{{company.title}}</h2>
       Overall User Rating <br>
