@@ -12,6 +12,10 @@ from .models import User
 from .redirect_check import *
 
 def redirect_loggedin_user(redirect_path):
+    '''
+    Decorator function to redirect logged in user to another page.
+    Current usage: When user is logged in, "login" and "signup" pages --> "my_account"
+    '''
     def handler_decorator(handler):
         @wraps(handler)
         def decorated_function(*args, **kwargs):
@@ -38,7 +42,7 @@ def login_user_with_redirect(user, form = None, redirect_path = None):
         #current_user = user
     else:
         return None, None
-    if not check_referrer_origin(redirect_path) or check_referrer_auth_requirement(redirect_path, ['signup', 'signout', 'reset_password', 'forgot_password']):
+    if not check_referrer_origin(redirect_path) or check_referrer_auth_requirement(redirect_path, ['signup', 'logout', 'reset-password', 'forgot-password']):
         redirect_path = None;
     flash('Logged in successfully.')
     return user, redirect_path

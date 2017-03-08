@@ -33,7 +33,7 @@ app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
 
 if MODE == 'local':
-    @app.route('/add_companies', methods=['GET'])
+    @app.route('/add-companies', methods=['GET'])
     @login_required # only admin
     def add_companies():
         if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
@@ -43,6 +43,11 @@ if MODE == 'local':
     @app.route('/temp', methods=['GET'])
     def temp():
         return render_template("temp.html")
+
+@app.errorhandler(401)
+def page_not_found(e):
+    flash("Requested page(%s) requires login OR you are not authorized. Redirected to main page. Thanks."%request.url)
+    return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -65,20 +70,20 @@ def redirect_www():
 @app.route('/sitemap', methods=['GET'])
 def sitemap():
     return render_template("sitemap.xml")
-@app.route('/about_us', methods=['GET'])
+@app.route('/about-us', methods=['GET'])
 def about_us():
     return render_template("about_us.html")
-@app.route('/contact_us', methods=['GET'])
+@app.route('/contact-us', methods=['GET'])
 def contact_us():
     return render_template("contact_us.html")
 @app.route('/terms', methods=['GET'])
 def terms():
     return render_template("terms.html")
-@app.route('/privacy_policy', methods=['GET'])
+@app.route('/privacy-policy', methods=['GET'])
 def privacy_policy():
     return render_template("privacy_policy.html")
 
-@app.route('/search_results', methods=['POST'])
+@app.route('/search-results', methods=['POST'])
 def search_results():
     search_result = search_company(request.form['search_criteria'])
     return render_template("search_results.html", companies=add_notes(search_result))
@@ -95,14 +100,14 @@ def index():
                            keywords= 'card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
                            description = 'Explore the options in accepting card payments for your business. Come find the most cost-effective card payment processors with our reviews.')
 
-@app.route('/my_account', methods=['GET', 'POST'])
+@app.route('/my-account', methods=['GET', 'POST'])
 @login_required
 def my_account():
     verify_email_form = VerifyEmailForm()
     edit_info_form = EditInfoForm()
     if edit_info_form.validate_on_submit():
         user_info = edit_info_form.data
-        if current_user.email.lower().strip() != user_info['email'].lower().strip():
+        if current_user.email.lower().strip() != user_info.get('email').lower().strip():
             current_user.email_verified = False
         for k, v in user_info.iteritems():
             exec "current_user.%s = '%s'"%(k, str(v))
@@ -111,15 +116,15 @@ def my_account():
     if verify_email_form.validate_on_submit():
         if verify_email_form.data['verify_email'] != current_user.email:
             abort(400)
-        code = TempCode.gen_code()
-        link = 'https://52payments.com/verify_email/%s'%str(code)
         subject = email_templates['verify_email']['subject']
-        body = email_templates['verify_email']['body']%(current_user.first_name, link)
+        body = email_templates['verify_email']['body']%(current_user.first_name, 'https://52payments.com/verify-email/%s'%str(TempCode.gen_code()))
+        logging.debug(subject)
+        logging.debug(body)
         send_email(current_user, subject, body)
-        flash('Email verification email is sent. Please check your email.')
+        flash('Email verification link is sent. Please check your email.')
         return redirect(url_for('my_account'))
     user = current_user.to_dict()
-    user.pop('password')
+    user.pop('password', None)
     reviews = Review.query(Review.user==current_user.key).order(-Review.created).fetch(limit=None)
     reviews = Review.reviews_for_display(reviews)
     for review in reviews:
@@ -130,7 +135,7 @@ def my_account():
                            verify_email_form = verify_email_form, edit_info_form=edit_info_form,
                            title = 'My Account | 52payments')
 
-@app.route('/verify_email/<code>', methods=['GET'])
+@app.route('/verify-email/<code>', methods=['GET'])
 def verify_email(code):
     value = TempCode.verify_code(code, 600)
     if value:
@@ -158,16 +163,16 @@ def forgot_password():
     if form.validate_on_submit():
         user = check_user()
         if user:
-            code = TempCode.gen_code()
-            link = 'https://52payments.com/reset_password/%s'%code
             subject = email_templates['forgot_password']['subject']
-            body = email_templates['forgot_password']['body']%(user.first_name, link)
+            body = email_templates['forgot_password']['body']%(user.first_name, 'https://52payments.com/reset-password/%s'%str(TempCode.gen_code(user.user_id)))
+            logging.debug(subject)
+            logging.debug(body)
             send_email(user, subject, body)
             flash('Password re-set link is sent to your email. Please check your email.')
             return redirect(url_for('index'))
     return render_template('forgot_password.html', form=form)
 
-@app.route('/reset_password/<code>', methods=['GET', 'POST'])
+@app.route('/reset-password/<code>', methods=['GET', 'POST'])
 def reset_password(code):
     user_id = TempCode.verify_code(code, 600, delete=False)
     form = ChangePasswordForm()
@@ -201,7 +206,7 @@ def login():
             return render_template('login.html', form = form, google_login_form = google_login_form)
         return redirect(auth_by_form.redirect or url_for('index'))
     if google_login_form.validate_on_submit():
-        auth_by_gg = google_oauth(google_login_form.data['id_token'])
+        auth_by_gg = google_oauth(google_login_form.data.get('id_token', ''))
         user = auth_by_gg.login()
         logging.debug(user)
         if not user or auth_by_gg.error:
@@ -235,7 +240,7 @@ def signup():
         flash('Successfully registered. Thank you')
         return redirect(url_for('index'))
     if google_login_form.validate_on_submit():
-        auth_by_gg = google_oauth(google_login_form.data['id_token'])
+        auth_by_gg = google_oauth(google_login_form.data.get('id_token', ''))
         user = auth_by_gg.signup()
         if not user or auth_by_gg.error:
             flash(auth_by_gg.error or "Please try again")
@@ -244,37 +249,6 @@ def signup():
         return redirect(url_for('index'))
     return render_template('signup.html', form=form, google_login_form= google_login_form,
                            title = 'Signup')
-
-
-@app.route('/register_company/<code>', methods=['GET', 'POST'])
-def register_company(code):
-    company_profile_name = TempCode.verify_code(code, delete=False)
-    if not company_profile_name:
-        abort(400)
-    form = CompanyForm(company_profile_name=company_profile_name)
-    if form.validate_on_submit():
-        company_form = form.data
-        company_form['company_profile_name'] = company_form['company_profile_name'].lower()
-        if Company.load_company(company_form['company_profile_name']):
-            flash('The entered Url End Point is taken.')
-            return render_template('register_company.html', form = form)
-        company_form['logo_file'] = request.files['logo_file'].read()
-        for col in ['pricing', 'rate', 'per_transaction']:
-            company_form[col +'_range'] = [company_form[col + '_range_lower'],company_form[col + '_range_upper']]
-            company_form.pop(col + '_range_lower', None)
-            company_form.pop(col + '_range_upper', None)
-        if company_form.get('phones'):
-            company_form['phones'] = company_form['phones'].split(',')
-        if company_form.get('landing_page'):
-            if company_form['landing_page'].find('http://') == -1:
-                company_form['landing_page'] = 'http://' + company_form['landing_page']
-        company = Company(**company_form)
-        company.put()
-        temp_code = TempCode.load_code(code)
-        temp_code.key.delete()
-        flash('Info Submitted')
-        return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
-    return render_template('register_company.html', form = form)
 
 @app.route('/company/<company_profile_name>', methods = ['GET', 'POST'])
 def company(company_profile_name):
@@ -304,6 +278,8 @@ def company(company_profile_name):
         flash("Requested page does not exist. Redirected to the main page.")
         return redirect(url_for("index"))
 
+#######################################################################
+# Not being used. Need to work on below in order
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin
 def admin():
@@ -338,3 +314,33 @@ def admindecision():
         else:
             review.key.delete()
             return 'declined'
+
+@app.route('/register-company/<code>', methods=['GET', 'POST'])
+def register_company(code):
+    company_profile_name = TempCode.verify_code(code, delete=False)
+    if not company_profile_name:
+        abort(400)
+    form = CompanyForm(company_profile_name=company_profile_name)
+    if form.validate_on_submit():
+        company_form = form.data
+        company_form['company_profile_name'] = company_form['company_profile_name'].lower()
+        if Company.load_company(company_form['company_profile_name']):
+            flash('The entered Url End Point is taken.')
+            return render_template('register_company.html', form = form)
+        company_form['logo_file'] = request.files['logo_file'].read()
+        for col in ['pricing', 'rate', 'per_transaction']:
+            company_form[col +'_range'] = [company_form[col + '_range_lower'],company_form[col + '_range_upper']]
+            company_form.pop(col + '_range_lower', None)
+            company_form.pop(col + '_range_upper', None)
+        if company_form.get('phones'):
+            company_form['phones'] = company_form['phones'].split(',')
+        if company_form.get('landing_page'):
+            if company_form['landing_page'].find('http://') == -1:
+                company_form['landing_page'] = 'http://' + company_form['landing_page']
+        company = Company(**company_form)
+        company.put()
+        temp_code = TempCode.load_code(code)
+        temp_code.key.delete()
+        flash('Info Submitted')
+        return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))
+    return render_template('register_company.html', form = form)

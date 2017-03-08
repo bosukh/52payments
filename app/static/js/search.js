@@ -37,27 +37,27 @@ var init_cont = {
     if (sessionStorage.getItem('Business_Types')){
       var biz_type = sessionStorage.getItem('Business_Types').split(',');
     } else {
-      var biz_type = ['Retail', 'Restaurant', 'E-Commerce',
-                      'Mobile', 'Professional/Personal Services',
-                      'Non-Profit', 'High-Risk','Enterprise', 'Other'];
+      var biz_type = ['E-Commerce', 'Enterprise', 'High-Risk',
+                      'Mobile', 'Non-Profit', 'Professional/Personal Services',
+                      'Restaurant', 'Retail', 'Other'];
     }
     if (sessionStorage.getItem('Complementary_Services')){
       var srv_type = sessionStorage.getItem('Complementary_Services').split(',');
     } else {
-      var srv_type = ['Analytics/Reporting', 'Recurring Billing',
-                      'Chargeback', 'Security', 'Fraud', 'ACH', 'Digital Wallet',
-                      'Loyalty Program', 'Other'];
+      var srv_type = ['ACH', 'Analytics/Reporting', 'Chargeback', 'Digital Wallet',
+                      'Fraud', 'Inventory Management', 'Loyalty Program',
+                      'Recurring Billing', 'Security', 'Other'];
     }
     if (sessionStorage.getItem('Terminals')){
       var equip_type = sessionStorage.getItem('Terminals').split(',');
     } else {
-      var equip_type = ['Terminal', 'Wireless Terminal', 'Mobile Terminal', 'POS Solution',
-                         'Virtual/Gateway','Other'];
+      var equip_type = ['Mobile Terminal', 'POS Solution', 'Terminal',
+                        'Virtual/Gateway', 'Wireless Terminal', 'Other'];
     }
     if (sessionStorage.getItem('Pricing_Methods')){
       var pricing_type = sessionStorage.getItem('Pricing_Methods').split(',');
     } else {
-      var pricing_type = ['Tiered', 'Interchange Plus', 'Flat', 'Custom', 'Other'];
+      var pricing_type = ['Flat', 'Interchange Plus', 'Tiered', 'Custom', 'Other'];
     }
     var types = {
       "Business_Types" : biz_type,
@@ -183,7 +183,7 @@ function get_search_result_base(func) {
     document.getElementById('loader').style = 'display: none;'
     add_cont_reading_btn();
   };
-  var url = '/search_results'
+  var url = '/search-results'
   var xhr = create_xhr('POST', url, after_todo);
   xhr.send('search_criteria='+model.search_criteria.value);
   if (func) {

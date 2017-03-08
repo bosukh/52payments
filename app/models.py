@@ -12,9 +12,9 @@ class TempCode(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=False)
 
     @classmethod
-    def gen_code(self):
+    def gen_code(self, value = None):
         code = uuid1().get_hex()
-        temp_code = TempCode(code=code, value=current_user.user_id)
+        temp_code = TempCode(code=code, value=value or current_user.user_id)
         temp_code.put()
         return code
 
@@ -71,9 +71,14 @@ class Company(ndb.Model):
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=False)
 
     @classmethod
-    def load_company(self, company_profile_name):
-        return self.make_query("WHERE company_profile_name = '%s'"%str(company_profile_name))()[0]
-
+    def load_company(self, company_profile_name, raw = False):
+        if raw:
+            res = self.gql("WHERE company_profile_name = '%s'"%str(company_profile_name)).fetch()
+        else:
+            res = self.make_query("WHERE company_profile_name = '%s'"%str(company_profile_name))()
+        if res:
+            return res[0]
+        return None
 
     @classmethod
     def make_query(self, query):

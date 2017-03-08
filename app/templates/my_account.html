@@ -57,7 +57,7 @@
       <span class='plain-value'>
         {% if user.email == user.user_id %}
         <b>Password:</b> <br> xxxxxxxxxx <span id='user-password'></span>
-        <br><a href='forgot_password'>Reset Password</a>
+        <br><a href='{{url_for("forgot_password")}}'>Reset Password</a>
         {% endif %}
       </span>
     </p>
