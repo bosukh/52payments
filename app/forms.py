@@ -4,7 +4,7 @@ from wtforms import IntegerField, FloatField, StringField, BooleanField, TextAre
 from wtforms.validators import Length, Email, DataRequired, EqualTo, URL, Regexp
 from flask_wtf.file import FileField
 from urlparse import urlparse, urljoin
-from flask import request, url_for
+from flask import request, url_for, session
 
 from urlparse import urlparse, urljoin
 from flask import request, url_for, redirect
@@ -16,7 +16,10 @@ def is_safe_url(target):
            ref_url.netloc == test_url.netloc
 
 def get_redirect_target():
-    for target in request.args.get('next'), request.referrer:
+    logging.debug(request.args.get('next'))
+    logging.debug(request.referrer)
+    logging.debug(session['initial_referrer'])
+    for target in request.args.get('next'), session['initial_referrer'], request.referrer:
         if not target:
             continue
         if is_safe_url(target):
@@ -34,7 +37,7 @@ class RedirectForm(Form):
         if target and is_safe_url(target):
             return target
         else:
-            return redirect(self.next.data)
+            return url_for('index') #redirect(self.next.data)
 
 class ReviewForm(Form):
     rating = HiddenField('Rating', validators = [DataRequired()])

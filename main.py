@@ -16,7 +16,7 @@ from app.models import Company, User, Review, TempCode
 from app.basejs import basejs
 from app.search import search_company
 from app.memcache import mc_getsert
-from app.login_manager import validate_user, load_user, google_oauth, login_user_with_redirect, load_user_by_email
+from app.login_manager import load_user, google_oauth, normal_auth, redirect_loggedin_user
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 from app.glossary import glossary
@@ -55,7 +55,6 @@ def redirect_www():
     """Redirect www requests to non-www"""
     urlparts = urlparse(request.url)
     urlparts_list = list(urlparts)
-    logging.debug(request.url)
     if urlparts.netloc in {'www.52payments.com', 'www.localhost:8080'}:
         urlparts_list[1] = urlparts.netloc[4:]
         return redirect(urlunparse(urlparts_list), code=301)
@@ -143,7 +142,7 @@ def verify_email(code):
         flash('Your email verification link is expired. Please try again.')
     return redirect(url_for('index'))
 
-@app.route('/forgot_password', methods=['GET', 'POST'])
+@app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     def check_user():
         user = load_user(form.data['email'])
@@ -188,36 +187,29 @@ def reset_password(code):
         return redirect(url_for('index'))
 
 @app.route('/login', methods=['GET', 'POST'])
+@redirect_loggedin_user('my_account')
 def login():
     if request.referrer and request.referrer.find('login')==-1:
         session['initial_referrer'] = request.referrer
     form = LoginForm()
     google_login_form = GoogleLoginForm()
     if form.validate_on_submit():
-        user, error = validate_user(form)
-        if error:
-            flash(error)
+        auth_by_form = normal_auth(form)
+        user = auth_by_form.login()
+        if not user or auth_by_form.error:
+            flash(auth_by_form.error or "Please try again")
             return render_template('login.html', form = form, google_login_form = google_login_form)
-        else:
-            current_user, redirect_route = login_user_with_redirect(user, form, session.get('initial_referrer'))
-            if current_user:
-                return redirect(redirect_route or url_for('index'))
-            else:
-                return abort(400)
+        return redirect(auth_by_form.redirect or url_for('index'))
     if google_login_form.validate_on_submit():
-        gg = google_oauth(google_login_form.data['id_token'])
-        user = gg.login()
-        if not user or gg.error:
-            flash(gg.error or "Please try again")
+        auth_by_gg = google_oauth(google_login_form.data['id_token'])
+        user = auth_by_gg.login()
+        logging.debug(user)
+        if not user or auth_by_gg.error:
+            flash(auth_by_gg.error or "Please try again")
             return render_template('login.html', form=form, google_login_form= google_login_form)
-        current_user, redirect_route = login_user_with_redirect(user, google_login_form, session.get('initial_referrer'))
-        if current_user:
-            return redirect(redirect_route or url_for('index'))
-        else:
-            return abort(400)
+        return redirect(auth_by_gg.redirect or url_for('index'))
     return render_template('login.html', form=form, google_login_form= google_login_form,
                            title = 'Login')
-
 
 @app.route('/logout', methods=['GET'])
 def logout():
@@ -230,32 +222,25 @@ def logout():
     return redirect(referrer or url_for('index'))
 
 @app.route('/signup', methods=['GET', 'POST'])
+@redirect_loggedin_user('my_account')
 def signup():
     form = SignUpForm()
     google_login_form =GoogleLoginForm()
     if form.validate_on_submit():
-        user_data = form.data
-        user = load_user(user_data['email'])
-        if user:
-            error = 'Your email is already registered.'
-            flash(error)
-            return render_template('signup.html', form=form, google_login_form= google_login_form)
-        elif not user:
-            user_data['password'] = bt.hashpw(user_data['password'], bt.gensalt())
-            user_data.pop('password_2')
-            user_data['user_id'] = user_data['email']
-            user = User(**user_data)
-            user.put()
-        flash('Successfully registered. Please login.')
-        return redirect(url_for('login'))
-    if google_login_form.validate_on_submit():
-        gg = google_oauth(google_login_form.data['id_token'])
-        user = gg.signup()
-        if not user or gg.error:
-            flash(gg.error or "Please try again")
+        auth_by_form = normal_auth(form)
+        user = auth_by_form.signup()
+        if not user or auth_by_form.error:
+            flash(auth_by_form.error or "Please try again")
             return render_template('signup.html', form=form, google_login_form= google_login_form)
         flash('Successfully registered. Thank you')
-        login_user(user)
+        return redirect(url_for('index'))
+    if google_login_form.validate_on_submit():
+        auth_by_gg = google_oauth(google_login_form.data['id_token'])
+        user = auth_by_gg.signup()
+        if not user or auth_by_gg.error:
+            flash(auth_by_gg.error or "Please try again")
+            return render_template('signup.html', form=form, google_login_form= google_login_form)
+        #flash('Successfully registered. Thank you')
         return redirect(url_for('index'))
     return render_template('signup.html', form=form, google_login_form= google_login_form,
                            title = 'Signup')
