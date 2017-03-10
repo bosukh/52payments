@@ -47,7 +47,7 @@ def login_user_with_redirect(user, form = None, redirect_path = None):
     flash('Logged in successfully.')
     return user, redirect_path
 
-class normal_auth:
+class NormalAuth:
     def __init__(self, form):
         '''
         Login or signup user given the form.
@@ -94,7 +94,7 @@ class normal_auth:
                 logging.debug(e)
             self.error = 'The given information is invalid'
 
-class google_oauth:
+class GoogleOauth:
     def __init__(self, id_token):
         '''
         https://developers.google.com/identity/sign-in/web/backend-auth
@@ -112,7 +112,7 @@ class google_oauth:
         self.user_id = self.idinfo.get('sub')
         self.user = load_user(self.user_id or '_')
         self.error = ''
-        self.redirect = session['initial_referrer'] or url_for('index')
+        self.redirect = session.get('initial_referrer') or url_for('index')
 
     def login(self):
         if self.user:
