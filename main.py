@@ -16,21 +16,70 @@ from app.models import Company, User, Review, TempCode
 from app.basejs import basejs
 from app.search import search_company
 from app.memcache import mc_getsert
-from app.login_manager import load_user, google_oauth, normal_auth, redirect_loggedin_user
+from app.login_manager import load_user, GoogleOauth, NormalAuth, redirect_loggedin_user
 from app.redirect_check import *
 from app.emails import email_templates, send_email
 from app.glossary import glossary
 from app.sticky_notes import add_sticky_note, add_notes
 from app.import_companies import import_companies
 
-def render_template(*args, **kwargs):
-    res = flask_render_template(*args, **kwargs)
-    return html_minify(res)
+from app.views.Signup import SignupView
+from app.views.Static import StaticView
+from app.views.ForgotPassword import ForgotPasswordView
+from app.views.CompanyProfile import CompanyProfileView
+from app.views.MyAccount import MyAccountView
+from app.views.SearchResult import SearchResultView
+from app.views.Index import IndexView
+from app.views.VerifyEmail import VerifyEmailView
+from app.views.ResetPassword import ResetPasswordView
+from app.views.Login import LoginView
+from app.views.Logout import LogoutView
+
+# StaticViews, GET-only
+app.add_url_rule('/about-us',
+                 view_func=StaticView.as_view('about_us', template_name='about_us.html'))
+app.add_url_rule('/contact-us',
+                 view_func=StaticView.as_view('contact_us', template_name='contact_us.html'))
+app.add_url_rule('/terms',
+                 view_func=StaticView.as_view('terms', template_name='terms.html'))
+app.add_url_rule('/privacy-policy',
+                 view_func=StaticView.as_view('privacy_policy', template_name='privacy_policy.html'))
+app.add_url_rule('/sitemap',
+                 view_func=StaticView.as_view('sitemap', template_name='sitemap.xml'))
+app.add_url_rule('/company/<string:company_profile_name>', # GET and POST
+                 view_func=CompanyProfileView.as_view('company'))
+app.add_url_rule('/my-account', # GET and POST
+                 view_func=MyAccountView.as_view('my_account'))
+app.add_url_rule('/forgot-password', # GET and POST
+                 view_func=ForgotPasswordView.as_view('forgot_password'))
+app.add_url_rule('/reset-password/<string:code>', # GET and POST
+                 view_func=ResetPasswordView.as_view('reset_password'))
+app.add_url_rule('/login', # GET and POST
+                view_func=LoginView.as_view('login'))
+app.add_url_rule('/signup', # GET and POST
+                view_func=SignupView.as_view('signup'))
+app.add_url_rule('/search-results',
+                 view_func=SearchResultView.as_view('search_results'),
+                 methods = ['POST'])
+app.add_url_rule('/index',
+                 view_func=IndexView.as_view('index'),
+                 methods = ['GET'])
+app.add_url_rule('/',
+                 view_func=IndexView.as_view('/'),
+                 methods = ['GET'])
+app.add_url_rule('/verify-email/<string:code>',
+                 view_func=VerifyEmailView.as_view('verify_email'),
+                 methods = ['GET'])
+app.add_url_rule('/LogoutView',
+                 view_func=LogoutView.as_view('logout'),
+                 methods = ['GET'])
+
 
 minified = minified_files(static_path='static' ,local_path = 'app/static', mode=MODE)
 app.jinja_env.globals['minified'] = minified
 app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
+
 
 if MODE == 'local':
     @app.route('/add-companies', methods=['GET'])
@@ -66,217 +115,6 @@ def redirect_www():
     if urlparts.netloc.find('appspot')> 0:
         urlparts_list[1] = '52payments.com'
         return redirect(urlunparse(urlparts_list), code=301)
-
-@app.route('/sitemap', methods=['GET'])
-def sitemap():
-    return render_template("sitemap.xml")
-@app.route('/about-us', methods=['GET'])
-def about_us():
-    return render_template("about_us.html")
-@app.route('/contact-us', methods=['GET'])
-def contact_us():
-    return render_template("contact_us.html")
-@app.route('/terms', methods=['GET'])
-def terms():
-    return render_template("terms.html")
-@app.route('/privacy-policy', methods=['GET'])
-def privacy_policy():
-    return render_template("privacy_policy.html")
-
-@app.route('/search-results', methods=['POST'])
-def search_results():
-    search_result = search_company(request.form['search_criteria'])
-    return render_template("search_results.html", companies=add_notes(search_result))
-
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-def index():
-    form = SearchForm()
-    if form.validate_on_submit():
-        return redirect(url_for('search_results'))
-    companies =  mc_getsert('featured_companies', Company.make_query("WHERE featured=True ORDER BY share DESC LIMIT 3"))
-    return render_template("index.html", companies = companies, form = form,
-                           title='Search and Compare Card Payment Processors | 52Payments',
-                           keywords= 'card processing, card processor, merchant accounts, payment processing solutions, Credit Card Processing Services',
-                           description = 'Explore the options in accepting card payments for your business. Come find the most cost-effective card payment processors with our reviews.')
-
-@app.route('/my-account', methods=['GET', 'POST'])
-@login_required
-def my_account():
-    verify_email_form = VerifyEmailForm()
-    edit_info_form = EditInfoForm()
-    if edit_info_form.validate_on_submit():
-        user_info = edit_info_form.data
-        if current_user.email.lower().strip() != user_info.get('email').lower().strip():
-            current_user.email_verified = False
-        for k, v in user_info.iteritems():
-            exec "current_user.%s = '%s'"%(k, str(v))
-        current_user.put()
-        return redirect(url_for('my_account'))
-    if verify_email_form.validate_on_submit():
-        if verify_email_form.data['verify_email'] != current_user.email:
-            abort(400)
-        subject = email_templates['verify_email']['subject']
-        body = email_templates['verify_email']['body']%(current_user.first_name, 'https://52payments.com/verify-email/%s'%str(TempCode.gen_code()))
-        logging.debug(subject)
-        logging.debug(body)
-        send_email(current_user, subject, body)
-        flash('Email verification link is sent. Please check your email.')
-        return redirect(url_for('my_account'))
-    user = current_user.to_dict()
-    user.pop('password', None)
-    reviews = Review.query(Review.user==current_user.key).order(-Review.created).fetch(limit=None)
-    reviews = Review.reviews_for_display(reviews)
-    for review in reviews:
-        company = review['company'].get()
-        review['company_name'] = company.title
-        review['company_profile_name'] = company.company_profile_name
-    return render_template("my_account.html", user= user, reviews=reviews,
-                           verify_email_form = verify_email_form, edit_info_form=edit_info_form,
-                           title = 'My Account | 52payments')
-
-@app.route('/verify-email/<code>', methods=['GET'])
-def verify_email(code):
-    value = TempCode.verify_code(code, 600)
-    if value:
-        user = load_user(value)
-        user.email_verified = True
-        user.put()
-        flash('Your email is now verified. Thank you')
-    else:
-        flash('Your email verification link is expired. Please try again.')
-    return redirect(url_for('index'))
-
-@app.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
-    def check_user():
-        user = load_user(form.data['email'])
-        if not user:
-            flash('Your email is not registered. Please sign up.')
-            return False
-        else:
-            if user.first_name.lower() != form.data['first_name'].lower() or user.last_name.lower() != form.data['last_name'].lower():
-                flash('Entered name does not match the email.')
-                return False
-        return user
-    form = ForgotPasswordForm()
-    if form.validate_on_submit():
-        user = check_user()
-        if user:
-            subject = email_templates['forgot_password']['subject']
-            body = email_templates['forgot_password']['body']%(user.first_name, 'https://52payments.com/reset-password/%s'%str(TempCode.gen_code(user.user_id)))
-            logging.debug(subject)
-            logging.debug(body)
-            send_email(user, subject, body)
-            flash('Password re-set link is sent to your email. Please check your email.')
-            return redirect(url_for('index'))
-    return render_template('forgot_password.html', form=form)
-
-@app.route('/reset-password/<code>', methods=['GET', 'POST'])
-def reset_password(code):
-    user_id = TempCode.verify_code(code, 600, delete=False)
-    form = ChangePasswordForm()
-    if user_id and not form.validate_on_submit():
-        flash('Please change your password.')
-        return render_template('change_password.html', form = form)
-    elif user_id and form.validate_on_submit():
-        temp_code = TempCode.load_code(code)
-        temp_code.key.delete()
-        user = load_user(user_id)
-        user.password = bt.hashpw(form.data['password'], bt.gensalt())
-        user.put()
-        flash('Your password is changed. Please login')
-        return redirect(url_for('login'))
-    else:
-        flash('Your link is expired or incorrect. Please try again')
-        return redirect(url_for('index'))
-
-@app.route('/login', methods=['GET', 'POST'])
-@redirect_loggedin_user('my_account')
-def login():
-    if request.referrer and request.referrer.find('login')==-1:
-        session['initial_referrer'] = request.referrer
-    form = LoginForm()
-    google_login_form = GoogleLoginForm()
-    if form.validate_on_submit():
-        auth_by_form = normal_auth(form)
-        user = auth_by_form.login()
-        if not user or auth_by_form.error:
-            flash(auth_by_form.error or "Please try again")
-            return render_template('login.html', form = form, google_login_form = google_login_form)
-        return redirect(auth_by_form.redirect or url_for('index'))
-    if google_login_form.validate_on_submit():
-        auth_by_gg = google_oauth(google_login_form.data.get('id_token', ''))
-        user = auth_by_gg.login()
-        logging.debug(user)
-        if not user or auth_by_gg.error:
-            flash(auth_by_gg.error or "Please try again")
-            return render_template('login.html', form=form, google_login_form= google_login_form)
-        return redirect(auth_by_gg.redirect or url_for('index'))
-    return render_template('login.html', form=form, google_login_form= google_login_form,
-                           title = 'Login')
-
-@app.route('/logout', methods=['GET'])
-def logout():
-    logout_user()
-    logging.debug(request.referrer)
-    referrer = request.referrer
-    if not check_referrer_origin(referrer) or check_referrer_auth_requirement(referrer):
-        referrer = None;
-    flash('Logged out successfully. Thanks.')
-    return redirect(referrer or url_for('index'))
-
-@app.route('/signup', methods=['GET', 'POST'])
-@redirect_loggedin_user('my_account')
-def signup():
-    form = SignUpForm()
-    google_login_form =GoogleLoginForm()
-    if form.validate_on_submit():
-        auth_by_form = normal_auth(form)
-        user = auth_by_form.signup()
-        if not user or auth_by_form.error:
-            flash(auth_by_form.error or "Please try again")
-            return render_template('signup.html', form=form, google_login_form= google_login_form)
-        flash('Successfully registered. Thank you')
-        return redirect(url_for('index'))
-    if google_login_form.validate_on_submit():
-        auth_by_gg = google_oauth(google_login_form.data.get('id_token', ''))
-        user = auth_by_gg.signup()
-        if not user or auth_by_gg.error:
-            flash(auth_by_gg.error or "Please try again")
-            return render_template('signup.html', form=form, google_login_form= google_login_form)
-        #flash('Successfully registered. Thank you')
-        return redirect(url_for('index'))
-    return render_template('signup.html', form=form, google_login_form= google_login_form,
-                           title = 'Signup')
-
-@app.route('/company/<company_profile_name>', methods = ['GET', 'POST'])
-def company(company_profile_name):
-    company = Company.load_company(company_profile_name)
-    form = ReviewForm()
-    if form.validate_on_submit():
-        if not current_user or not current_user.is_authenticated:
-            flash('You need to log-in.')
-        else:
-            review = form.data
-            review['rating'] = int(review['rating'])
-            review['user'] = load_user(current_user.user_id).key
-            review['company'] = Company.load_company(company_profile_name).key
-            review = Review(**review)
-            review.put()
-            flash('Your review is submitted. It should be up soon.')
-            return redirect(url_for('company', company_profile_name = company_profile_name))
-    if company:
-        reviews = Review.query(Review.company==company.key).filter(Review.approved == True).order(-Review.created).fetch(limit=None)
-        reviews = Review.reviews_for_display(reviews)
-        return render_template('company_profile.html',
-                                company = add_notes(company), reviews = reviews, form=form,
-                                title = '%s Review'%company.title.strip(),
-                                keywords = "%s, search and compare payment processors, merchant account, card processor, payment processor"%company.title,
-                                description = company.meta_description.strip())
-    else:
-        flash("Requested page does not exist. Redirected to the main page.")
-        return redirect(url_for("index"))
 
 #######################################################################
 # Not being used. Need to work on below in order
