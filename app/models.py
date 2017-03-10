@@ -1,9 +1,10 @@
+import logging
+
 from google.appengine.ext import ndb
 from datetime import datetime
 from functools import wraps
 from flask_login import current_user
 from uuid import uuid1
-import logging
 from .sticky_notes import add_notes
 
 class TempCode(ndb.Model):
