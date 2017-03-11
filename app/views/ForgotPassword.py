@@ -7,7 +7,7 @@ from flask.views import View
 from ..emails import email_templates, send_email
 from ..login_manager import load_user
 from ..forms import ForgotPasswordForm
-from ..models import TempCode
+from ..models.TempCode import TempCodeModel
 
 class ForgotPasswordView(View):
     methods = ['GET', 'POST']
@@ -27,7 +27,7 @@ class ForgotPasswordView(View):
             user = check_user()
             if user:
                 subject = email_templates['forgot_password']['subject']
-                body = email_templates['forgot_password']['body']%(user.first_name, 'https://52payments.com/reset-password/%s'%str(TempCode.gen_code(user.user_id)))
+                body = email_templates['forgot_password']['body']%(user.first_name, 'https://52payments.com/reset-password/%s'%str(TempCodeModel.gen_code(user.user_id)))
                 logging.debug(subject)
                 logging.debug(body)
                 send_email(user, subject, body)

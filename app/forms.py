@@ -1,5 +1,5 @@
 import logging
-from flask_wtf import FlaskForm as Form
+from flask_wtf import FlaskForm
 from wtforms import IntegerField, FloatField, StringField, BooleanField, TextAreaField, TextField, SelectMultipleField, HiddenField, PasswordField
 from wtforms.validators import Length, Email, DataRequired, EqualTo, URL, Regexp
 from flask_wtf.file import FileField
@@ -8,6 +8,7 @@ from flask import request, url_for, session
 
 from urlparse import urlparse, urljoin
 from flask import request, url_for, redirect
+
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -23,6 +24,13 @@ def get_redirect_target():
             continue
         if is_safe_url(target):
             return target
+
+class Form(FlaskForm):
+    @property
+    def data(self):
+        res = dict((name, f.data) for name, f in self._fields.iteritems())
+        res.pop('csrf_token', None)
+        return res
 
 class RedirectForm(Form):
     next = HiddenField()

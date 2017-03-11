@@ -1,6 +1,6 @@
 import logging
 
-from .models import Company
+from .models.Company import CompanyModel
 from .memcache import mc_getsert
 
 def parse_search_criteria(search_criteria):
@@ -33,13 +33,13 @@ def company_search_query(search_criteria):
                 where_clause.append("%s = '%s'"%(col_name, value))
     gql_query += ' AND '.join(where_clause) + " ORDER BY share DESC"
     logging.debug(gql_query)
-    res =  Company.gql(gql_query).fetch()
+    res =  CompanyModel.gql(gql_query).fetch()
     logging.debug('Query Resulted in %s'%str(len(res)))
     return res
 
 def search_company(search_criteria):
     if not search_criteria:
         logging.debug('Search Returning all comapnies')
-        return mc_getsert('all_verified_companies', Company.make_query("ORDER BY share DESC"))
+        return mc_getsert('all_verified_companies', CompanyModel.make_query("ORDER BY share DESC"))
     search_result = company_search_query(parse_search_criteria(search_criteria))
     return search_result

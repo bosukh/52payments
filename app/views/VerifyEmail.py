@@ -2,11 +2,11 @@ from flask import flash, redirect, url_for
 from flask.views import MethodView
 
 from ..login_manager import load_user
-from ..models import TempCode
+from ..models.TempCode import TempCodeModel
 
 class VerifyEmailView(MethodView):
     def get(self, code):
-        value = TempCode.verify_code(code, 600)
+        value = TempCodeModel.verify_code(code, 600)
         if value:
             user = load_user(value)
             user.email_verified = True

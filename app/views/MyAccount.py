@@ -7,7 +7,8 @@ from flask_login import current_user, login_required
 
 from ..emails import email_templates, send_email
 from ..forms import VerifyEmailForm, EditInfoForm
-from ..models import Review, TempCode
+from ..models.Review import ReviewModel
+from ..models.TempCode import TempCodeModel
 
 class MyAccountView(View):
     methods = ['GET', 'POST']
@@ -27,13 +28,13 @@ class MyAccountView(View):
                 if verify_email_form.data['verify_email'] != current_user.email:
                     abort(400)
                 subject = email_templates['verify_email']['subject']
-                body = email_templates['verify_email']['body']%(current_user.first_name, 'https://52payments.com/verify-email/%s'%str(TempCode.gen_code()))
+                body = email_templates['verify_email']['body']%(current_user.first_name, 'https://52payments.com/verify-email/%s'%str(TempCodeModel.gen_code()))
                 send_email(current_user, subject, body)
                 flash('Email verification link is sent. Please check your email.')
         user = current_user.to_dict()
         user.pop('password', None)
-        reviews = Review.query(Review.user == current_user.key and Review.approved == True).order(-Review.created).fetch(limit = None)
-        reviews = Review.reviews_for_display(reviews)
+        reviews = ReviewModel.query(ReviewModel.user == current_user.key and ReviewModel.approved == True).order(-ReviewModel.created).fetch(limit = None)
+        reviews = ReviewModel.reviews_for_display(reviews)
         for review in reviews:
             company = review['company'].get()
             review['company_name'] = company.title

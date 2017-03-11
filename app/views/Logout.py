@@ -1,4 +1,5 @@
 import logging
+
 from flask import flash, redirect, url_for, request
 from flask.views import MethodView
 from flask_login import logout_user

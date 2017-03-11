@@ -3,7 +3,7 @@ from config import MODE
 import logging
 from urlparse import urlparse, urlunparse
 from flask import Flask, make_response, abort, g, jsonify, flash, redirect, session, url_for, request
-from flask import render_template as flask_render_template
+from flask import render_template 
 from rjscssmin_plugin import minified_files, html_minify
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
@@ -12,7 +12,6 @@ from flask_login import fresh_login_required, LoginManager, login_user, logout_u
 
 from app import app, login_manager
 from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
-from app.models import Company, User, Review, TempCode
 from app.basejs import basejs
 from app.search import search_company
 from app.memcache import mc_getsert
@@ -22,6 +21,11 @@ from app.emails import email_templates, send_email
 from app.glossary import glossary
 from app.sticky_notes import add_sticky_note, add_notes
 from app.import_companies import import_companies
+
+from app.models.Company import CompanyModel
+from app.models.User import UserModel
+from app.models.Review import ReviewModel
+from app.models.TempCode import TempCodeModel
 
 from app.views.Signup import SignupView
 from app.views.Static import StaticView
@@ -121,10 +125,14 @@ def redirect_www():
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required # only admin
 def admin():
+    logging.debug('###############')
     if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
         abort(400)
-    reviews = Review.query().filter(Review.approved ==None).order(-Review.created).fetch(limit=None)
+    logging.debug('###############')
+    reviews = ReviewModel.query().filter(ReviewModel.approved ==None).order(-ReviewModel.created).fetch(limit=None)
+    logging.debug('###############')
     dict_reviews = []
+    logging.debug('###############')
     for review in reviews:
         urlsafe = review.key.urlsafe()
         review = review.to_dict()
@@ -132,6 +140,7 @@ def admin():
         user = review['user'].get()
         review['user_name'] = user.first_name + ' ' +user.last_name
         dict_reviews.append(review)
+    logging.debug('###############')
     return render_template('admin.html',
                             reviews=dict_reviews)
 
@@ -155,7 +164,7 @@ def admindecision():
 
 @app.route('/register-company/<code>', methods=['GET', 'POST'])
 def register_company(code):
-    company_profile_name = TempCode.verify_code(code, delete=False)
+    company_profile_name = TempCodeModel.verify_code(code, delete=False)
     if not company_profile_name:
         abort(400)
     form = CompanyForm(company_profile_name=company_profile_name)
@@ -175,9 +184,9 @@ def register_company(code):
         if company_form.get('landing_page'):
             if company_form['landing_page'].find('http://') == -1:
                 company_form['landing_page'] = 'http://' + company_form['landing_page']
-        company = Company(**company_form)
+        company = CompanyModel(**company_form)
         company.put()
-        temp_code = TempCode.load_code(code)
+        temp_code = TempCodeModel.load_code(code)
         temp_code.key.delete()
         flash('Info Submitted')
         return redirect(url_for('company', company_profile_name = form.data['company_profile_name']))

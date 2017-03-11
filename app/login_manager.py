@@ -8,7 +8,7 @@ from functools import wraps
 
 from . import login_manager
 from . import WEB_CLIENT_ID
-from .models import User
+from .models.User import UserModel
 from .redirect_check import *
 
 def redirect_loggedin_user(redirect_path):
@@ -27,11 +27,11 @@ def redirect_loggedin_user(redirect_path):
 
 @login_manager.user_loader
 def load_user(user_id):
-    query = User.gql("WHERE user_id = '%s'"%str(user_id))
+    query = UserModel.gql("WHERE user_id = '%s'"%str(user_id))
     return query.get()
 
 def load_user_by_email(email):
-    query = User.gql("WHERE email = '%s'"%str(email))
+    query = UserModel.gql("WHERE email = '%s'"%str(email))
     return query.get()
 
 def login_user_with_redirect(user, form = None, redirect_path = None):
@@ -86,7 +86,7 @@ class NormalAuth:
             try:
                 orig_password = self.data.get('password', '')
                 self.data['password'] = bt.hashpw(orig_password, bt.gensalt())
-                self.user = User(**self.data)
+                self.user = UserModel(**self.data)
                 self.user.put()
                 self.data['password'] = orig_password
                 return self.login()
@@ -127,7 +127,7 @@ class GoogleOauth:
             self.error = 'Your email is already registered.'
             return None
         else:
-            self.user = User(user_id = self.idinfo['sub'],
+            self.user = UserModel(user_id = self.idinfo['sub'],
                         email = self.idinfo['email'],
                         first_name = self.idinfo['given_name'],
                         last_name = self.idinfo['family_name'],
