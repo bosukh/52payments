@@ -1,0 +1,8 @@
+flask
+flask-login
+flask-sslify
+flask-wtf
+rjscssmin-plugin
+oauth2client
+bcrypt(https://github.com/erlichmen/py-bcrypt)
+
