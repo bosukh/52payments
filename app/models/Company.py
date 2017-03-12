@@ -31,6 +31,12 @@ class CompanyModel(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=False)
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=False)
 
+    def __eq__(self, other):
+        return self.company_profile_name == other.company_profile_name
+
+    def __ne__(self, other):
+        return not self.__eq__(self, other)
+
     @classmethod
     def load_company(self, company_profile_name, raw = False):
         '''

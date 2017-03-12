@@ -13,6 +13,13 @@ class ReviewModel(ndb.Model):
     created = ndb.DateTimeProperty(auto_now_add = True, indexed=True)
     last_modified = ndb.DateTimeProperty(auto_now = True, indexed=True)
 
+    def __eq__(self, other):
+        return (self.title == other.title and \
+                self.content == other.content)
+
+    def __ne__(self, other):
+        return not self.__eq__(self, other)
+
     @classmethod
     def reviews_for_display(self, reviews):
         reviews = [review.to_dict() for review in reviews]
