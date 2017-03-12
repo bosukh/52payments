@@ -6,7 +6,7 @@ from flask.views import View
 from flask_login import current_user
 
 from ..emails import email_templates, send_email
-from ..forms import ReviewForm
+from ..forms.WriteReview import WriteReviewForm
 from ..models.Company import CompanyModel
 from ..models.Review import ReviewModel
 
@@ -14,7 +14,7 @@ from ..models.Review import ReviewModel
 class CompanyProfileView(View):
     methods = ['GET', 'POST']
     def dispatch_request(self, company_profile_name):
-        form = ReviewForm()
+        form = WriteReviewForm()
         company = CompanyModel.load_company(company_profile_name)
         if not company:
             flash("Requested page does not exist. Redirected to the main page.")

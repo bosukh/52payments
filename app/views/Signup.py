@@ -2,7 +2,9 @@ from . import render_template
 from flask import flash, redirect, url_for, request
 from flask.views import View, MethodView
 
-from ..forms import SignUpForm, GoogleLoginForm
+
+from ..forms.SignUp import SignUpForm
+from ..forms.GoogleLogin import GoogleLoginForm
 from ..login_manager import redirect_loggedin_user, NormalAuth, GoogleOauth
 from flask_login import current_user, login_required
 

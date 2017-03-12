@@ -6,7 +6,7 @@ from flask.views import View
 
 from ..emails import email_templates, send_email
 from ..login_manager import load_user
-from ..forms import ForgotPasswordForm
+from ..forms.ForgotPassword import ForgotPasswordForm
 from ..models.TempCode import TempCodeModel
 
 class ForgotPasswordView(View):

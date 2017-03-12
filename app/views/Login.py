@@ -3,7 +3,8 @@ from . import render_template
 from flask import flash, redirect, url_for, request, session
 from flask.views import View
 
-from ..forms import LoginForm, GoogleLoginForm
+from ..forms.Login import LoginForm
+from ..forms.GoogleLogin import GoogleLoginForm
 from ..login_manager import redirect_loggedin_user, GoogleOauth, NormalAuth
 
 class LoginView(View):

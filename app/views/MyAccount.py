@@ -6,7 +6,8 @@ from flask.views import View
 from flask_login import current_user, login_required
 
 from ..emails import email_templates, send_email
-from ..forms import VerifyEmailForm, EditInfoForm
+from ..forms.VerifyEmail import VerifyEmailForm
+from ..forms.EditInfo import EditInfoForm
 from ..models.Review import ReviewModel
 from ..models.TempCode import TempCodeModel
 
@@ -33,6 +34,7 @@ class MyAccountView(View):
                 flash('Email verification link is sent. Please check your email.')
         user = current_user.to_dict()
         user.pop('password', None)
+        # In Local Env, seems to return all reviews regardless of user
         reviews = ReviewModel.query(ReviewModel.user == current_user.key and ReviewModel.approved == True).order(-ReviewModel.created).fetch(limit = None)
         reviews = ReviewModel.reviews_for_display(reviews)
         for review in reviews:

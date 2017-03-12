@@ -5,7 +5,7 @@ from flask import flash, redirect, url_for, request
 from flask.views import View
 
 from ..login_manager import load_user
-from ..forms import ChangePasswordForm
+from ..forms.ResetPassword import ResetPasswordForm
 from ..models.TempCode import TempCodeModel
 
 class ResetPasswordView(View):
