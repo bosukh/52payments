@@ -10,7 +10,7 @@ def add_sticky_note(term):
         return Markup('<span class="sticky_note" style="text-decoration:underline;" onmouseover="javascript:show_hover_message(this)" onmouseout="javascript:hide_hover_message(this)" onclick="javascript:hide_hover_message(this)">%s<p class="hover_message">%s</p></span>'%(term.strip(), note))
 
 def add_notes(companies):
-    def mapping(company):
+    def pre_render(company):
         company.pricing_method = map(add_sticky_note, company.pricing_method)
         company.provided_srvs= map(add_sticky_note, company.provided_srvs)
         company.complementary_srvs = map(add_sticky_note, company.complementary_srvs)
@@ -21,7 +21,5 @@ def add_notes(companies):
         company.avg_rating = round(company.avg_rating, 1)
         return company
     if type(companies) != list:
-        return mapping(companies)
-    for company in companies:
-        company = mapping(company)
-    return companies
+        return pre_render(companies)
+    return map(pre_render, companies)

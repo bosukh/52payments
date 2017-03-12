@@ -2,30 +2,15 @@ from config import MODE
 
 import logging
 from urlparse import urlparse, urlunparse
-from flask import Flask, make_response, abort, g, jsonify, flash, redirect, session, url_for, request
+from flask import abort, flash, redirect, url_for, request
 from flask import render_template
-from rjscssmin_plugin import minified_files, html_minify
-from google.appengine.ext import ndb
-from google.appengine.api import memcache
-from bcrypt import bcrypt as bt
-from flask_login import fresh_login_required, LoginManager, login_user, logout_user, current_user, login_required
+from rjscssmin_plugin import minified_files
+from flask_login import login_required, current_user
 
-from app import app, login_manager
-#from app.forms import ChangePasswordForm, EditInfoForm, VerifyEmailForm, ForgotPasswordForm, GoogleLoginForm, CompanyForm, SearchForm, LoginForm, SignUpForm, ReviewForm
-from app.basejs import basejs
-from app.search import search_company
-from app.memcache import mc_getsert
-from app.login_manager import load_user, GoogleOauth, NormalAuth, redirect_loggedin_user
-from app.redirect_check import *
-from app.emails import email_templates, send_email
+from app import app
 from app.glossary import glossary
-from app.sticky_notes import add_sticky_note, add_notes
+from app.sticky_notes import add_sticky_note
 from app.import_companies import import_companies
-
-from app.models.Company import CompanyModel
-from app.models.User import UserModel
-from app.models.Review import ReviewModel
-from app.models.TempCode import TempCodeModel
 
 from app.views.Signup import SignupView
 from app.views.Static import StaticView
@@ -84,29 +69,6 @@ app.jinja_env.globals['minified'] = minified
 app.jinja_env.globals['sticky_note'] = add_sticky_note
 app.jinja_env.globals['glossary'] = glossary
 
-
-if MODE == 'local':
-    @app.route('/add-companies', methods=['GET'])
-    @login_required # only admin
-    def add_companies():
-        if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
-            abort(400)
-        import_companies()
-        return "####"
-    @app.route('/temp', methods=['GET'])
-    def temp():
-        return render_template("temp.html")
-
-@app.errorhandler(401)
-def page_not_found(e):
-    flash("Requested page(%s) requires login OR you are not authorized. Redirected to main page. Thanks."%request.url)
-    return redirect(url_for('index'))
-
-@app.errorhandler(404)
-def page_not_found(e):
-    flash("Requested page(%s) does not exist. Redirected to main page. Thanks."%request.url)
-    return redirect(url_for('index'))
-
 @app.before_request
 def redirect_www():
     #http://stackoverflow.com/questions/9766134/how-do-i-redirect-to-the-www-version-of-my-flask-site-on-heroku
@@ -120,6 +82,27 @@ def redirect_www():
         urlparts_list[1] = '52payments.com'
         return redirect(urlunparse(urlparts_list), code=301)
 
+@app.errorhandler(401)
+def page_not_found(e):
+    flash("Requested page(%s) requires login OR you are not authorized. Redirected to main page. Thanks."%request.url)
+    return redirect(url_for('index'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    flash("Requested page(%s) does not exist. Redirected to main page. Thanks."%request.url)
+    return redirect(url_for('index'))
+
+if MODE == 'local':
+    @app.route('/add-companies', methods=['GET'])
+    @login_required # only admin
+    def add_companies():
+        if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
+            abort(400)
+        import_companies()
+        return "####"
+    @app.route('/temp', methods=['GET'])
+    def temp():
+        return render_template("temp.html")
 #######################################################################
 # Not being used. Need to work on below in order
 # @app.route('/admin', methods=['GET', 'POST'])
