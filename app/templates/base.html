@@ -32,7 +32,7 @@
           <ul class="nav_ul">
             <a id= 'nav-square-logo' class="nav_a" href="{{url_for('index')}}"><img class='square-logo' src="{{ url_for('static', filename='square_logo.svg') }}" alt="52payments"></a>
             <a id= 'nav-side-logo' style='display:none;' class="nav_a" href="{{url_for('index')}}"><img style='max-width:20rem;' class='side-logo' src="{{ url_for('static', filename='side_logo.svg') }}" alt="52payments"></a>
-            {% if current_user.is_authenticated %}
+            {% if current_user.is_authenticated and current_user %}
             <div style='display:none;' class="g-signin2"></div>
             <li class="nav_li"><a class="nav_a" onclick= 'javascript:signOut()' href="{{url_for('logout')}}">Sign-out</a></li>
             <li class="nav_li"><a class="nav_a" href="{{url_for('my_account')}}">My Account</a></li>

@@ -1,4 +1,7 @@
 <div id='write-review-box' style='display:none;' class="company-profile-basic-box row">
+  <ul id="warnings">
+    <li class = 'li_warning' id='warning_email'>- Please provide proper email.</li>
+  </ul>
   <form action="" method="post" name="" enctype="multipart/form-data">
       {{ form.hidden_tag() }}
       <div class="row">
@@ -17,6 +20,7 @@
             <span class='rating-star' id='rating_1'>☆</span>
           </div>
           <div id= 'rating_text' class="">
+            Please select your rating by clicking stars.
           </div>
         </div>
         <div class="column">
@@ -35,6 +39,34 @@
       <div class="row">
         {{form.content}}
       </div>
+      {% if not current_user.is_authenticated and current_user %}
+      <div class="row">
+        <div class="column">
+          <div class="row">
+            <div class="column">
+              First Name
+            </div>
+          </div>
+          {{form.first_name}}
+        </div>
+        <div class="column">
+          <div class="row">
+            <div class="column">
+              Last Name
+            </div>
+          </div>
+          {{form.last_name}}
+        </div>
+        <div class="column">
+          <div class="row">
+            <div class="column">
+              Email
+            </div>
+          </div>
+          {{form.email}}
+        </div>
+      </div>
+      {% endif %}
       <div style='display:inline-block;' class="row">
         <div class="column" style='text-align:center'>
           <button id='review-submit-button' type="submit" name="submit-review-button">Submit</button>

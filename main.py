@@ -92,14 +92,15 @@ def page_not_found(e):
     flash("Requested page(%s) does not exist. Redirected to main page. Thanks."%request.url)
     return redirect(url_for('index'))
 
+@app.route('/add-companies', methods=['GET'])
+@login_required # only admin
+def add_companies():
+    if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
+        abort(400)
+    import_companies()
+    return "####"
+
 if MODE == 'local':
-    @app.route('/add-companies', methods=['GET'])
-    @login_required # only admin
-    def add_companies():
-        if current_user.email != 'admin@52payments.com' or not current_user.email_verified:
-            abort(400)
-        import_companies()
-        return "####"
     @app.route('/temp', methods=['GET'])
     def temp():
         return render_template("temp.html")

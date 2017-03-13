@@ -11,15 +11,9 @@
       <a href="{{company.landing_page}}" target = '_blank'>
         <button class='company-apply-button' style = 'display:flex; margin-left:1rem;' type="button" name="apply-button">Apply</button>
       </a>
-      {% if current_user.is_authenticated and current_user%}
       <a href="javascript:show_review_box()">
         <button id='company-review-button' style = 'display:flex; margin-left:1rem;' onclick='on_write_review()' class='company-review-button' type="button" name="button">Write a Review</button>
       </a>
-      {% else %}
-      <a href="javascript:alert_login_required()">
-        <button style = 'display:flex; margin-left:1rem;'id='company-review-button' class='company-review-button' type="button" name="wirte-review-button">Write a Review</button>
-      </a>
-      {% endif %}
     </div>
     {% if company.updated %}
     <p style='font-size:1.3rem;'>

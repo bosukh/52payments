@@ -7,7 +7,10 @@ var button_id, all_warning_id;
 
 function hide_warnings(field_ids){
   for (var i = 0; i < field_ids.length; i++){
-    document.getElementById('warning_'+field_ids[i]).style.display = 'none';
+    var elem = document.getElementById('warning_'+field_ids[i])
+    if (elem){
+      elem.style.display = 'none';
+    }
   }
 }
 function enable_btn(dom_id){
@@ -22,7 +25,7 @@ function disable_btn(dom_id){
 }
 function add_validator(dom_id, re_name){
   var elem = document.getElementById(dom_id);
-  var function_call = 'check_input(this,' + re_name + ')'
+  var function_call = 'check_input(this,' + re_name + ')';
   elem.setAttribute('oninput', function_call);
 }
 function check_all_field(field_ids, have_warnings_ = true){

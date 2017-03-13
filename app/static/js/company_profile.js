@@ -1,4 +1,4 @@
-var input_list = ['rating', 'title', 'content'];
+var input_list = ['rating', 'title', 'content', 'first_name', 'last_name', 'email'];
 var rating_input = document.getElementById('rating');
 var rating_text = document.getElementById('rating_text');
 var ratings = []
@@ -30,10 +30,29 @@ function show_review_box(){
 document.getElementById('title').setAttribute('maxlength', '120')
 document.getElementById('content').setAttribute('maxlength', '5000')
 disable_btn('review-submit-button');
+var temp = [];
 for (var i = 0; i < input_list.length; i++){
   var elem = document.getElementById(input_list[i]);
-  elem.setAttribute('oninput', 'check_all()');
+  if (elem){
+    elem.setAttribute('oninput', 'check_all()');
+  } else {
+    temp.push(input_list[i])
+  }
 }
+for (a of temp){
+  pop(input_list, a);
+}
+if (input_list.includes('email')){
+  var elem = document.getElementById('email');
+  var check_email = function(){
+    check_input(elem, email_re);
+    check_all();
+  }
+  var function_call = 'check_email()';
+  elem.setAttribute('oninput', function_call);
+}
+hide_warnings(['email']);
+
 rating_input.value = '';
 for (var i=1; i< 6;i++){
   ratings.push(document.getElementById('rating_'+ i));

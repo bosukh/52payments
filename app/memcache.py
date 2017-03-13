@@ -21,8 +21,8 @@ def mc_getsert(key, func):
     '''
     if not key:
         return False
-    dat = memcache.get(key)
-    if not dat:
+    value = memcache.get(key)
+    if not value:
         value = func()
         memcache.add(key, value)
     return value

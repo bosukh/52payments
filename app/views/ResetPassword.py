@@ -1,3 +1,4 @@
+import logging
 from . import render_template
 
 from bcrypt import bcrypt as bt
@@ -12,7 +13,7 @@ class ResetPasswordView(View):
     methods = ['GET', 'POST']
     def dispatch_request(self, code):
         user_id = TempCodeModel.verify_code(code, 600, delete=False)
-        form = ChangePasswordForm()
+        form = ResetPasswordForm()
         if not user_id:
             flash('Your link is expired or incorrect. Please try again')
             return redirect(url_for('index'))

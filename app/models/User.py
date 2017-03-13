@@ -21,6 +21,7 @@ class UserModel(ndb.Model):
     def __ne__(self, other):
         return not self.__eq__(self, other)
 
+    @property
     def is_active(self):
         """True, as all users are active."""
         return True
@@ -29,10 +30,12 @@ class UserModel(ndb.Model):
         """Return the email address to satisfy Flask-Login's requirements."""
         return self.user_id
 
+    @property
     def is_authenticated(self):
         """Return True if the user is authenticated."""
-        return self.authenticated
+        return True #self.authenticated
 
+    @property
     def is_anonymous(self):
         """False, as anonymous users aren't supported."""
         return False

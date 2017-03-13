@@ -19,7 +19,7 @@ def redirect_loggedin_user(redirect_path):
     def handler_decorator(handler):
         @wraps(handler)
         def decorated_function(*args, **kwargs):
-            if session.get('user_id'):
+            if current_user and current_user.is_authenticated:
                 return redirect(url_for(redirect_path))
             return handler(*args, **kwargs)
         return decorated_function
@@ -37,7 +37,7 @@ def load_user_by_email(email):
 def login_user_with_redirect(user, form = None, redirect_path = None):
     if form:
         redirect_path = form.redirect()
-    if redirect_path and user.is_authenticated():
+    if redirect_path and user.is_authenticated:
         login_user(user)
         #current_user = user
     else:

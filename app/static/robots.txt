@@ -1,10 +1,10 @@
 User-agent: *
 Disallow: /admin
-Disallow: /my_account
-Disallow: /verify_email
-Disallow: /forgot_password
-Disallow: /reset_password
-Disallow: /register_company
+Disallow: /my-account
+Disallow: /verify-email
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /register-company
 Disallow: /terms
-Disallow: /privacy_policy
-Disallow: /search_results
+Disallow: /privacy-policy
+Disallow: /search-results
